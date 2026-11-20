@@ -99,6 +99,72 @@
     return null;
   }
 
+  /* ---------- Contraseñas ----------
+   * Nunca se guarda la contraseña en texto plano: se deriva un hash con
+   * PBKDF2 (SHA-256, 100 000 iteraciones) y una sal aleatoria por usuario.
+   */
+  const PBKDF2_ITERATIONS = 100000;
+
+  function toHex(bytes) {
+    return Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  function fromHex(hex) {
+    const pares = String(hex).match(/[0-9a-f]{2}/gi) || [];
+    return new Uint8Array(pares.map(h => parseInt(h, 16)));
+  }
+
+  async function derivar(password, salt) {
+    const subtle = global.crypto && global.crypto.subtle;
+    if (!subtle) {
+      throw new Error('Este navegador no permite cifrar la contraseña. Abre la página desde un archivo local, http://localhost o https.');
+    }
+    const key = await subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveBits']);
+    const bits = await subtle.deriveBits(
+      { name: 'PBKDF2', salt: salt, iterations: PBKDF2_ITERATIONS, hash: 'SHA-256' },
+      key,
+      256
+    );
+    return toHex(new Uint8Array(bits));
+  }
+
+  async function hashPassword(password) {
+    const salt = global.crypto.getRandomValues(new Uint8Array(16));
+    return {
+      passwordHash: await derivar(password, salt),
+      passwordSalt: toHex(salt),
+      passwordUpdatedAt: new Date().toISOString()
+    };
+  }
+
+  function hasPassword(user) {
+    return typeof user.passwordHash === 'string' && user.passwordHash.length > 0;
+  }
+
+  async function verifyPassword(user, password) {
+    if (!hasPassword(user) || typeof user.passwordSalt !== 'string') return false;
+    const hash = await derivar(password, fromHex(user.passwordSalt));
+    return hash === user.passwordHash;
+  }
+
+  /**
+   * Comprueba email + contraseña contra los usuarios registrados.
+   * Devuelve { ok: true, user } o { ok: false, error }.
+   */
+  async function authenticate(email, password) {
+    const correo = String(email || '').trim().toLowerCase();
+    const user = getUsers().find(u => String(u.email || '').toLowerCase() === correo);
+    const credencialesInvalidas = { ok: false, error: 'Correo o contraseña incorrectos.' };
+
+    if (!user) return credencialesInvalidas;
+    if (!hasPassword(user)) {
+      return { ok: false, error: 'Este usuario aún no tiene contraseña. Asígnala editándolo en Administración de usuarios.' };
+    }
+    if (!(await verifyPassword(user, password))) return credencialesInvalidas;
+    if (!isActive(user)) return { ok: false, error: 'Este usuario está desactivado. Pide a un administrador que lo active.' };
+    return { ok: true, user: user };
+  }
+
   function getInitials(user) {
     const a = (user.nombre || '').trim().charAt(0);
     const b = (user.apellido || '').trim().charAt(0);
@@ -113,6 +179,9 @@
     isSuperAdmin: isSuperAdmin,
     isActive: isActive,
     validateAdminGuard: validateAdminGuard,
+    hashPassword: hashPassword,
+    hasPassword: hasPassword,
+    authenticate: authenticate,
     getInitials: getInitials
   };
 })(window);

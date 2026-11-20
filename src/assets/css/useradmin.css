@@ -1,0 +1,43 @@
+/* =====================================================================
+   VISTA · Administración de usuarios (views/useradmin.html)
+   Se carga después de dashboard.css y theme.css (usa sus variables).
+   ===================================================================== */
+
+/* Tarjetas que contienen los iframes de lista y formulario */
+.component-iframe-card {
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--surface);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.component-frame {
+  width: 100%;
+  border: 0;
+  display: block;
+  background-color: var(--sp-slate-50);
+}
+
+.frame-list-height {
+  height: 540px;
+}
+
+.frame-form-height {
+  height: 520px;
+}
+
+/* Tarjetas de resumen que filtran la tabla */
+.kpi-filter {
+  cursor: pointer;
+}
+
+.kpi-filter.kpi-active {
+  border-color: var(--sp-primary-500);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18);
+}
+
+.kpi-filter:focus-visible {
+  outline: 2px solid var(--sp-primary-500);
+  outline-offset: 2px;
+}

@@ -1,0 +1,127 @@
+/* =====================================================================
+   COMPONENTE · Lista de usuarios (components/userlist.html)
+   Se carga después de theme.css (usa sus variables --sp-*).
+   ===================================================================== */
+
+body {
+  background-color: #f8fafc;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.85rem;
+}
+
+/* ---------- Toolbar ---------- */
+.toolbar .form-control,
+.toolbar .form-select {
+  font-size: 0.8rem;
+}
+
+/* ---------- Tabla ---------- */
+.table thead th {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.col-select {
+  width: 36px;
+}
+
+.sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.sortable:hover {
+  color: #0f172a;
+}
+
+.sortable .sort-icon {
+  opacity: 0.35;
+  font-size: 0.7rem;
+}
+
+.sortable.sorted .sort-icon {
+  opacity: 1;
+}
+
+.user-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* Avatar grande del modal de detalles */
+.user-avatar.user-avatar-lg {
+  width: 52px;
+  height: 52px;
+  font-size: 1rem;
+}
+
+.user-row-inactive td:not(.actions-cell):not(.select-cell) {
+  opacity: 0.55;
+}
+
+.user-row-selected {
+  --bs-table-bg: #eef2ff;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* ---------- Sección de acciones ---------- */
+.actions-group .btn {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-color: #e2e8f0;
+  background-color: #ffffff;
+  color: #475569;
+}
+
+.actions-group .btn:hover:not(:disabled) {
+  color: #ffffff;
+}
+
+/* Colores de la paleta (theme.css) */
+.actions-group .btn-act-view:hover { background-color: var(--sp-info-500); border-color: var(--sp-info-500); }
+.actions-group .btn-act-edit:hover { background-color: var(--sp-primary-500); border-color: var(--sp-primary-500); }
+.actions-group .btn-act-on:hover { background-color: var(--sp-success-500); border-color: var(--sp-success-500); }
+.actions-group .btn-act-off:hover { background-color: var(--sp-warning-500); border-color: var(--sp-warning-500); }
+.actions-group .btn-act-del:hover { background-color: var(--sp-danger-500); border-color: var(--sp-danger-500); }
+
+.actions-group .btn-act-view { color: var(--sp-info-600); }
+.actions-group .btn-act-edit { color: var(--sp-primary-600); }
+.actions-group .btn-act-on { color: var(--sp-success-600); }
+.actions-group .btn-act-off { color: var(--sp-warning-600); }
+.actions-group .btn-act-del { color: var(--sp-danger-600); }
+
+.actions-group .btn:disabled {
+  opacity: 0.35;
+}
+
+/* ---------- Barra de acciones masivas ---------- */
+.bulk-bar {
+  background: var(--sp-gradient);
+  box-shadow: 0 6px 16px -4px rgba(99, 102, 241, 0.5);
+  color: #ffffff;
+  border-radius: 0.5rem;
+}
+
+.bulk-bar .btn {
+  font-size: 0.75rem;
+}

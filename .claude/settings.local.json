@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -v '\\\\${')",
+      "Bash(node \"C:/Users/HP/AppData/Local/Temp/claude/2484e96d1e9b2eae/4e6f8298-d46a-45de-8e38-4e1a692d19e8/scratchpad/audit-js.js\" /d/prueba_2026/curso/src)"
+    ]
+  }
+}

@@ -1,0 +1,392 @@
+/* =====================================================================
+   STUDIO PLAY · TEMA DE COLOR
+   Paleta moderna: Índigo/Violeta (marca) + Slate (neutros)
+   + Esmeralda / Rosa / Ámbar / Cielo (estados).
+
+   Cárgalo SIEMPRE después de bootstrap.min.css y del resto de hojas.
+   Para cambiar la marca basta con editar las variables --sp-*.
+   ===================================================================== */
+
+:root {
+  /* ---------- Marca ---------- */
+  --sp-primary-50: #eef2ff;
+  --sp-primary-100: #e0e7ff;
+  --sp-primary-200: #c7d2fe;
+  --sp-primary-300: #a5b4fc;
+  --sp-primary-500: #6366f1;
+  --sp-primary-600: #4f46e5;
+  --sp-primary-700: #4338ca;
+  --sp-primary-900: #312e81;
+  --sp-violet-500: #8b5cf6;
+  --sp-violet-600: #7c3aed;
+
+  --sp-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  --sp-gradient-hover: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  --sp-gradient-deep: linear-gradient(135deg, #312e81 0%, #4f46e5 55%, #7c3aed 100%);
+
+  /* ---------- Neutros (slate) ---------- */
+  --sp-slate-50: #f8fafc;
+  --sp-slate-100: #f1f5f9;
+  --sp-slate-200: #e2e8f0;
+  --sp-slate-300: #cbd5e1;
+  --sp-slate-400: #94a3b8;
+  --sp-slate-500: #64748b;
+  --sp-slate-600: #475569;
+  --sp-slate-700: #334155;
+  --sp-slate-800: #1e293b;
+  --sp-slate-900: #0f172a;
+
+  /* ---------- Estados ---------- */
+  --sp-success-50: #ecfdf5;
+  --sp-success-500: #10b981;
+  --sp-success-600: #059669;
+  --sp-success-700: #047857;
+
+  --sp-danger-50: #fff1f2;
+  --sp-danger-500: #f43f5e;
+  --sp-danger-600: #e11d48;
+  --sp-danger-700: #be123c;
+
+  --sp-warning-50: #fffbeb;
+  --sp-warning-500: #f59e0b;
+  --sp-warning-600: #d97706;
+  --sp-warning-700: #b45309;
+
+  --sp-info-50: #f0f9ff;
+  --sp-info-500: #0ea5e9;
+  --sp-info-600: #0284c7;
+  --sp-info-700: #0369a1;
+
+  --sp-bg: #f5f7fb;
+
+  /* ---------- Variables del proyecto (compatibilidad) ---------- */
+  --studio-dark: var(--sp-slate-900);
+  --studio-accent: var(--sp-primary-500);
+  --studio-accent-soft: var(--sp-primary-50);
+  --studio-success: var(--sp-success-500);
+  --studio-danger: var(--sp-danger-500);
+  --studio-warning: var(--sp-warning-500);
+  --studio-bg: var(--sp-bg);
+  --card-border: var(--sp-slate-200);
+  --text-main: var(--sp-slate-900);
+  --text-muted: var(--sp-slate-500);
+
+  /* ---------- Bootstrap 5.3: colores base ---------- */
+  --bs-primary: #6366f1;
+  --bs-primary-rgb: 99, 102, 241;
+  --bs-secondary: #64748b;
+  --bs-secondary-rgb: 100, 116, 139;
+  --bs-success: #10b981;
+  --bs-success-rgb: 16, 185, 129;
+  --bs-info: #0ea5e9;
+  --bs-info-rgb: 14, 165, 233;
+  --bs-warning: #f59e0b;
+  --bs-warning-rgb: 245, 158, 11;
+  --bs-danger: #f43f5e;
+  --bs-danger-rgb: 244, 63, 94;
+  --bs-light: #f8fafc;
+  --bs-light-rgb: 248, 250, 252;
+  --bs-dark: #0f172a;
+  --bs-dark-rgb: 15, 23, 42;
+
+  --bs-primary-text-emphasis: #4338ca;
+  --bs-secondary-text-emphasis: #334155;
+  --bs-success-text-emphasis: #047857;
+  --bs-info-text-emphasis: #0369a1;
+  --bs-warning-text-emphasis: #b45309;
+  --bs-danger-text-emphasis: #be123c;
+  --bs-light-text-emphasis: #475569;
+  --bs-dark-text-emphasis: #0f172a;
+
+  --bs-primary-bg-subtle: #eef2ff;
+  --bs-secondary-bg-subtle: #f1f5f9;
+  --bs-success-bg-subtle: #ecfdf5;
+  --bs-info-bg-subtle: #f0f9ff;
+  --bs-warning-bg-subtle: #fffbeb;
+  --bs-danger-bg-subtle: #fff1f2;
+  --bs-light-bg-subtle: #f8fafc;
+  --bs-dark-bg-subtle: #e2e8f0;
+
+  --bs-primary-border-subtle: #c7d2fe;
+  --bs-secondary-border-subtle: #e2e8f0;
+  --bs-success-border-subtle: #a7f3d0;
+  --bs-info-border-subtle: #bae6fd;
+  --bs-warning-border-subtle: #fde68a;
+  --bs-danger-border-subtle: #fecdd3;
+  --bs-light-border-subtle: #f1f5f9;
+  --bs-dark-border-subtle: #cbd5e1;
+
+  --bs-body-color: #0f172a;
+  --bs-body-color-rgb: 15, 23, 42;
+  --bs-emphasis-color: #0f172a;
+  --bs-secondary-color: #64748b;
+  --bs-tertiary-color: #94a3b8;
+  --bs-secondary-bg: #f1f5f9;
+  --bs-tertiary-bg: #f8fafc;
+  --bs-border-color: #e2e8f0;
+  --bs-border-color-translucent: rgba(15, 23, 42, 0.08);
+
+  --bs-link-color: #4f46e5;
+  --bs-link-color-rgb: 79, 70, 229;
+  --bs-link-hover-color: #4338ca;
+  --bs-link-hover-color-rgb: 67, 56, 202;
+
+  --bs-focus-ring-color: rgba(99, 102, 241, 0.25);
+}
+
+::selection {
+  background: var(--sp-primary-200);
+  color: var(--sp-slate-900);
+}
+
+/* =====================================================================
+   BOTONES
+   ===================================================================== */
+
+/* Acción principal de la marca */
+.btn-dark {
+  --bs-btn-color: #ffffff;
+  --bs-btn-bg: var(--sp-primary-500);
+  --bs-btn-border-color: var(--sp-primary-500);
+  --bs-btn-hover-color: #ffffff;
+  --bs-btn-hover-bg: var(--sp-primary-600);
+  --bs-btn-hover-border-color: var(--sp-primary-600);
+  --bs-btn-focus-shadow-rgb: 99, 102, 241;
+  --bs-btn-active-color: #ffffff;
+  --bs-btn-active-bg: var(--sp-primary-700);
+  --bs-btn-active-border-color: var(--sp-primary-700);
+  --bs-btn-disabled-color: #ffffff;
+  --bs-btn-disabled-bg: var(--sp-primary-300);
+  --bs-btn-disabled-border-color: var(--sp-primary-300);
+  box-shadow: 0 1px 2px rgba(79, 70, 229, 0.25);
+}
+
+.btn-outline-primary,
+.btn-outline-dark {
+  --bs-btn-color: var(--sp-primary-600);
+  --bs-btn-border-color: var(--sp-primary-200);
+  --bs-btn-hover-color: #ffffff;
+  --bs-btn-hover-bg: var(--sp-primary-500);
+  --bs-btn-hover-border-color: var(--sp-primary-500);
+  --bs-btn-focus-shadow-rgb: 99, 102, 241;
+  --bs-btn-active-color: #ffffff;
+  --bs-btn-active-bg: var(--sp-primary-600);
+  --bs-btn-active-border-color: var(--sp-primary-600);
+  --bs-btn-disabled-color: var(--sp-primary-300);
+  --bs-btn-disabled-border-color: var(--sp-primary-100);
+}
+
+.btn-outline-secondary {
+  --bs-btn-color: var(--sp-slate-600);
+  --bs-btn-border-color: var(--sp-slate-200);
+  --bs-btn-hover-color: var(--sp-slate-900);
+  --bs-btn-hover-bg: var(--sp-slate-100);
+  --bs-btn-hover-border-color: var(--sp-slate-300);
+  --bs-btn-active-color: var(--sp-slate-900);
+  --bs-btn-active-bg: var(--sp-slate-200);
+  --bs-btn-active-border-color: var(--sp-slate-300);
+  --bs-btn-focus-shadow-rgb: 100, 116, 139;
+}
+
+.btn-success {
+  --bs-btn-color: #ffffff;
+  --bs-btn-bg: var(--sp-success-500);
+  --bs-btn-border-color: var(--sp-success-500);
+  --bs-btn-hover-color: #ffffff;
+  --bs-btn-hover-bg: var(--sp-success-600);
+  --bs-btn-hover-border-color: var(--sp-success-600);
+  --bs-btn-active-bg: var(--sp-success-700);
+  --bs-btn-active-border-color: var(--sp-success-700);
+  --bs-btn-focus-shadow-rgb: 16, 185, 129;
+}
+
+.btn-outline-success {
+  --bs-btn-color: var(--sp-success-600);
+  --bs-btn-border-color: #a7f3d0;
+  --bs-btn-hover-color: #ffffff;
+  --bs-btn-hover-bg: var(--sp-success-500);
+  --bs-btn-hover-border-color: var(--sp-success-500);
+  --bs-btn-active-color: #ffffff;
+  --bs-btn-active-bg: var(--sp-success-600);
+  --bs-btn-active-border-color: var(--sp-success-600);
+  --bs-btn-focus-shadow-rgb: 16, 185, 129;
+}
+
+.btn-danger {
+  --bs-btn-color: #ffffff;
+  --bs-btn-bg: var(--sp-danger-500);
+  --bs-btn-border-color: var(--sp-danger-500);
+  --bs-btn-hover-color: #ffffff;
+  --bs-btn-hover-bg: var(--sp-danger-600);
+  --bs-btn-hover-border-color: var(--sp-danger-600);
+  --bs-btn-active-bg: var(--sp-danger-700);
+  --bs-btn-active-border-color: var(--sp-danger-700);
+  --bs-btn-focus-shadow-rgb: 244, 63, 94;
+}
+
+.btn-outline-danger {
+  --bs-btn-color: var(--sp-danger-600);
+  --bs-btn-border-color: #fecdd3;
+  --bs-btn-hover-color: #ffffff;
+  --bs-btn-hover-bg: var(--sp-danger-500);
+  --bs-btn-hover-border-color: var(--sp-danger-500);
+  --bs-btn-active-color: #ffffff;
+  --bs-btn-active-bg: var(--sp-danger-600);
+  --bs-btn-active-border-color: var(--sp-danger-600);
+  --bs-btn-focus-shadow-rgb: 244, 63, 94;
+}
+
+.btn-warning {
+  --bs-btn-color: #ffffff;
+  --bs-btn-bg: var(--sp-warning-500);
+  --bs-btn-border-color: var(--sp-warning-500);
+  --bs-btn-hover-color: #ffffff;
+  --bs-btn-hover-bg: var(--sp-warning-600);
+  --bs-btn-hover-border-color: var(--sp-warning-600);
+  --bs-btn-active-color: #ffffff;
+  --bs-btn-active-bg: var(--sp-warning-700);
+  --bs-btn-active-border-color: var(--sp-warning-700);
+  --bs-btn-focus-shadow-rgb: 245, 158, 11;
+}
+
+.btn-outline-warning {
+  --bs-btn-color: var(--sp-warning-600);
+  --bs-btn-border-color: #fde68a;
+  --bs-btn-hover-color: #ffffff;
+  --bs-btn-hover-bg: var(--sp-warning-500);
+  --bs-btn-hover-border-color: var(--sp-warning-500);
+  --bs-btn-active-color: #ffffff;
+  --bs-btn-active-bg: var(--sp-warning-600);
+  --bs-btn-active-border-color: var(--sp-warning-600);
+  --bs-btn-focus-shadow-rgb: 245, 158, 11;
+}
+
+.btn-link {
+  --bs-btn-color: var(--sp-primary-600);
+  --bs-btn-hover-color: var(--sp-primary-700);
+}
+
+/* Botones propios del proyecto: degradado de marca */
+.btn-studio,
+.btn-studio-dark {
+  background: var(--sp-gradient) !important;
+  border: 0 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px -2px rgba(99, 102, 241, 0.45);
+  transition: box-shadow 0.2s ease, transform 0.15s ease, filter 0.2s ease;
+}
+
+.btn-studio:hover,
+.btn-studio-dark:hover {
+  background: var(--sp-gradient-hover) !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 16px -2px rgba(99, 102, 241, 0.55);
+  transform: translateY(-1px);
+}
+
+.btn-studio:active,
+.btn-studio-dark:active {
+  transform: translateY(0);
+}
+
+/* =====================================================================
+   FORMULARIOS
+   ===================================================================== */
+.form-control,
+.form-select {
+  border-color: var(--sp-slate-200);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--sp-primary-300);
+  box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.18);
+}
+
+.form-check-input:focus {
+  border-color: var(--sp-primary-300);
+  box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.18);
+}
+
+.form-check-input:checked,
+.form-check-input[type="checkbox"]:indeterminate {
+  background-color: var(--sp-primary-500);
+  border-color: var(--sp-primary-500);
+}
+
+.form-switch .form-check-input:focus:not(:checked) {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23a5b4fc'/%3e%3c/svg%3e");
+}
+
+.form-check-input:checked[role="switch"] {
+  background-color: var(--sp-success-500);
+  border-color: var(--sp-success-500);
+}
+
+.input-group-text {
+  border-color: var(--sp-slate-200);
+  color: var(--sp-slate-500);
+}
+
+.was-validated .form-control:valid {
+  border-color: var(--sp-success-500);
+}
+
+.was-validated .form-control:invalid,
+.form-control.is-invalid {
+  border-color: var(--sp-danger-500);
+}
+
+.invalid-feedback {
+  color: var(--sp-danger-600);
+}
+
+/* =====================================================================
+   COMPONENTES BOOTSTRAP
+   ===================================================================== */
+.accordion {
+  --bs-accordion-border-color: var(--sp-slate-200);
+  --bs-accordion-active-color: var(--sp-primary-700);
+  --bs-accordion-active-bg: var(--sp-primary-50);
+  --bs-accordion-btn-focus-box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.18);
+  --bs-accordion-btn-active-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%234338ca' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M2 5L8 11L14 5'/%3e%3c/svg%3e");
+}
+
+.dropdown-menu {
+  --bs-dropdown-link-hover-bg: var(--sp-slate-100);
+  --bs-dropdown-link-active-bg: var(--sp-primary-500);
+  --bs-dropdown-border-color: var(--sp-slate-200);
+}
+
+.table {
+  --bs-table-hover-bg: var(--sp-slate-50);
+  --bs-table-border-color: var(--sp-slate-100);
+}
+
+.table-light {
+  --bs-table-bg: var(--sp-slate-50);
+  --bs-table-color: var(--sp-slate-600);
+  --bs-table-border-color: var(--sp-slate-200);
+}
+
+.alert-success { --bs-alert-bg: var(--sp-success-50); --bs-alert-color: var(--sp-success-700); --bs-alert-border-color: #a7f3d0; }
+.alert-danger  { --bs-alert-bg: var(--sp-danger-50);  --bs-alert-color: var(--sp-danger-700);  --bs-alert-border-color: #fecdd3; }
+
+.modal {
+  --bs-modal-border-radius: 1rem;
+}
+
+.toast {
+  --bs-toast-border-radius: 0.75rem;
+}
+
+/* =====================================================================
+   UTILIDADES COMPARTIDAS (todas las páginas cargan este archivo)
+   ===================================================================== */
+.fs-xs {
+  font-size: 0.7rem !important;
+}
+
+.fs-sm {
+  font-size: 0.75rem !important;
+}

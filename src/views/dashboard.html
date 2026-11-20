@@ -9,77 +9,24 @@
   <link rel="stylesheet" href="../assets/css/navbar.css">
   <link rel="stylesheet" href="../assets/css/sidebar.css">
   <link rel="stylesheet" href="../assets/css/dashboard.css">
-  <link rel="stylesheet" href="../../node_modules/bootstrap-icons/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../assets/icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../assets/css/theme.css">
 </head>
 <body>
 
-  <!-- =======================================================
-       NAVBAR SUPERIOR (Movido a dashboard.html)
-       ======================================================= -->
-  <nav class="navbar navbar-expand-lg navbar-studio sticky-top">
-    <div class="container-fluid">
-      <!-- Botón retráctil del Sidebar + Logo y Nombre (debajo del logo) -->
-      <div class="d-flex align-items-center gap-3">
-        <button type="button" class="btn btn-outline-dark btn-sm px-2 py-1" id="navbarSidebarToggle" title="Retraer / Expandir Sidebar">
-          <i class="bi bi-layout-sidebar-inset"></i>
-        </button>
-
-        <a class="navbar-brand d-flex flex-column align-items-center m-0 lh-1" href="#todos" onclick="mostrarSeccion('todos')">
-          <img src="../assets/imagenes/logo.jpg" alt="Logo Studio play" class="brand-logo">
-          <span class="brand-title">Studio play</span>
-        </a>
-      </div>
-
-      <!-- Acceso / Perfil de Usuario en la derecha del Navbar -->
-      <div class="d-flex align-items-center gap-3 ms-auto">
-        <!-- Vista cuando la sesión está INICIADA: Perfil (user.jpg) + Cerrar sesión -->
-        <div class="d-flex align-items-center gap-2" id="loggedInSection">
-          <div class="dropdown" id="userDropdownContainer">
-            <a href="#" class="user-profile-btn dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-              <img src="../assets/imagenes/user.jpg" alt="Usuario Studio play" class="user-avatar">
-              <span class="small fw-semibold d-none d-sm-inline" id="navbarUserName">Mi Cuenta</span>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2" aria-labelledby="userDropdown">
-              <li class="px-3 py-2 border-bottom">
-                <div class="d-flex align-items-center gap-2">
-                  <img src="../assets/imagenes/user.jpg" alt="Usuario" class="user-avatar">
-                  <div>
-                    <div class="fw-bold small" id="dropdownUserTitle">Usuario Studio</div>
-                    <div class="text-muted" style="font-size: 0.75rem;" id="dropdownUserEmail">usuario@studioplay.com</div>
-                  </div>
-                </div>
-              </li>
-              <li><a class="dropdown-item small py-2" href="#usuario-admin" onclick="mostrarSeccion('usuario-admin')"><i class="bi bi-person me-2"></i>Mi perfil</a></li>
-              <li><a class="dropdown-item small py-2" href="#config-password" onclick="mostrarSeccion('config-password')"><i class="bi bi-gear me-2"></i>Configuración</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li>
-                <button type="button" class="dropdown-item small py-2 text-danger" id="dropdownLogoutBtn">
-                  <i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión
-                </button>
-              </li>
-            </ul>
-          </div>
-
-          <button type="button" class="btn btn-outline-dark btn-sm px-3" id="navLogoutBtn">
-            <i class="bi bi-box-arrow-right me-1"></i>Cerrar sesión
-          </button>
-        </div>
-
-        <!-- Vista cuando la sesión está CERRADA: solo botón Iniciar sesión -->
-        <div class="d-none" id="loggedOutSection">
-          <button type="button" class="btn btn-dark btn-sm px-3" data-bs-toggle="modal" data-bs-target="#loginModal">
-            <i class="bi bi-box-arrow-in-right me-1"></i>Iniciar sesión
-          </button>
-        </div>
-      </div>
-    </div>
-  </nav>
+  <!-- Navbar superior (componente compartido con las demás vistas) -->
+  <iframe
+    src="../components/navbar.html"
+    id="navbarFrame"
+    name="navbarFrame"
+    title="Navbar Studio play"
+    class="navbar-iframe">
+  </iframe>
 
   <!-- =======================================================
-       CONTENEDOR PRINCIPAL: SIDEBAR (IFRAME) + DASHBOARD
+       SIDEBAR (IFRAME) + DASHBOARD
        ======================================================= -->
   <div class="workspace-shell">
-    <!-- Iframe del Sidebar Retráctil -->
     <iframe
       src="../components/sidebar.html"
       name="sidebarFrame"
@@ -88,171 +35,163 @@
       class="sidebar-iframe">
     </iframe>
 
-    <!-- Contenido del Dashboard -->
-    <main class="dashboard-main-scroll">
+    <main class="dashboard-main-scroll" id="dashboardScroll">
       <div class="dashboard-container container-fluid">
-        <!-- Barra Superior con Filtros Rápidos -->
-        <div class="dashboard-topbar d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+
+        <!-- Barra superior con filtros -->
+        <div class="dashboard-topbar d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
           <div class="d-flex align-items-center gap-2">
-            <span class="badge text-bg-dark"><i class="bi bi-broadcast me-1"></i>En vivo</span>
-            <h1 class="h6 fw-bold mb-0">Panel de Control · Studio play</h1>
+            <span class="live-dot" aria-hidden="true"></span>
+            <span class="fw-semibold">Panel de Control</span>
+            <span class="text-muted d-none d-sm-inline">· Studio play</span>
           </div>
 
-          <div class="d-flex flex-wrap align-items-center gap-1" id="quickFilterBar">
-            <button type="button" class="filter-pill active" data-filter="todos">
-              <i class="bi bi-grid-1x2 me-1"></i>Todo
-            </button>
-            <button type="button" class="filter-pill" data-filter="grupo-inventario">
-              <i class="bi bi-box-seam me-1"></i>Inventario
-            </button>
-            <button type="button" class="filter-pill" data-filter="grupo-usuario">
-              <i class="bi bi-people me-1"></i>Usuarios
-            </button>
-            <button type="button" class="filter-pill" data-filter="grupo-config">
-              <i class="bi bi-gear me-1"></i>Configuración
-            </button>
+          <div class="segmented" id="quickFilterBar" role="group" aria-label="Filtrar secciones">
+            <button type="button" class="filter-pill active" data-filter="todos"><i class="bi bi-grid-1x2 me-1"></i>Todo</button>
+            <button type="button" class="filter-pill" data-filter="grupo-inventario"><i class="bi bi-box-seam me-1"></i>Inventario</button>
+            <button type="button" class="filter-pill" data-filter="grupo-usuario"><i class="bi bi-people me-1"></i>Usuarios</button>
+            <button type="button" class="filter-pill" data-filter="grupo-config"><i class="bi bi-gear me-1"></i>Configuración</button>
           </div>
         </div>
 
-        <!-- FILA 1: 4 KPI CARDS + 3 STUDIO CARDS INTERACTIVAS -->
-        <div class="row g-2 mb-2 section-panel" data-group="general">
-          <div class="col-6 col-md-3">
-            <div class="card stat-card p-2">
-              <div class="d-flex align-items-center justify-content-between mb-1">
-                <div class="d-flex align-items-center gap-2">
-                  <div class="stat-icon bg-dark text-white"><i class="bi bi-boxes"></i></div>
-                  <div>
-                    <div class="text-muted" style="font-size: 0.7rem;">Stock Total</div>
-                    <div class="fw-bold fs-5 lh-1" id="statTotalProductos">170</div>
-                  </div>
-                </div>
-                <span class="badge text-bg-success-subtle text-success border border-success-subtle">+12.4%</span>
-              </div>
-              <div class="progress" style="height: 4px;">
-                <div class="progress-bar bg-dark" id="kpiBarStock" style="width: 82%"></div>
-              </div>
+        <!-- Bienvenida -->
+        <div class="hero-card mb-3 section-panel" data-group="general">
+          <div class="d-flex flex-wrap justify-content-between align-items-end gap-3">
+            <div>
+              <div class="hero-eyebrow" id="heroDate">—</div>
+              <h1 id="heroGreeting">Hola 👋</h1>
+              <div class="hero-sub" id="heroSummary">Resumen del estudio en tiempo real.</div>
             </div>
-          </div>
-
-          <div class="col-6 col-md-3">
-            <div class="card stat-card p-2">
-              <div class="d-flex align-items-center justify-content-between mb-1">
-                <div class="d-flex align-items-center gap-2">
-                  <div class="stat-icon bg-success-subtle text-success"><i class="bi bi-box-arrow-in-down"></i></div>
-                  <div>
-                    <div class="text-muted" style="font-size: 0.7rem;">Entradas (+)</div>
-                    <div class="fw-bold fs-5 lh-1 text-success" id="statEntradas">57</div>
-                  </div>
-                </div>
-                <span class="badge text-bg-success-subtle text-success border border-success-subtle">Activas</span>
-              </div>
-              <div class="progress" style="height: 4px;">
-                <div class="progress-bar bg-success" style="width: 74%"></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-6 col-md-3">
-            <div class="card stat-card p-2">
-              <div class="d-flex align-items-center justify-content-between mb-1">
-                <div class="d-flex align-items-center gap-2">
-                  <div class="stat-icon bg-danger-subtle text-danger"><i class="bi bi-box-arrow-up"></i></div>
-                  <div>
-                    <div class="text-muted" style="font-size: 0.7rem;">Salidas (-)</div>
-                    <div class="fw-bold fs-5 lh-1 text-danger" id="statSalidas">23</div>
-                  </div>
-                </div>
-                <span class="badge text-bg-warning-subtle text-warning-emphasis border border-warning-subtle">Control</span>
-              </div>
-              <div class="progress" style="height: 4px;">
-                <div class="progress-bar bg-danger" style="width: 42%"></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-6 col-md-3">
-            <div class="card stat-card p-2">
-              <div class="d-flex align-items-center justify-content-between mb-1">
-                <div class="d-flex align-items-center gap-2">
-                  <div class="stat-icon bg-primary-subtle text-primary"><i class="bi bi-person-check"></i></div>
-                  <div>
-                    <div class="text-muted" style="font-size: 0.7rem;">Usuarios Admin</div>
-                    <div class="fw-bold fs-5 lh-1 text-primary" id="statUsuarios">3</div>
-                  </div>
-                </div>
-                <span class="badge text-bg-primary-subtle text-primary border border-primary-subtle">En línea</span>
-              </div>
-              <div class="progress" style="height: 4px;">
-                <div class="progress-bar bg-primary" style="width: 88%"></div>
-              </div>
+            <div class="d-flex flex-wrap gap-2">
+              <button type="button" class="hero-action primary" data-goto="inventario-entrada"><i class="bi bi-box-arrow-in-down"></i>Registrar entrada</button>
+              <button type="button" class="hero-action" data-goto="inventario-salida"><i class="bi bi-box-arrow-up"></i>Registrar salida</button>
+              <a class="hero-action" href="./useradmin.html"><i class="bi bi-people"></i>Gestionar usuarios</a>
             </div>
           </div>
         </div>
 
-        <!-- 3 Cards Destacadas de Acceso Rápido -->
-        <div class="row g-2 mb-2 section-panel" data-group="general">
+        <!-- FILA 1: KPIs -->
+        <div class="row g-3 mb-3 section-panel" data-group="general">
+          <div class="col-6 col-xl-3">
+            <div class="card stat-card kpi h-100">
+              <div class="stat-head">
+                <span class="stat-label">Stock total</span>
+                <div class="stat-icon tone-brand"><i class="bi bi-boxes"></i></div>
+              </div>
+              <div class="stat-value" id="statTotalProductos">0</div>
+              <div class="stat-foot">
+                <span class="trend neutral" id="trendStock"><i class="bi bi-dash"></i>0</span>
+                <span id="stockFootText">productos con stock bajo</span>
+              </div>
+              <div class="stat-progress"><span class="bg-primary" id="kpiBarStock"></span></div>
+            </div>
+          </div>
+
+          <div class="col-6 col-xl-3">
+            <div class="card stat-card kpi h-100">
+              <div class="stat-head">
+                <span class="stat-label">Entradas (+)</span>
+                <div class="stat-icon tone-success"><i class="bi bi-box-arrow-in-down"></i></div>
+              </div>
+              <div class="stat-value text-success" id="statEntradas">0</div>
+              <div class="stat-foot">
+                <span class="trend up" id="trendEntradas"><i class="bi bi-arrow-up-right"></i>0%</span>
+                <span>del movimiento total</span>
+              </div>
+              <div class="stat-progress"><span class="bg-success" id="kpiBarEntradas"></span></div>
+            </div>
+          </div>
+
+          <div class="col-6 col-xl-3">
+            <div class="card stat-card kpi h-100">
+              <div class="stat-head">
+                <span class="stat-label">Salidas (−)</span>
+                <div class="stat-icon tone-danger"><i class="bi bi-box-arrow-up"></i></div>
+              </div>
+              <div class="stat-value text-danger" id="statSalidas">0</div>
+              <div class="stat-foot">
+                <span class="trend down" id="trendSalidas"><i class="bi bi-arrow-down-right"></i>0%</span>
+                <span>del movimiento total</span>
+              </div>
+              <div class="stat-progress"><span class="bg-danger" id="kpiBarSalidas"></span></div>
+            </div>
+          </div>
+
+          <div class="col-6 col-xl-3">
+            <div class="card stat-card kpi h-100">
+              <div class="stat-head">
+                <span class="stat-label">Usuarios</span>
+                <div class="stat-icon tone-accent"><i class="bi bi-person-check"></i></div>
+              </div>
+              <div class="stat-value text-primary" id="statUsuarios">0</div>
+              <div class="stat-foot">
+                <span class="trend up" id="trendUsuarios"><i class="bi bi-person-fill-check"></i>0</span>
+                <span>activos</span>
+              </div>
+              <div class="stat-progress"><span class="bg-primary" id="kpiBarUsuarios"></span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Accesos rápidos -->
+        <div class="row g-3 mb-3 section-panel" data-group="general">
           <div class="col-12 col-md-4">
-            <div class="card feature-card" onclick="filtrarPorGrupo('grupo-inventario')">
+            <div class="card feature-card h-100" role="button" tabindex="0" data-group-target="grupo-inventario">
               <div class="feature-card-banner bg-dark"></div>
-              <div class="card-body py-2 px-3 d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center gap-2">
-                  <img src="../assets/imagenes/logo.jpg" alt="Studio" class="avatar-sm border">
-                  <div>
-                    <div class="fw-bold" style="font-size: 0.79rem;">Card · Estudio Principal 4K</div>
-                    <div class="text-muted" style="font-size: 0.69rem;">Cámaras, Audio e Iluminación</div>
-                  </div>
+              <div class="card-body py-3 px-3 d-flex align-items-center gap-3">
+                <div class="stat-icon tone-dark"><i class="bi bi-camera-reels"></i></div>
+                <div class="flex-grow-1">
+                  <div class="fw-bold">Estudio Principal 4K</div>
+                  <div class="text-muted small">Cámaras, audio e iluminación</div>
                 </div>
-                <span class="badge text-bg-dark">Ver Stock <i class="bi bi-arrow-right-short"></i></span>
+                <i class="bi bi-arrow-right feature-arrow"></i>
               </div>
             </div>
           </div>
           <div class="col-12 col-md-4">
-            <div class="card feature-card" onclick="filtrarPorGrupo('grupo-usuario')">
+            <div class="card feature-card h-100" role="button" tabindex="0" data-group-target="grupo-usuario">
               <div class="feature-card-banner bg-primary"></div>
-              <div class="card-body py-2 px-3 d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center gap-2">
-                  <img src="../assets/imagenes/user.jpg" alt="User" class="avatar-sm border">
-                  <div>
-                    <div class="fw-bold" style="font-size: 0.79rem;">Card · Gestión de Usuarios</div>
-                    <div class="text-muted" style="font-size: 0.69rem;">Administradores y Permisos</div>
-                  </div>
+              <div class="card-body py-3 px-3 d-flex align-items-center gap-3">
+                <div class="stat-icon tone-accent"><i class="bi bi-people-fill"></i></div>
+                <div class="flex-grow-1">
+                  <div class="fw-bold">Gestión de Usuarios</div>
+                  <div class="text-muted small">Administradores y permisos</div>
                 </div>
-                <span class="badge text-bg-primary">Usuarios <i class="bi bi-arrow-right-short"></i></span>
+                <i class="bi bi-arrow-right feature-arrow"></i>
               </div>
             </div>
           </div>
           <div class="col-12 col-md-4">
-            <div class="card feature-card" onclick="filtrarPorGrupo('grupo-config')">
+            <div class="card feature-card h-100" role="button" tabindex="0" data-group-target="grupo-config">
               <div class="feature-card-banner bg-success"></div>
-              <div class="card-body py-2 px-3 d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center gap-2">
-                  <i class="bi bi-shield-lock-fill text-success fs-5"></i>
-                  <div>
-                    <div class="fw-bold" style="font-size: 0.79rem;">Card · Seguridad de Cuenta</div>
-                    <div class="text-muted" style="font-size: 0.69rem;">Password y Correo de acceso</div>
-                  </div>
+              <div class="card-body py-3 px-3 d-flex align-items-center gap-3">
+                <div class="stat-icon tone-success"><i class="bi bi-shield-lock-fill"></i></div>
+                <div class="flex-grow-1">
+                  <div class="fw-bold">Seguridad de Cuenta</div>
+                  <div class="text-muted small">Contraseña y correo de acceso</div>
                 </div>
-                <span class="badge text-bg-success">Ajustes <i class="bi bi-arrow-right-short"></i></span>
+                <i class="bi bi-arrow-right feature-arrow"></i>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- FILA 2: 2 GRÁFICOS HD EN TIEMPO REAL (Barras + Donut) -->
-        <div class="row g-2 mb-2 section-panel" data-group="general">
+        <!-- FILA 2: Gráficos -->
+        <div class="row g-3 mb-3 section-panel" data-group="general">
           <div class="col-12 col-lg-7">
             <div class="card module-card h-100">
-              <div class="module-header">
-                <span class="fw-bold"><i class="bi bi-bar-chart-fill me-1 text-primary"></i>Gráfico · Comparativa Stock, Entradas y Salidas</span>
-                <div style="font-size: 0.71rem;">
-                  <span class="me-2"><span class="chart-legend-dot" style="background:#111111;"></span>Stock</span>
-                  <span class="me-2"><span class="chart-legend-dot" style="background:#16a34a;"></span>Entradas</span>
-                  <span><span class="chart-legend-dot" style="background:#dc2626;"></span>Salidas</span>
+              <div class="module-header flex-wrap">
+                <span class="fw-bold d-flex align-items-center"><span class="module-icon tone-accent"><i class="bi bi-bar-chart-fill"></i></span>Stock, entradas y salidas</span>
+                <div class="text-muted fs-xs">
+                  <span class="me-2"><span class="chart-legend-dot serie-stock"></span>Stock</span>
+                  <span class="me-2"><span class="chart-legend-dot serie-entradas"></span>Entradas</span>
+                  <span><span class="chart-legend-dot serie-salidas"></span>Salidas</span>
                 </div>
               </div>
               <div class="card-body">
                 <div class="chart-canvas-wrapper">
-                  <canvas id="barChart"></canvas>
+                  <canvas id="barChart" aria-label="Gráfico de barras de stock, entradas y salidas por producto" role="img"></canvas>
+                  <div class="chart-tooltip" id="barTooltip"></div>
                 </div>
               </div>
             </div>
@@ -261,171 +200,124 @@
           <div class="col-12 col-lg-5">
             <div class="card module-card h-100">
               <div class="module-header">
-                <span class="fw-bold"><i class="bi bi-pie-chart-fill me-1 text-success"></i>Gráfico · Distribución por Categoría</span>
-                <span class="badge text-bg-light border">Interactivo</span>
+                <span class="fw-bold d-flex align-items-center"><span class="module-icon tone-success"><i class="bi bi-pie-chart-fill"></i></span>Distribución por categoría</span>
               </div>
               <div class="card-body">
-                <div class="chart-canvas-wrapper">
-                  <canvas id="donutChart"></canvas>
+                <div class="row g-3 align-items-center">
+                  <div class="col-5">
+                    <div class="chart-canvas-wrapper chart-sm">
+                      <canvas id="donutChart" aria-label="Gráfico de distribución de stock por categoría" role="img"></canvas>
+                    </div>
+                  </div>
+                  <div class="col-7">
+                    <ul class="donut-legend" id="donutLegend"></ul>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- FILA 3: TABLA DE PRODUCTOS + ENTRADA / SALIDA -->
-        <div class="row g-2 mb-2">
-          <!-- Tabla de Inventario de Productos -->
-          <div class="col-12 col-lg-7 section-panel" id="inventario-productos" data-group="grupo-inventario">
+        <!-- FILA 3: Inventario + Movimientos + Actividad -->
+        <div class="row g-3 mb-3">
+          <div class="col-12 col-xl-8 section-panel" id="inventario-productos" data-group="grupo-inventario">
             <div class="card module-card h-100">
-              <div class="module-header flex-wrap gap-1">
-                <span class="fw-bold"><i class="bi bi-table me-1"></i>Tabla · Inventario de Productos</span>
-                <div class="d-flex align-items-center gap-1">
-                  <select id="filtroCategoriaSelect" class="form-select form-select-sm py-0" style="width: 105px; font-size: 0.73rem;">
-                    <option value="">Categorías</option>
+              <div class="module-header flex-wrap">
+                <span class="fw-bold d-flex align-items-center"><span class="module-icon tone-dark"><i class="bi bi-table"></i></span>Inventario de productos</span>
+                <div class="d-flex align-items-center gap-2">
+                  <select id="filtroCategoriaSelect" class="form-select form-select-sm toolbar-select" aria-label="Filtrar por categoría">
+                    <option value="">Todas</option>
                     <option value="Video">Video</option>
                     <option value="Audio">Audio</option>
                     <option value="Luz">Luz</option>
                     <option value="Rig">Rig</option>
                   </select>
-                  <input type="search" id="buscarProductoInput" class="form-control form-control-sm py-0" placeholder="Buscar..." style="width: 130px; font-size: 0.73rem;">
+                  <div class="input-group input-group-sm toolbar-search">
+                    <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                    <input type="search" id="buscarProductoInput" class="form-control" placeholder="Buscar…" aria-label="Buscar producto">
+                  </div>
                 </div>
               </div>
               <div class="card-body p-0">
                 <div class="table-responsive">
-                  <table class="table table-sm table-hover align-middle mb-0">
-                    <thead class="table-light">
+                  <table class="table table-hover align-middle mb-0">
+                    <thead>
                       <tr>
-                        <th class="ps-3">Cód.</th>
+                        <th class="ps-3">Código</th>
                         <th>Producto</th>
-                        <th>Cat.</th>
-                        <th>Nivel</th>
-                        <th>Stock</th>
-                        <th>Ajuste Rápido</th>
+                        <th>Categoría</th>
+                        <th class="col-nivel">Nivel</th>
+                        <th class="text-end">Stock</th>
+                        <th class="text-center">Ajuste</th>
                         <th class="pe-3">Estado</th>
                       </tr>
                     </thead>
-                    <tbody id="productosTableBody">
-                      <tr data-codigo="SP-001" data-cat="Video" data-entradas="15" data-salidas="6">
-                        <td class="ps-3 fw-semibold">SP-001</td>
-                        <td>Cámara Sony FX3 Cinema</td>
-                        <td><span class="badge text-bg-light border">Video</span></td>
-                        <td style="width: 75px;">
-                          <div class="progress" style="height: 5px;"><div class="progress-bar bg-dark stock-bar" style="width: 75%"></div></div>
-                        </td>
-                        <td class="fw-bold stock-cell">45</td>
-                        <td>
-                          <button type="button" class="btn btn-outline-success btn-qty" onclick="ajusteRapido('SP-001', 1)" title="+1 Entrada">+</button>
-                          <button type="button" class="btn btn-outline-danger btn-qty" onclick="ajusteRapido('SP-001', -1)" title="-1 Salida">-</button>
-                        </td>
-                        <td class="pe-3"><span class="badge text-bg-success status-badge">Disponible</span></td>
-                      </tr>
-                      <tr data-codigo="SP-002" data-cat="Audio" data-entradas="20" data-salidas="8">
-                        <td class="ps-3 fw-semibold">SP-002</td>
-                        <td>Micrófono Shure SM7B</td>
-                        <td><span class="badge text-bg-light border">Audio</span></td>
-                        <td style="width: 75px;">
-                          <div class="progress" style="height: 5px;"><div class="progress-bar bg-dark stock-bar" style="width: 90%"></div></div>
-                        </td>
-                        <td class="fw-bold stock-cell">60</td>
-                        <td>
-                          <button type="button" class="btn btn-outline-success btn-qty" onclick="ajusteRapido('SP-002', 1)" title="+1 Entrada">+</button>
-                          <button type="button" class="btn btn-outline-danger btn-qty" onclick="ajusteRapido('SP-002', -1)" title="-1 Salida">-</button>
-                        </td>
-                        <td class="pe-3"><span class="badge text-bg-success status-badge">Disponible</span></td>
-                      </tr>
-                      <tr data-codigo="SP-003" data-cat="Luz" data-entradas="12" data-salidas="5">
-                        <td class="ps-3 fw-semibold">SP-003</td>
-                        <td>Panel LED Aputure 600d</td>
-                        <td><span class="badge text-bg-light border">Luz</span></td>
-                        <td style="width: 75px;">
-                          <div class="progress" style="height: 5px;"><div class="progress-bar bg-dark stock-bar" style="width: 65%"></div></div>
-                        </td>
-                        <td class="fw-bold stock-cell">40</td>
-                        <td>
-                          <button type="button" class="btn btn-outline-success btn-qty" onclick="ajusteRapido('SP-003', 1)" title="+1 Entrada">+</button>
-                          <button type="button" class="btn btn-outline-danger btn-qty" onclick="ajusteRapido('SP-003', -1)" title="-1 Salida">-</button>
-                        </td>
-                        <td class="pe-3"><span class="badge text-bg-success status-badge">Disponible</span></td>
-                      </tr>
-                      <tr data-codigo="SP-004" data-cat="Rig" data-entradas="10" data-salidas="4">
-                        <td class="ps-3 fw-semibold">SP-004</td>
-                        <td>Estabilizador DJI RS3 Pro</td>
-                        <td><span class="badge text-bg-light border">Rig</span></td>
-                        <td style="width: 75px;">
-                          <div class="progress" style="height: 5px;"><div class="progress-bar bg-dark stock-bar" style="width: 45%"></div></div>
-                        </td>
-                        <td class="fw-bold stock-cell">25</td>
-                        <td>
-                          <button type="button" class="btn btn-outline-success btn-qty" onclick="ajusteRapido('SP-004', 1)" title="+1 Entrada">+</button>
-                          <button type="button" class="btn btn-outline-danger btn-qty" onclick="ajusteRapido('SP-004', -1)" title="-1 Salida">-</button>
-                        </td>
-                        <td class="pe-3"><span class="badge text-bg-success status-badge">Disponible</span></td>
-                      </tr>
-                    </tbody>
+                    <tbody id="productosTableBody"></tbody>
                   </table>
+                </div>
+                <div class="text-center text-muted py-4 d-none" id="productosEmpty">
+                  <i class="bi bi-search fs-4 d-block mb-1"></i>Ningún producto coincide con la búsqueda.
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Entrada y Salida de Inventario -->
-          <div class="col-12 col-lg-5">
-            <div class="row g-2">
-              <div class="col-12 section-panel" id="inventario-entrada" data-group="grupo-inventario">
+          <div class="col-12 col-xl-4">
+            <div class="row g-3">
+              <div class="col-12 col-md-6 col-xl-12 section-panel" id="inventario-entrada" data-group="grupo-inventario">
                 <div class="card module-card">
                   <div class="module-header">
-                    <span class="fw-bold text-success"><i class="bi bi-box-arrow-in-down me-1"></i>Inventario · Entrada (+)</span>
-                    <span class="badge text-bg-success-subtle text-success">Sumar Stock</span>
+                    <span class="fw-bold d-flex align-items-center"><span class="module-icon tone-success"><i class="bi bi-box-arrow-in-down"></i></span>Entrada de stock</span>
+                    <span class="soft-badge soft-success">Sumar</span>
                   </div>
                   <div class="card-body">
-                    <form id="formEntrada" class="row g-1 align-items-center">
+                    <form id="formEntrada" class="row g-2 align-items-center" novalidate>
+                      <div class="col-7">
+                        <select class="form-select form-select-sm producto-select" id="entradaProducto" aria-label="Producto de entrada"></select>
+                      </div>
                       <div class="col-5">
-                        <select class="form-select form-select-sm py-1" id="entradaProducto" style="font-size: 0.76rem;">
-                          <option value="SP-001">SP-001 · Sony FX3</option>
-                          <option value="SP-002">SP-002 · Shure SM7B</option>
-                          <option value="SP-003">SP-003 · LED Aputure</option>
-                          <option value="SP-004">SP-004 · DJI RS3</option>
-                        </select>
+                        <input type="number" class="form-control form-control-sm" id="entradaCantidad" min="1" step="1" value="5" aria-label="Cantidad de entrada" required>
                       </div>
-                      <div class="col-3">
-                        <input type="number" class="form-control form-control-sm py-1" id="entradaCantidad" min="1" value="5" style="font-size: 0.76rem;" required>
-                      </div>
-                      <div class="col-4 d-grid">
-                        <button type="submit" class="btn btn-success btn-sm py-1" style="font-size: 0.76rem;">
-                          <i class="bi bi-plus-lg me-1"></i>Entrada
-                        </button>
+                      <div class="col-12 d-grid">
+                        <button type="submit" class="btn btn-success btn-sm"><i class="bi bi-plus-lg me-1"></i>Registrar entrada</button>
                       </div>
                     </form>
                   </div>
                 </div>
               </div>
 
-              <div class="col-12 section-panel" id="inventario-salida" data-group="grupo-inventario">
+              <div class="col-12 col-md-6 col-xl-12 section-panel" id="inventario-salida" data-group="grupo-inventario">
                 <div class="card module-card">
                   <div class="module-header">
-                    <span class="fw-bold text-danger"><i class="bi bi-box-arrow-up me-1"></i>Inventario · Salida (-)</span>
-                    <span class="badge text-bg-danger-subtle text-danger">Restar Stock</span>
+                    <span class="fw-bold d-flex align-items-center"><span class="module-icon tone-danger"><i class="bi bi-box-arrow-up"></i></span>Salida de stock</span>
+                    <span class="soft-badge soft-danger">Restar</span>
                   </div>
                   <div class="card-body">
-                    <form id="formSalida" class="row g-1 align-items-center">
+                    <form id="formSalida" class="row g-2 align-items-center" novalidate>
+                      <div class="col-7">
+                        <select class="form-select form-select-sm producto-select" id="salidaProducto" aria-label="Producto de salida"></select>
+                      </div>
                       <div class="col-5">
-                        <select class="form-select form-select-sm py-1" id="salidaProducto" style="font-size: 0.76rem;">
-                          <option value="SP-001">SP-001 · Sony FX3</option>
-                          <option value="SP-002">SP-002 · Shure SM7B</option>
-                          <option value="SP-003">SP-003 · LED Aputure</option>
-                          <option value="SP-004">SP-004 · DJI RS3</option>
-                        </select>
+                        <input type="number" class="form-control form-control-sm" id="salidaCantidad" min="1" step="1" value="2" aria-label="Cantidad de salida" required>
                       </div>
-                      <div class="col-3">
-                        <input type="number" class="form-control form-control-sm py-1" id="salidaCantidad" min="1" value="2" style="font-size: 0.76rem;" required>
-                      </div>
-                      <div class="col-4 d-grid">
-                        <button type="submit" class="btn btn-danger btn-sm py-1" style="font-size: 0.76rem;">
-                          <i class="bi bi-dash-lg me-1"></i>Salida
-                        </button>
+                      <div class="col-12 small text-muted" id="salidaDisponible">Disponible: —</div>
+                      <div class="col-12 d-grid">
+                        <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-dash-lg me-1"></i>Registrar salida</button>
                       </div>
                     </form>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12 section-panel" id="actividad-reciente" data-group="general">
+                <div class="card module-card">
+                  <div class="module-header">
+                    <span class="fw-bold d-flex align-items-center"><span class="module-icon tone-warning"><i class="bi bi-activity"></i></span>Actividad reciente</span>
+                    <button type="button" class="btn btn-link btn-sm p-0 text-muted text-decoration-none" id="clearActivity">Limpiar</button>
+                  </div>
+                  <div class="card-body py-2">
+                    <ul class="activity-list" id="activityList"></ul>
+                    <div class="text-muted small text-center py-3 d-none" id="activityEmpty">Sin actividad todavía.</div>
                   </div>
                 </div>
               </div>
@@ -433,113 +325,92 @@
           </div>
         </div>
 
-        <!-- FILA 4: USUARIO (Admin / Restar) Y CONFIGURACIÓN (Password / Email) -->
-        <div class="row g-2">
-          <!-- Usuario: Admin -->
+        <!-- FILA 4: Usuarios + Configuración -->
+        <div class="row g-3">
           <div class="col-12 col-md-6 col-xl-3 section-panel" id="usuario-admin" data-group="grupo-usuario">
             <div class="card module-card h-100">
               <div class="module-header">
-                <span class="fw-bold"><i class="bi bi-person-badge me-1 text-primary"></i>Usuario · Admin</span>
-                <span class="badge text-bg-light border">Roles</span>
+                <span class="fw-bold d-flex align-items-center"><span class="module-icon tone-accent"><i class="bi bi-person-badge"></i></span>Equipo</span>
+                <a href="./useradmin.html" class="btn btn-link btn-sm p-0 text-decoration-none">Ver todo <i class="bi bi-arrow-right-short"></i></a>
               </div>
               <div class="card-body">
-                <form id="formAddAdmin" class="d-flex gap-1 mb-2">
-                  <input type="text" class="form-control form-control-sm py-1" id="adminNameInput" placeholder="Nombre Admin..." style="font-size: 0.75rem;" required>
-                  <button type="submit" class="btn btn-studio-dark btn-sm py-1 px-2" style="font-size: 0.75rem;" title="Agregar Admin">
-                    <i class="bi bi-person-plus"></i>
-                  </button>
-                </form>
-                <table class="table table-sm align-middle mb-0" style="font-size: 0.75rem;">
-                  <tbody id="adminTableBody">
-                    <tr data-user="Carlos M.">
-                      <td><img src="../assets/imagenes/user.jpg" alt="" class="avatar-sm me-1">Carlos M.</td>
-                      <td class="text-end"><span class="badge text-bg-success">Super Admin</span></td>
-                    </tr>
-                    <tr data-user="Elena R.">
-                      <td><img src="../assets/imagenes/logo.jpg" alt="" class="avatar-sm me-1">Elena R.</td>
-                      <td class="text-end"><span class="badge text-bg-primary">Inventario</span></td>
-                    </tr>
-                    <tr data-user="Marco D.">
-                      <td><img src="../assets/imagenes/user.jpg" alt="" class="avatar-sm me-1">Marco D.</td>
-                      <td class="text-end"><span class="badge text-bg-secondary">Soporte</span></td>
-                    </tr>
-                  </tbody>
-                </table>
+                <ul class="list-unstyled mb-0 d-grid gap-2" id="teamList"></ul>
+                <a href="./useradmin.html" class="btn btn-studio-dark btn-sm w-100 mt-3"><i class="bi bi-person-plus me-1"></i>Nuevo usuario</a>
               </div>
             </div>
           </div>
 
-          <!-- Usuario: Restar -->
           <div class="col-12 col-md-6 col-xl-3 section-panel" id="usuario-restar" data-group="grupo-usuario">
             <div class="card module-card h-100">
               <div class="module-header">
-                <span class="fw-bold"><i class="bi bi-person-dash me-1 text-danger"></i>Usuario · Restar</span>
-                <span class="badge text-bg-warning-subtle text-warning-emphasis">Bajas</span>
+                <span class="fw-bold d-flex align-items-center"><span class="module-icon tone-danger"><i class="bi bi-person-dash"></i></span>Acciones rápidas</span>
+                <span class="soft-badge soft-warning">Usuarios</span>
               </div>
               <div class="card-body">
-                <form id="formRestarUsuario">
-                  <select class="form-select form-select-sm py-1 mb-2" id="selectUserRestar" style="font-size: 0.75rem;">
-                    <option value="Carlos M.">Carlos M. (Super Admin)</option>
-                    <option value="Elena R.">Elena R. (Inventario)</option>
-                    <option value="Marco D.">Marco D. (Soporte)</option>
+                <form id="formRestarUsuario" novalidate>
+                  <label for="selectUserRestar" class="form-label small fw-semibold mb-1">Usuario</label>
+                  <select class="form-select form-select-sm mb-2" id="selectUserRestar"></select>
+                  <label for="selectAccionRestar" class="form-label small fw-semibold mb-1">Acción</label>
+                  <select class="form-select form-select-sm mb-2" id="selectAccionRestar">
+                    <option value="desactivar">Desactivar usuario</option>
+                    <option value="activar">Activar usuario</option>
+                    <option value="eliminar">Eliminar usuario</option>
                   </select>
-                  <select class="form-select form-select-sm py-1 mb-2" id="selectAccionRestar" style="font-size: 0.75rem;">
-                    <option value="Restar permisos">Restar permisos</option>
-                    <option value="Restablecer sesión">Restablecer sesión</option>
-                    <option value="Eliminar de lista">Eliminar de lista</option>
-                  </select>
-                  <button type="submit" class="btn btn-outline-danger btn-sm w-100 py-1" style="font-size: 0.75rem;">
-                    <i class="bi bi-person-x me-1"></i>Aplicar a Usuario
+                  <div class="alert alert-danger py-1 px-2 small d-none mb-2" id="restarError" role="alert"></div>
+                  <button type="submit" class="btn btn-outline-danger btn-sm w-100">
+                    <i class="bi bi-lightning-charge me-1"></i>Aplicar acción
                   </button>
                 </form>
               </div>
             </div>
           </div>
 
-          <!-- Configuración: Password -->
           <div class="col-12 col-md-6 col-xl-3 section-panel" id="config-password" data-group="grupo-config">
             <div class="card module-card h-100">
               <div class="module-header">
-                <span class="fw-bold"><i class="bi bi-key me-1"></i>Config · Password</span>
-                <span class="badge text-bg-light border">Clave</span>
+                <span class="fw-bold d-flex align-items-center"><span class="module-icon tone-dark"><i class="bi bi-key"></i></span>Contraseña</span>
               </div>
               <div class="card-body">
-                <form id="formPassword">
+                <form id="formPassword" novalidate>
                   <div class="input-group input-group-sm mb-2">
-                    <span class="input-group-text bg-light"><i class="bi bi-lock"></i></span>
-                    <input type="password" class="form-control py-1" placeholder="Clave actual" style="font-size: 0.75rem;" required>
+                    <span class="input-group-text bg-white"><i class="bi bi-lock"></i></span>
+                    <input type="password" class="form-control" id="pwdActual" placeholder="Clave actual" autocomplete="current-password" required>
                   </div>
                   <div class="input-group input-group-sm mb-2">
-                    <span class="input-group-text bg-light"><i class="bi bi-shield-lock"></i></span>
-                    <input type="password" class="form-control py-1" placeholder="Nueva clave" style="font-size: 0.75rem;" required minlength="4">
+                    <span class="input-group-text bg-white"><i class="bi bi-shield-lock"></i></span>
+                    <input type="password" class="form-control" id="pwdNueva" placeholder="Nueva clave (mín. 6)" autocomplete="new-password" minlength="6" required>
                   </div>
-                  <button type="submit" class="btn btn-studio-dark btn-sm w-100 py-1" style="font-size: 0.75rem;">
-                    <i class="bi bi-check2-circle me-1"></i>Actualizar Password
+                  <div class="input-group input-group-sm mb-2">
+                    <span class="input-group-text bg-white"><i class="bi bi-shield-check"></i></span>
+                    <input type="password" class="form-control" id="pwdConfirmar" placeholder="Confirmar nueva clave" autocomplete="new-password" required>
+                  </div>
+                  <div class="alert alert-danger py-1 px-2 small d-none mb-2" id="pwdError" role="alert"></div>
+                  <button type="submit" class="btn btn-studio-dark btn-sm w-100">
+                    <i class="bi bi-check2-circle me-1"></i>Actualizar contraseña
                   </button>
                 </form>
               </div>
             </div>
           </div>
 
-          <!-- Configuración: Email -->
           <div class="col-12 col-md-6 col-xl-3 section-panel" id="config-email" data-group="grupo-config">
             <div class="card module-card h-100">
               <div class="module-header">
-                <span class="fw-bold"><i class="bi bi-envelope-at me-1"></i>Config · Email</span>
-                <span class="badge text-bg-light border">Correo</span>
+                <span class="fw-bold d-flex align-items-center"><span class="module-icon tone-dark"><i class="bi bi-envelope-at"></i></span>Correo</span>
               </div>
               <div class="card-body">
-                <form id="formEmail">
+                <form id="formEmail" novalidate>
                   <div class="input-group input-group-sm mb-2">
-                    <span class="input-group-text bg-light"><i class="bi bi-envelope"></i></span>
-                    <input type="email" class="form-control bg-light py-1" id="currentEmailInput" value="admin@studioplay.com" style="font-size: 0.75rem;" readonly>
+                    <span class="input-group-text bg-white"><i class="bi bi-envelope"></i></span>
+                    <input type="email" class="form-control bg-light" id="currentEmailInput" value="admin@studioplay.com" aria-label="Correo actual" readonly>
                   </div>
                   <div class="input-group input-group-sm mb-2">
-                    <span class="input-group-text bg-light"><i class="bi bi-pencil-square"></i></span>
-                    <input type="email" class="form-control py-1" id="newEmailInput" placeholder="nuevo@studioplay.com" style="font-size: 0.75rem;" required>
+                    <span class="input-group-text bg-white"><i class="bi bi-pencil-square"></i></span>
+                    <input type="email" class="form-control" id="newEmailInput" placeholder="nuevo@studioplay.com" aria-label="Nuevo correo" required>
                   </div>
-                  <button type="submit" class="btn btn-studio-dark btn-sm w-100 py-1" style="font-size: 0.75rem;">
-                    <i class="bi bi-save me-1"></i>Guardar Email
+                  <div class="alert alert-danger py-1 px-2 small d-none mb-2" id="emailError" role="alert"></div>
+                  <button type="submit" class="btn btn-studio-dark btn-sm w-100">
+                    <i class="bi bi-save me-1"></i>Guardar correo
                   </button>
                 </form>
               </div>
@@ -551,7 +422,7 @@
     </main>
   </div>
 
-  <!-- Modal de Login de Acceso -->
+  <!-- Modal de Login -->
   <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content border-0 shadow">
@@ -564,7 +435,7 @@
         </div>
         <div class="modal-body pt-3">
           <div class="text-center mb-3">
-            <img src="../assets/imagenes/user.jpg" alt="Usuario" class="rounded-circle border mb-2" style="width: 68px; height: 68px; object-fit: cover;">
+            <img src="../assets/imagenes/user.jpg" alt="Usuario" class="rounded-circle border mb-2 avatar-lg">
             <p class="text-muted small mb-0">Ingresa tus credenciales para acceder a tu cuenta</p>
           </div>
           <form id="modalLoginForm">
@@ -574,10 +445,11 @@
             </div>
             <div class="mb-3">
               <label for="modalPassword" class="form-label small fw-semibold">Contraseña</label>
-              <input type="password" class="form-control" id="modalPassword" placeholder="••••••••" required>
+              <input type="password" class="form-control" id="modalPassword" placeholder="••••••••" autocomplete="current-password" required>
             </div>
+            <div class="alert alert-danger py-2 small d-none" id="loginError" role="alert"></div>
             <div class="d-grid">
-              <button type="submit" class="btn btn-studio">Iniciar Sesión</button>
+              <button type="submit" class="btn btn-studio" id="loginSubmitBtn">Iniciar Sesión</button>
             </div>
           </form>
         </div>
@@ -585,423 +457,962 @@
     </div>
   </div>
 
-  <!-- Notificación Toast Flotante -->
-  <div id="studioToast" class="studio-toast d-none">
-    <i class="bi bi-check-circle-fill text-success"></i>
+  <!-- Modal de confirmación -->
+  <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-body text-center pt-4">
+          <div class="fs-1 mb-2 text-danger"><i class="bi bi-exclamation-triangle-fill"></i></div>
+          <h5 class="fw-bold mb-1" id="confirmModalLabel">¿Confirmar?</h5>
+          <p class="text-muted small mb-0" id="confirmMessage"></p>
+        </div>
+        <div class="modal-footer border-top-0 justify-content-center pt-0 pb-3">
+          <button type="button" class="btn btn-outline-secondary btn-sm px-3" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-danger btn-sm px-3" id="confirmOkBtn">Confirmar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="studioToast" class="studio-toast d-none" role="status" aria-live="polite">
+    <i class="bi bi-check-circle-fill text-success" id="studioToastIcon"></i>
     <span id="studioToastText">Acción completada</span>
   </div>
 
   <script src="../assets/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/js/user-admin-store.js"></script>
+  <script src="../assets/js/session.js"></script>
   <script>
     // =======================================================
-    // LÓGICA DEL NAVBAR Y CONTROL DEL SIDEBAR RETRÁCTIL
+    // NAVBAR Y SIDEBAR
     // =======================================================
-    const loggedInSection = document.getElementById('loggedInSection');
-    const loggedOutSection = document.getElementById('loggedOutSection');
-    const navLogoutBtn = document.getElementById('navLogoutBtn');
-    const dropdownLogoutBtn = document.getElementById('dropdownLogoutBtn');
-    const modalLoginForm = document.getElementById('modalLoginForm');
-    const loginModalEl = document.getElementById('loginModal');
-    const navbarSidebarToggle = document.getElementById('navbarSidebarToggle');
+    const navbarFrame = document.getElementById('navbarFrame');
     const sidebarFrame = document.getElementById('sidebarFrame');
+    const modalLoginForm = document.getElementById('modalLoginForm');
+    const loginModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('loginModal'));
 
-    navbarSidebarToggle.addEventListener('click', function () {
-      if (sidebarFrame && sidebarFrame.contentWindow) {
-        sidebarFrame.contentWindow.postMessage('toggle-sidebar', '*');
+    // Aplicar el estado "fijado" antes de que cargue el iframe (evita un salto visual)
+    try {
+      if (window.localStorage.getItem('studioSidebarPinned') === '1') sidebarFrame.classList.add('pinned');
+    } catch (e) { /* sin almacenamiento */ }
+
+    // El navbar (iframe) muestra la sesión; aquí solo se actualiza el saludo
+    function renderSesion() {
+      const sesion = StudioSession.get();
+      actualizarSaludo(sesion.loggedIn && sesion.email ? StudioSession.displayName(sesion) : '');
+    }
+
+    // Envía la sesión actual al navbar (no depende de que compartan almacenamiento)
+    function enviarSesionAlNavbar() {
+      navbarFrame.contentWindow.postMessage({ type: 'navbar-session-changed', session: StudioSession.get() }, '*');
+    }
+
+    // Al cargar el iframe (y por si ya hubiera cargado antes de este script)
+    navbarFrame.addEventListener('load', enviarSesionAlNavbar);
+    enviarSesionAlNavbar();
+
+    // El modal de login vive aquí porque dentro del iframe del navbar quedaría recortado.
+    // Valida email y contraseña contra los usuarios registrados.
+    const loginError = document.getElementById('loginError');
+    const loginSubmitBtn = document.getElementById('loginSubmitBtn');
+
+    modalLoginForm.addEventListener('submit', async function (event) {
+      event.preventDefault();
+      if (!modalLoginForm.reportValidity()) return;
+      loginError.classList.add('d-none');
+      loginSubmitBtn.disabled = true;
+      try {
+        const resultado = await StudioUserStore.authenticate(
+          document.getElementById('modalEmail').value,
+          document.getElementById('modalPassword').value
+        );
+        if (!resultado.ok) {
+          loginError.textContent = resultado.error;
+          loginError.classList.remove('d-none');
+          document.getElementById('modalPassword').select();
+          return;
+        }
+        StudioSession.login(resultado.user);
+        modalLoginForm.reset();
+        loginModal.hide();
+        enviarSesionAlNavbar();
+        renderSesion();
+      } catch (error) {
+        loginError.textContent = error.message;
+        loginError.classList.remove('d-none');
+      } finally {
+        loginSubmitBtn.disabled = false;
       }
     });
 
-    function cerrarSesion() {
-      loggedInSection.classList.add('d-none');
-      loggedOutSection.classList.remove('d-none');
-    }
-
-    navLogoutBtn.addEventListener('click', cerrarSesion);
-    dropdownLogoutBtn.addEventListener('click', cerrarSesion);
-
-    modalLoginForm.addEventListener('submit', function (event) {
-      event.preventDefault();
-      const email = document.getElementById('modalEmail').value;
-      const username = email.split('@')[0] || 'Mi Cuenta';
-
-      document.getElementById('navbarUserName').textContent = username;
-      document.getElementById('dropdownUserTitle').textContent = username;
-      document.getElementById('dropdownUserEmail').textContent = email;
-
-      loggedOutSection.classList.add('d-none');
-      loggedInSection.classList.remove('d-none');
-
-      const modalInstance = bootstrap.Modal.getInstance(loginModalEl);
-      if (modalInstance) modalInstance.hide();
+    document.getElementById('loginModal').addEventListener('hidden.bs.modal', function () {
+      loginError.classList.add('d-none');
+      modalLoginForm.reset();
     });
 
     // =======================================================
-    // LÓGICA DEL DASHBOARD (GRÁFICOS, TABLAS Y CARDS)
+    // ESTADO DEL INVENTARIO
+    // =======================================================
+    const STOCK_MAX = 80;      // referencia para la barra de nivel
+    const STOCK_BAJO = 15;     // umbral de stock bajo
+
+    const productos = [
+      { codigo: 'SP-001', nombre: 'Cámara Sony FX3 Cinema', corto: 'Sony FX3', categoria: 'Video', icon: 'bi-camera-video', stock: 45, entradas: 15, salidas: 6 },
+      { codigo: 'SP-002', nombre: 'Micrófono Shure SM7B', corto: 'Shure SM7B', categoria: 'Audio', icon: 'bi-mic', stock: 60, entradas: 20, salidas: 8 },
+      { codigo: 'SP-003', nombre: 'Panel LED Aputure 600d', corto: 'LED Aputure', categoria: 'Luz', icon: 'bi-lightbulb', stock: 40, entradas: 12, salidas: 5 },
+      { codigo: 'SP-004', nombre: 'Estabilizador DJI RS3 Pro', corto: 'DJI RS3', categoria: 'Rig', icon: 'bi-aspect-ratio', stock: 25, entradas: 10, salidas: 4 }
+    ];
+
+    // Colores de la paleta del tema (theme.css)
+    const COLORES_SERIE = { stock: '#6366f1', entradas: '#10b981', salidas: '#f43f5e' };
+    const COLORES_CATEGORIA = ['#6366f1', '#0ea5e9', '#10b981', '#f59e0b'];
+
+    const actividad = [];
+
+    // ---------- Persistencia del inventario y la actividad ----------
+    const INVENTARIO_KEY = 'studioPlayInventario';
+    const MAX_ACTIVIDAD = 25;
+
+    function esEnteroNoNegativo(n) {
+      return Number.isInteger(n) && n >= 0;
+    }
+
+    function cargarEstadoGuardado() {
+      let data;
+      try {
+        data = JSON.parse(window.localStorage.getItem(INVENTARIO_KEY) || 'null');
+      } catch (e) {
+        return; // datos corruptos: se usan los valores iniciales
+      }
+      if (!data || typeof data !== 'object') return;
+
+      // Solo se restauran las cifras de productos conocidos, validando cada valor
+      if (Array.isArray(data.productos)) {
+        data.productos.forEach(guardado => {
+          const p = productos.find(x => x.codigo === guardado.codigo);
+          if (!p) return;
+          ['stock', 'entradas', 'salidas'].forEach(campo => {
+            if (esEnteroNoNegativo(guardado[campo])) p[campo] = guardado[campo];
+          });
+        });
+      }
+
+      if (Array.isArray(data.actividad)) {
+        data.actividad.slice(0, MAX_ACTIVIDAD).forEach(a => {
+          const fecha = new Date(a.fecha);
+          if (typeof a.tipo === 'string' && typeof a.detalle === 'string' && !isNaN(fecha)) {
+            actividad.push({ tipo: a.tipo, detalle: a.detalle, fecha: fecha });
+          }
+        });
+      }
+    }
+
+    function guardarEstado() {
+      try {
+        window.localStorage.setItem(INVENTARIO_KEY, JSON.stringify({
+          productos: productos.map(p => ({ codigo: p.codigo, stock: p.stock, entradas: p.entradas, salidas: p.salidas })),
+          actividad: actividad
+        }));
+      } catch (e) {
+        /* sin almacenamiento disponible */
+      }
+    }
+
+    cargarEstadoGuardado();
+
+    function getProducto(codigo) {
+      return productos.find(p => p.codigo === codigo);
+    }
+
+    // =======================================================
+    // UTILIDADES DE UI
     // =======================================================
     const toastEl = document.getElementById('studioToast');
     const toastText = document.getElementById('studioToastText');
-    const panels = document.querySelectorAll('.section-panel');
-    const filterPills = document.querySelectorAll('.filter-pill');
+    const toastIcon = document.getElementById('studioToastIcon');
     let toastTimer = null;
 
-    function mostrarMensaje(texto) {
+    function mostrarMensaje(texto, tipo) {
+      const iconos = {
+        success: 'bi-check-circle-fill text-success',
+        danger: 'bi-x-circle-fill text-danger',
+        warning: 'bi-exclamation-triangle-fill text-warning'
+      };
+      toastIcon.className = `bi ${iconos[tipo || 'success']}`;
       toastText.textContent = texto;
       toastEl.classList.remove('d-none');
+      // reinicia la animación de entrada
+      toastEl.style.animation = 'none';
+      void toastEl.offsetWidth;
+      toastEl.style.animation = '';
       if (toastTimer) clearTimeout(toastTimer);
       toastTimer = setTimeout(() => toastEl.classList.add('d-none'), 3000);
     }
 
-    function obtenerDatosInventario() {
-      const filas = document.querySelectorAll('#productosTableBody tr');
-      const items = [];
-      filas.forEach(tr => {
-        items.push({
-          codigo: tr.dataset.codigo,
-          categoria: tr.dataset.cat,
-          stock: parseInt(tr.querySelector('.stock-cell').textContent, 10) || 0,
-          entradas: parseInt(tr.dataset.entradas, 10) || 0,
-          salidas: parseInt(tr.dataset.salidas, 10) || 0
-        });
-      });
-      return items;
+    function animarNumero(el, valor) {
+      const inicio = parseInt(el.textContent.replace(/\D/g, ''), 10) || 0;
+      if (inicio === valor || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        el.textContent = valor.toLocaleString('es');
+        return;
+      }
+      const duracion = 450;
+      const t0 = performance.now();
+      function paso(t) {
+        const p = Math.min(1, (t - t0) / duracion);
+        const eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(inicio + (valor - inicio) * eased).toLocaleString('es');
+        if (p < 1) requestAnimationFrame(paso);
+      }
+      requestAnimationFrame(paso);
     }
+
+    function setError(el, mensaje) {
+      el.textContent = mensaje || '';
+      el.classList.toggle('d-none', !mensaje);
+    }
+
+    // Confirmación con modal
+    const confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
+    let pendingConfirm = null;
+
+    function confirmar(titulo, mensaje, onOk) {
+      document.getElementById('confirmModalLabel').textContent = titulo;
+      document.getElementById('confirmMessage').textContent = mensaje;
+      pendingConfirm = onOk;
+      confirmModal.show();
+    }
+
+    document.getElementById('confirmOkBtn').addEventListener('click', function () {
+      const fn = pendingConfirm;
+      pendingConfirm = null;
+      confirmModal.hide();
+      if (fn) fn();
+    });
+
+    // =======================================================
+    // SALUDO
+    // =======================================================
+    function actualizarSaludo(nombre) {
+      const ahora = new Date();
+      const h = ahora.getHours();
+      const saludo = h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches';
+      const fecha = ahora.toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+      document.getElementById('heroDate').textContent = fecha;
+      document.getElementById('heroGreeting').textContent = `${saludo}${nombre ? ', ' + nombre : ''} 👋`;
+    }
+
+    function actualizarResumenHero() {
+      const bajos = productos.filter(p => p.stock < STOCK_BAJO).length;
+      const total = productos.reduce((a, p) => a + p.stock, 0);
+      document.getElementById('heroSummary').textContent = bajos > 0
+        ? `${total} unidades en inventario · ${bajos} producto(s) requieren reposición.`
+        : `${total} unidades en inventario · todo el stock está en niveles saludables.`;
+    }
+
+    // =======================================================
+    // TABLA DE PRODUCTOS
+    // =======================================================
+    function estadoStock(stock) {
+      if (stock === 0) return { cls: 'soft-danger', texto: 'Agotado', bar: 'bg-danger' };
+      if (stock < STOCK_BAJO) return { cls: 'soft-warning', texto: 'Bajo', bar: 'bg-warning' };
+      return { cls: 'soft-success', texto: 'Disponible', bar: 'bg-primary' };
+    }
+
+    function renderTablaProductos() {
+      const tbody = document.getElementById('productosTableBody');
+      const q = document.getElementById('buscarProductoInput').value.trim().toLowerCase();
+      const cat = document.getElementById('filtroCategoriaSelect').value;
+      tbody.replaceChildren();
+
+      const visibles = productos.filter(p => {
+        const matchTexto = !q || [p.codigo, p.nombre, p.categoria].some(v => v.toLowerCase().includes(q));
+        return matchTexto && (!cat || p.categoria === cat);
+      });
+
+      visibles.forEach(p => {
+        const est = estadoStock(p.stock);
+        const tr = document.createElement('tr');
+        tr.dataset.codigo = p.codigo;
+        tr.innerHTML = `
+          <td class="ps-3 fw-semibold text-muted"></td>
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <span class="stat-icon stat-icon-sm tone-dark"><i class="bi ${p.icon}"></i></span>
+              <span class="fw-semibold nombre"></span>
+            </div>
+          </td>
+          <td><span class="soft-badge soft-neutral cat"></span></td>
+          <td>
+            <div class="stat-progress m-0"><span class="${est.bar}" style="width:${Math.min(100, Math.round((p.stock / STOCK_MAX) * 100))}%"></span></div>
+          </td>
+          <td class="text-end fw-bold">${p.stock}</td>
+          <td class="text-center text-nowrap">
+            <button type="button" class="btn-qty plus me-1" data-delta="1" aria-label="Sumar 1 a ${p.codigo}" title="+1 Entrada"><i class="bi bi-plus-lg"></i></button>
+            <button type="button" class="btn-qty minus" data-delta="-1" aria-label="Restar 1 a ${p.codigo}" title="−1 Salida" ${p.stock === 0 ? 'disabled' : ''}><i class="bi bi-dash-lg"></i></button>
+          </td>
+          <td class="pe-3"><span class="soft-badge ${est.cls}">${est.texto}</span></td>
+        `;
+        tr.children[0].textContent = p.codigo;
+        tr.querySelector('.nombre').textContent = p.nombre;
+        tr.querySelector('.cat').textContent = p.categoria;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('productosEmpty').classList.toggle('d-none', visibles.length > 0);
+    }
+
+    document.getElementById('productosTableBody').addEventListener('click', function (e) {
+      const btn = e.target.closest('.btn-qty');
+      if (!btn) return;
+      const codigo = btn.closest('tr').dataset.codigo;
+      registrarMovimiento(codigo, parseInt(btn.dataset.delta, 10));
+    });
+
+    document.getElementById('buscarProductoInput').addEventListener('input', renderTablaProductos);
+    document.getElementById('filtroCategoriaSelect').addEventListener('change', renderTablaProductos);
+
+    // =======================================================
+    // MOVIMIENTOS DE INVENTARIO
+    // =======================================================
+    function registrarMovimiento(codigo, delta) {
+      const p = getProducto(codigo);
+      if (!p || delta === 0) return false;
+
+      if (delta < 0 && p.stock < Math.abs(delta)) {
+        mostrarMensaje(`Stock insuficiente en ${codigo} (disponible: ${p.stock}).`, 'danger');
+        return false;
+      }
+
+      p.stock += delta;
+      if (delta > 0) p.entradas += delta; else p.salidas += Math.abs(delta);
+
+      registrarActividad(
+        delta > 0 ? 'entrada' : 'salida',
+        `${delta > 0 ? '+' : '−'}${Math.abs(delta)} uds · ${p.corto}`
+      );
+      actualizarInventarioUI();
+      mostrarMensaje(`${delta > 0 ? 'Entrada' : 'Salida'} registrada: ${delta > 0 ? '+' : '−'}${Math.abs(delta)} uds en ${codigo}`);
+      if (p.stock > 0 && p.stock < STOCK_BAJO && delta < 0) {
+        setTimeout(() => mostrarMensaje(`${p.corto} tiene stock bajo (${p.stock} uds).`, 'warning'), 1200);
+      }
+      return true;
+    }
+
+    function poblarSelectsProductos() {
+      document.querySelectorAll('.producto-select').forEach(sel => {
+        const valor = sel.value;
+        sel.replaceChildren(...productos.map(p => {
+          const opt = document.createElement('option');
+          opt.value = p.codigo;
+          opt.textContent = `${p.codigo} · ${p.corto}`;
+          return opt;
+        }));
+        if (valor) sel.value = valor;
+      });
+      actualizarDisponibleSalida();
+    }
+
+    function actualizarDisponibleSalida() {
+      const p = getProducto(document.getElementById('salidaProducto').value);
+      const input = document.getElementById('salidaCantidad');
+      document.getElementById('salidaDisponible').textContent = p ? `Disponible: ${p.stock} uds` : 'Disponible: —';
+      if (p) input.max = String(p.stock);
+    }
+
+    document.getElementById('salidaProducto').addEventListener('change', actualizarDisponibleSalida);
+
+    function leerCantidad(input) {
+      const n = Number(input.value);
+      if (!Number.isInteger(n) || n < 1) {
+        input.classList.add('is-invalid');
+        mostrarMensaje('Ingresa una cantidad entera mayor que 0.', 'danger');
+        return null;
+      }
+      input.classList.remove('is-invalid');
+      return n;
+    }
+
+    document.getElementById('formEntrada').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const cant = leerCantidad(document.getElementById('entradaCantidad'));
+      if (cant === null) return;
+      registrarMovimiento(document.getElementById('entradaProducto').value, cant);
+    });
+
+    document.getElementById('formSalida').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const cant = leerCantidad(document.getElementById('salidaCantidad'));
+      if (cant === null) return;
+      registrarMovimiento(document.getElementById('salidaProducto').value, -cant);
+    });
+
+    // =======================================================
+    // KPIs
+    // =======================================================
+    function actualizarKPIsInventario() {
+      const total = productos.reduce((a, p) => a + p.stock, 0);
+      const entradas = productos.reduce((a, p) => a + p.entradas, 0);
+      const salidas = productos.reduce((a, p) => a + p.salidas, 0);
+      const movimiento = entradas + salidas || 1;
+      const bajos = productos.filter(p => p.stock < STOCK_BAJO).length;
+      const capacidad = productos.length * STOCK_MAX;
+
+      animarNumero(document.getElementById('statTotalProductos'), total);
+      animarNumero(document.getElementById('statEntradas'), entradas);
+      animarNumero(document.getElementById('statSalidas'), salidas);
+
+      const trendStock = document.getElementById('trendStock');
+      trendStock.className = `trend ${bajos > 0 ? 'down' : 'up'}`;
+      trendStock.innerHTML = `<i class="bi ${bajos > 0 ? 'bi-exclamation-triangle' : 'bi-check2'}"></i>${bajos}`;
+      document.getElementById('stockFootText').textContent = bajos === 1 ? 'producto con stock bajo' : 'productos con stock bajo';
+
+      const pctE = Math.round((entradas / movimiento) * 100);
+      const pctS = 100 - pctE;
+      document.getElementById('trendEntradas').innerHTML = `<i class="bi bi-arrow-up-right"></i>${pctE}%`;
+      document.getElementById('trendSalidas').innerHTML = `<i class="bi bi-arrow-down-right"></i>${pctS}%`;
+
+      document.getElementById('kpiBarStock').style.width = `${Math.min(100, Math.round((total / capacidad) * 100))}%`;
+      document.getElementById('kpiBarEntradas').style.width = `${pctE}%`;
+      document.getElementById('kpiBarSalidas').style.width = `${pctS}%`;
+    }
+
+    function actualizarInventarioUI() {
+      guardarEstado();
+      renderTablaProductos();
+      actualizarKPIsInventario();
+      actualizarDisponibleSalida();
+      actualizarResumenHero();
+      redibujarGraficos(false);
+    }
+
+    // =======================================================
+    // GRÁFICOS (canvas)
+    // =======================================================
+    let barRects = [];
 
     function prepararCanvas(canvas) {
       const parent = canvas.parentElement;
       const dpr = window.devicePixelRatio || 1;
-      const rectW = parent.clientWidth || 420;
-      const rectH = parent.clientHeight || 155;
-      canvas.width = rectW * dpr;
-      canvas.height = rectH * dpr;
-      canvas.style.width = rectW + 'px';
-      canvas.style.height = rectH + 'px';
+      const W = parent.clientWidth || 420;
+      const H = parent.clientHeight || 200;
+      canvas.width = W * dpr;
+      canvas.height = H * dpr;
+      canvas.style.width = W + 'px';
+      canvas.style.height = H + 'px';
       const ctx = canvas.getContext('2d');
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      return { ctx, W: rectW, H: rectH };
+      return { ctx, W, H };
     }
 
-    function dibujarGraficoBarras() {
+    function roundRectPath(ctx, x, y, w, h, r) {
+      if (ctx.roundRect) {
+        ctx.roundRect(x, y, w, h, r);
+      } else {
+        ctx.rect(x, y, w, h);
+      }
+    }
+
+    function dibujarGraficoBarras(progreso) {
       const canvas = document.getElementById('barChart');
       if (!canvas || canvas.offsetParent === null) return;
       const { ctx, W, H } = prepararCanvas(canvas);
       ctx.clearRect(0, 0, W, H);
+      barRects = [];
 
-      const datos = obtenerDatosInventario();
-      const padLeft = 34;
-      const padBottom = 22;
-      const padTop = 18;
-      const chartW = W - padLeft - 12;
+      const padLeft = 34, padRight = 8, padBottom = 26, padTop = 16;
+      const chartW = W - padLeft - padRight;
       const chartH = H - padBottom - padTop;
-      const maxVal = Math.max(70, ...datos.map(d => Math.max(d.stock, d.entradas, d.salidas)));
+      const maxDato = Math.max(...productos.map(d => Math.max(d.stock, d.entradas, d.salidas)), 10);
+      const paso = Math.ceil(maxDato / 4 / 10) * 10 || 10;
+      const maxVal = paso * 4;
 
-      ctx.strokeStyle = '#f1f5f9';
-      ctx.fillStyle = '#64748b';
+      // Rejilla
       ctx.font = '10px system-ui, sans-serif';
-      for (let i = 0; i <= 3; i++) {
-        const val = Math.round((maxVal / 3) * i);
-        const y = padTop + chartH - (chartH * (i / 3));
+      ctx.textAlign = 'right';
+      for (let i = 0; i <= 4; i++) {
+        const y = padTop + chartH - chartH * (i / 4);
+        ctx.strokeStyle = i === 0 ? '#e2e8f0' : '#f1f3f7';
+        ctx.setLineDash(i === 0 ? [] : [3, 4]);
         ctx.beginPath();
         ctx.moveTo(padLeft, y);
-        ctx.lineTo(W - 8, y);
+        ctx.lineTo(W - padRight, y);
         ctx.stroke();
-        ctx.fillText(val.toString(), 6, y + 3);
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillText(String(paso * i), padLeft - 6, y + 3);
       }
+      ctx.setLineDash([]);
 
-      const groupW = chartW / datos.length;
-      const barW = Math.min(18, Math.max(10, Math.floor(groupW / 4.5)));
-      datos.forEach((d, idx) => {
-        const groupX = padLeft + idx * groupW + (groupW - (barW * 3 + 6)) / 2;
+      const groupW = chartW / productos.length;
+      const barW = Math.min(20, Math.max(8, Math.floor(groupW / 5)));
+      const gap = 4;
+
+      productos.forEach((d, idx) => {
+        const groupX = padLeft + idx * groupW + (groupW - (barW * 3 + gap * 2)) / 2;
         const series = [
-          { val: d.stock, color: '#111111' },
-          { val: d.entradas, color: '#16a34a' },
-          { val: d.salidas, color: '#dc2626' }
+          { key: 'stock', nombre: 'Stock', val: d.stock },
+          { key: 'entradas', nombre: 'Entradas', val: d.entradas },
+          { key: 'salidas', nombre: 'Salidas', val: d.salidas }
         ];
 
         series.forEach((s, sIdx) => {
-          const bHeight = Math.max(2, (s.val / maxVal) * chartH);
-          const x = groupX + sIdx * (barW + 3);
-          const y = padTop + chartH - bHeight;
+          const fullH = Math.max(2, (s.val / maxVal) * chartH);
+          const bH = fullH * progreso;
+          const x = groupX + sIdx * (barW + gap);
+          const y = padTop + chartH - bH;
 
-          ctx.fillStyle = s.color;
+          ctx.fillStyle = COLORES_SERIE[s.key];
           ctx.beginPath();
-          ctx.roundRect(x, y, barW, bHeight, [3, 3, 0, 0]);
+          roundRectPath(ctx, x, y, barW, bH, [4, 4, 0, 0]);
           ctx.fill();
 
-          ctx.fillStyle = '#334155';
-          ctx.font = 'bold 9px system-ui, sans-serif';
-          ctx.textAlign = 'center';
-          ctx.fillText(s.val.toString(), x + barW / 2, y - 3);
+          barRects.push({ x, y: padTop + chartH - fullH, w: barW, h: fullH, producto: d, serie: s });
         });
 
-        ctx.fillStyle = '#334155';
+        ctx.fillStyle = '#475569';
         ctx.font = '600 10px system-ui, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText(`${d.codigo} (${d.categoria})`, padLeft + idx * groupW + groupW / 2, H - 5);
+        ctx.fillText(d.codigo, padLeft + idx * groupW + groupW / 2, H - 9);
       });
       ctx.textAlign = 'start';
     }
 
-    function dibujarGraficoDonut() {
+    function dibujarGraficoDonut(progreso) {
       const canvas = document.getElementById('donutChart');
       if (!canvas || canvas.offsetParent === null) return;
       const { ctx, W, H } = prepararCanvas(canvas);
       ctx.clearRect(0, 0, W, H);
 
-      const datos = obtenerDatosInventario();
-      const colores = ['#111111', '#2563eb', '#16a34a', '#ea580c'];
-      const total = datos.reduce((acc, d) => acc + d.stock, 0) || 1;
-
-      const cx = Math.min(90, W * 0.3);
+      const total = productos.reduce((a, d) => a + d.stock, 0);
+      const cx = W / 2;
       const cy = H / 2;
-      const radius = Math.min(60, H * 0.4);
-      const innerRadius = radius * 0.6;
+      const radius = Math.min(W, H) / 2 - 4;
+      const grosor = Math.max(12, radius * 0.28);
 
-      let startAngle = -Math.PI / 2;
-      datos.forEach((d, i) => {
-        const sliceAngle = (d.stock / total) * Math.PI * 2;
-        ctx.beginPath();
-        ctx.arc(cx, cy, radius, startAngle, startAngle + sliceAngle);
-        ctx.arc(cx, cy, innerRadius, startAngle + sliceAngle, startAngle, true);
-        ctx.closePath();
-        ctx.fillStyle = colores[i % colores.length];
-        ctx.fill();
-        startAngle += sliceAngle;
-      });
+      // pista de fondo
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius - grosor / 2, 0, Math.PI * 2);
+      ctx.strokeStyle = '#eef1f6';
+      ctx.lineWidth = grosor;
+      ctx.stroke();
+
+      if (total > 0) {
+        let start = -Math.PI / 2;
+        const separacion = productos.length > 1 ? 0.03 : 0;
+        productos.forEach((d, i) => {
+          const angulo = (d.stock / total) * Math.PI * 2 * progreso;
+          if (angulo <= separacion) { start += angulo; return; }
+          ctx.beginPath();
+          ctx.arc(cx, cy, radius - grosor / 2, start + separacion / 2, start + angulo - separacion / 2);
+          ctx.strokeStyle = COLORES_CATEGORIA[i % COLORES_CATEGORIA.length];
+          ctx.lineWidth = grosor;
+          ctx.lineCap = 'round';
+          ctx.stroke();
+          start += angulo;
+        });
+      }
 
       ctx.fillStyle = '#0f172a';
-      ctx.font = 'bold 14px system-ui, sans-serif';
+      ctx.font = '700 18px system-ui, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(total.toString(), cx, cy + 2);
-      ctx.fillStyle = '#64748b';
-      ctx.font = '9px system-ui, sans-serif';
-      ctx.fillText('TOTAL', cx, cy + 13);
+      ctx.fillText(total.toLocaleString('es'), cx, cy + 3);
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '600 9px system-ui, sans-serif';
+      ctx.fillText('UNIDADES', cx, cy + 16);
       ctx.textAlign = 'start';
+    }
 
-      const legendX = cx + radius + 22;
-      datos.forEach((d, i) => {
-        const ly = 22 + i * 31;
+    function renderLeyendaDonut() {
+      const total = productos.reduce((a, d) => a + d.stock, 0) || 1;
+      const ul = document.getElementById('donutLegend');
+      ul.replaceChildren();
+      productos.forEach((d, i) => {
         const pct = Math.round((d.stock / total) * 100);
-        ctx.fillStyle = colores[i % colores.length];
-        ctx.beginPath();
-        ctx.roundRect(legendX, ly, 10, 10, 2);
-        ctx.fill();
-
-        ctx.fillStyle = '#1e293b';
-        ctx.font = '600 11px system-ui, sans-serif';
-        ctx.fillText(`${d.categoria}: ${pct}% (${d.stock} uds)`, legendX + 16, ly + 9);
+        const color = COLORES_CATEGORIA[i % COLORES_CATEGORIA.length];
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <span class="swatch" style="background:${color}"></span>
+          <span class="fw-semibold cat"></span>
+          <span class="text-muted">${d.stock} uds · <strong class="text-body">${pct}%</strong></span>
+          <div class="bar"><span style="width:${pct}%;background:${color}"></span></div>
+        `;
+        li.querySelector('.cat').textContent = d.categoria;
+        ul.appendChild(li);
       });
     }
 
-    function redibujarGraficos() {
-      dibujarGraficoBarras();
-      dibujarGraficoDonut();
+    let animFrame = null;
+    function redibujarGraficos(animar) {
+      renderLeyendaDonut();
+      if (animFrame) cancelAnimationFrame(animFrame);
+      const reducir = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!animar || reducir) {
+        dibujarGraficoBarras(1);
+        dibujarGraficoDonut(1);
+        return;
+      }
+      const t0 = performance.now();
+      const duracion = 650;
+      function frame(t) {
+        const p = Math.min(1, (t - t0) / duracion);
+        const eased = 1 - Math.pow(1 - p, 3);
+        dibujarGraficoBarras(eased);
+        dibujarGraficoDonut(eased);
+        if (p < 1) animFrame = requestAnimationFrame(frame);
+      }
+      animFrame = requestAnimationFrame(frame);
     }
 
-    window.addEventListener('resize', redibujarGraficos);
+    // Tooltip del gráfico de barras
+    const barCanvas = document.getElementById('barChart');
+    const barTooltip = document.getElementById('barTooltip');
 
-    // Mostrar una sección específica o un grupo
+    barCanvas.addEventListener('mousemove', function (e) {
+      const rect = barCanvas.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+      const hit = barRects.find(b => mx >= b.x - 2 && mx <= b.x + b.w + 2 && my >= b.y - 6 && my <= b.y + b.h);
+      if (!hit) {
+        barTooltip.classList.remove('show');
+        barCanvas.style.cursor = 'default';
+        return;
+      }
+      barCanvas.style.cursor = 'pointer';
+      barTooltip.replaceChildren();
+      const titulo = document.createElement('div');
+      titulo.className = 'fw-semibold';
+      titulo.textContent = hit.producto.nombre;
+      const valor = document.createElement('div');
+      valor.textContent = `${hit.serie.nombre}: ${hit.serie.val} uds`;
+      barTooltip.append(titulo, valor);
+      barTooltip.style.left = `${hit.x + hit.w / 2 + barCanvas.offsetLeft}px`;
+      barTooltip.style.top = `${hit.y + barCanvas.offsetTop}px`;
+      barTooltip.classList.add('show');
+    });
+
+    barCanvas.addEventListener('mouseleave', () => barTooltip.classList.remove('show'));
+
+    let resizeTimer = null;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => redibujarGraficos(false), 120);
+    });
+
+    // =======================================================
+    // ACTIVIDAD RECIENTE
+    // =======================================================
+    const TIPOS_ACTIVIDAD = {
+      entrada: { icon: 'bi-box-arrow-in-down', tone: 'tone-success', titulo: 'Entrada de stock' },
+      salida: { icon: 'bi-box-arrow-up', tone: 'tone-danger', titulo: 'Salida de stock' },
+      usuario: { icon: 'bi-person-gear', tone: 'tone-accent', titulo: 'Usuarios' },
+      config: { icon: 'bi-shield-lock', tone: 'tone-dark', titulo: 'Configuración' }
+    };
+
+    function registrarActividad(tipo, detalle) {
+      actividad.unshift({ tipo, detalle, fecha: new Date() });
+      if (actividad.length > MAX_ACTIVIDAD) actividad.length = MAX_ACTIVIDAD;
+      guardarEstado();
+      renderActividad();
+    }
+
+    function formatearHora(fecha) {
+      const hoy = new Date();
+      const mismoDia = fecha.toDateString() === hoy.toDateString();
+      return mismoDia
+        ? fecha.toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' })
+        : fecha.toLocaleDateString('es', { day: '2-digit', month: 'short' });
+    }
+
+    function renderActividad() {
+      const ul = document.getElementById('activityList');
+      ul.replaceChildren();
+      const visibles = actividad.filter(a => TIPOS_ACTIVIDAD[a.tipo]);
+      visibles.forEach(a => {
+        const meta = TIPOS_ACTIVIDAD[a.tipo];
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <span class="activity-icon ${meta.tone}"><i class="bi ${meta.icon}"></i></span>
+          <div class="flex-grow-1 min-w-0">
+            <div class="fw-semibold">${meta.titulo}</div>
+            <div class="text-muted small text-truncate detalle"></div>
+          </div>
+          <span class="activity-time">${formatearHora(a.fecha)}</span>
+        `;
+        li.querySelector('.detalle').textContent = a.detalle;
+        ul.appendChild(li);
+      });
+      document.getElementById('activityEmpty').classList.toggle('d-none', visibles.length > 0);
+    }
+
+    document.getElementById('clearActivity').addEventListener('click', function () {
+      actividad.length = 0;
+      guardarEstado();
+      renderActividad();
+    });
+
+    // =======================================================
+    // USUARIOS (datos reales desde StudioUserStore)
+    // =======================================================
+    function leerUsuarios() {
+      try {
+        return StudioUserStore.getUsers();
+      } catch (error) {
+        mostrarMensaje(error.message, 'danger');
+        return [];
+      }
+    }
+
+    function renderUsuarios() {
+      const users = leerUsuarios();
+      const activos = users.filter(StudioUserStore.isActive).length;
+
+      animarNumero(document.getElementById('statUsuarios'), users.length);
+      document.getElementById('trendUsuarios').innerHTML = `<i class="bi bi-person-fill-check"></i>${activos}`;
+      document.getElementById('kpiBarUsuarios').style.width = users.length ? `${Math.round((activos / users.length) * 100)}%` : '0%';
+
+      // Lista del equipo
+      const teamList = document.getElementById('teamList');
+      teamList.replaceChildren();
+      if (users.length === 0) {
+        const li = document.createElement('li');
+        li.className = 'text-muted small text-center py-2';
+        li.textContent = 'No hay usuarios registrados.';
+        teamList.appendChild(li);
+      }
+      users.slice(0, 5).forEach(u => {
+        const activo = StudioUserStore.isActive(u);
+        const li = document.createElement('li');
+        li.className = 'd-flex align-items-center gap-2';
+        li.innerHTML = `
+          <span class="user-initials ${activo ? (StudioUserStore.isSuperAdmin(u) ? 'text-bg-dark' : 'tone-accent') : 'text-bg-secondary'}"></span>
+          <div class="flex-grow-1 min-w-0">
+            <div class="fw-semibold text-truncate nombre"></div>
+            <div class="text-muted text-truncate rol fs-xs"></div>
+          </div>
+          <span class="soft-badge ${activo ? 'soft-success' : 'soft-neutral'}">${activo ? 'Activo' : 'Inactivo'}</span>
+        `;
+        li.querySelector('.user-initials').textContent = StudioUserStore.getInitials(u);
+        li.querySelector('.nombre').textContent = `${u.nombre} ${u.apellido}`;
+        li.querySelector('.rol').textContent = u.roles.join(', ') || 'Sin rol';
+        teamList.appendChild(li);
+      });
+      if (users.length > 5) {
+        const li = document.createElement('li');
+        li.className = 'text-muted small text-center';
+        li.textContent = `+${users.length - 5} usuarios más`;
+        teamList.appendChild(li);
+      }
+
+      // Select de acciones rápidas
+      const sel = document.getElementById('selectUserRestar');
+      const prev = sel.value;
+      sel.replaceChildren(...users.map(u => {
+        const opt = document.createElement('option');
+        opt.value = u.id;
+        opt.textContent = `${u.nombre} ${u.apellido} · ${StudioUserStore.isActive(u) ? 'activo' : 'inactivo'}`;
+        return opt;
+      }));
+      if (prev && users.some(u => u.id === prev)) sel.value = prev;
+    }
+
+    document.getElementById('formRestarUsuario').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const errorEl = document.getElementById('restarError');
+      setError(errorEl, '');
+      const id = document.getElementById('selectUserRestar').value;
+      const accion = document.getElementById('selectAccionRestar').value;
+      const users = leerUsuarios();
+      const user = users.find(u => u.id === id);
+      if (!user) {
+        setError(errorEl, 'Selecciona un usuario válido.');
+        return;
+      }
+
+      let next;
+      if (accion === 'eliminar') next = users.filter(u => u.id !== id);
+      else next = users.map(u => u.id === id ? Object.assign({}, u, { activo: accion === 'activar' }) : u);
+
+      const guard = StudioUserStore.validateAdminGuard(next);
+      if (guard) {
+        setError(errorEl, guard);
+        return;
+      }
+
+      const nombre = `${user.nombre} ${user.apellido}`;
+      const ejecutar = () => {
+        StudioUserStore.saveUsers(next);
+        renderUsuarios();
+        const textos = { activar: 'activado', desactivar: 'desactivado', eliminar: 'eliminado' };
+        registrarActividad('usuario', `${nombre} ${textos[accion]}`);
+        mostrarMensaje(`Usuario ${nombre} ${textos[accion]}.`);
+      };
+
+      if (accion === 'eliminar') {
+        confirmar('Eliminar usuario', `Se eliminará a ${nombre} (${id}). Esta acción no se puede deshacer.`, ejecutar);
+      } else {
+        ejecutar();
+      }
+    });
+
+    window.addEventListener('storage', function (event) {
+      if (event.key === 'studioPlayUsers') renderUsuarios();
+    });
+
+    // =======================================================
+    // CONFIGURACIÓN
+    // =======================================================
+    document.getElementById('formPassword').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const errorEl = document.getElementById('pwdError');
+      const actual = document.getElementById('pwdActual').value;
+      const nueva = document.getElementById('pwdNueva').value;
+      const confirmarPwd = document.getElementById('pwdConfirmar').value;
+
+      if (!actual) return setError(errorEl, 'Ingresa tu clave actual.');
+      if (nueva.length < 6) return setError(errorEl, 'La nueva clave debe tener al menos 6 caracteres.');
+      if (nueva !== confirmarPwd) return setError(errorEl, 'Las claves nuevas no coinciden.');
+      if (nueva === actual) return setError(errorEl, 'La nueva clave debe ser distinta de la actual.');
+
+      setError(errorEl, '');
+      this.reset();
+      registrarActividad('config', 'Contraseña actualizada');
+      mostrarMensaje('Contraseña actualizada con éxito.');
+    });
+
+    document.getElementById('formEmail').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const errorEl = document.getElementById('emailError');
+      const input = document.getElementById('newEmailInput');
+      const nuevoEmail = input.value.trim().toLowerCase();
+      const actual = document.getElementById('currentEmailInput').value;
+
+      if (!nuevoEmail || !input.checkValidity()) return setError(errorEl, 'Ingresa un correo válido.');
+      if (nuevoEmail === actual) return setError(errorEl, 'Ese ya es tu correo actual.');
+
+      setError(errorEl, '');
+      document.getElementById('currentEmailInput').value = nuevoEmail;
+      input.value = '';
+      registrarActividad('config', `Correo cambiado a ${nuevoEmail}`);
+      mostrarMensaje('Correo actualizado a: ' + nuevoEmail);
+    });
+
+    // =======================================================
+    // NAVEGACIÓN ENTRE SECCIONES
+    // =======================================================
+    const panels = document.querySelectorAll('.section-panel');
+    const filterPills = document.querySelectorAll('.filter-pill');
+    const dashboardScroll = document.getElementById('dashboardScroll');
+
     function mostrarSeccion(seccion) {
       if (!seccion || seccion === 'todos') {
         filtrarPorGrupo('todos');
         return;
       }
+      const destino = document.getElementById(seccion);
+      if (!destino || !destino.classList.contains('section-panel')) {
+        filtrarPorGrupo('todos');
+        return;
+      }
       filterPills.forEach(btn => btn.classList.remove('active'));
-      panels.forEach(p => {
-        if (p.id === seccion) {
-          p.classList.remove('d-none');
-        } else {
-          p.classList.add('d-none');
-        }
-      });
+      panels.forEach(p => p.classList.toggle('d-none', p !== destino));
+      dashboardScroll.scrollTo({ top: 0 });
     }
 
     function filtrarPorGrupo(grupo) {
-      filterPills.forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.filter === grupo);
-      });
-
-      if (grupo === 'todos') {
-        panels.forEach(p => p.classList.remove('d-none'));
-        setTimeout(redibujarGraficos, 20);
-        return;
-      }
-
+      filterPills.forEach(btn => btn.classList.toggle('active', btn.dataset.filter === grupo));
       panels.forEach(p => {
-        if (p.dataset.group === grupo) {
-          p.classList.remove('d-none');
-        } else {
-          p.classList.add('d-none');
-        }
+        p.classList.toggle('d-none', grupo !== 'todos' && p.dataset.group !== grupo);
       });
+      if (grupo === 'todos') setTimeout(() => redibujarGraficos(false), 20);
+      dashboardScroll.scrollTo({ top: 0 });
     }
 
-    filterPills.forEach(btn => {
-      btn.addEventListener('click', () => {
-        filtrarPorGrupo(btn.dataset.filter);
+    filterPills.forEach(btn => btn.addEventListener('click', () => filtrarPorGrupo(btn.dataset.filter)));
+
+    document.querySelectorAll('[data-group-target]').forEach(card => {
+      const ir = () => filtrarPorGrupo(card.dataset.groupTarget);
+      card.addEventListener('click', ir);
+      card.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); ir(); }
       });
     });
 
-    // Escuchar mensajes enviados desde el iframe de sidebar.html
+    // Botones del encabezado: llevan al formulario y lo enfocan
+    document.querySelectorAll('[data-goto]').forEach(btn => {
+      btn.addEventListener('click', function () {
+        const destino = document.getElementById(btn.dataset.goto);
+        if (!destino) return;
+        destino.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const input = destino.querySelector('input[type="number"]');
+        if (input) setTimeout(() => input.focus({ preventScroll: true }), 350);
+      });
+    });
+
     window.addEventListener('message', function (event) {
-      if (event.data && event.data.type === 'navigate-section') {
+      if (!event.data || typeof event.data !== 'object') return;
+
+      // ---- Mensajes del navbar ----
+      if (event.source === navbarFrame.contentWindow) {
+        if (event.data.type === 'navbar-login-request') {
+          loginModal.show();
+        } else if (event.data.type === 'navbar-dropdown') {
+          navbarFrame.classList.toggle('dropdown-open', Boolean(event.data.open));
+        } else if (event.data.type === 'navbar-session-changed') {
+          if (event.data.session) StudioSession.set(event.data.session);
+          renderSesion();
+        }
+        return;
+      }
+
+      // ---- Mensajes del sidebar ----
+      if (event.source !== sidebarFrame.contentWindow) return;
+      if (event.data.type === 'sidebar-state') {
+        sidebarFrame.classList.toggle('pinned', Boolean(event.data.pinned));
+        sidebarFrame.classList.toggle('peek', Boolean(event.data.peek));
+        return;
+      }
+      if (event.data.type === 'navigate-section') {
         if (event.data.section === 'usuario-admin') {
           window.location.href = './useradmin.html';
           return;
         }
         mostrarSeccion(event.data.section);
-      } else if (event.data && event.data.type === 'sidebar-resized') {
-        setTimeout(redibujarGraficos, 260);
+      } else if (event.data.type === 'sidebar-resized') {
+        setTimeout(() => redibujarGraficos(false), 260);
       }
     });
 
-    redibujarGraficos();
+    // =======================================================
+    // INICIO
+    // =======================================================
+    renderSesion();
+    poblarSelectsProductos();
+    renderTablaProductos();
+    actualizarKPIsInventario();
+    actualizarResumenHero();
+    renderUsuarios();
+    renderActividad();
 
-    // Filtros combinados en la Tabla de Productos
-    function filtrarTablaProductos() {
-      const q = document.getElementById('buscarProductoInput').value.toLowerCase();
-      const cat = document.getElementById('filtroCategoriaSelect').value;
-      document.querySelectorAll('#productosTableBody tr').forEach(tr => {
-        const matchTexto = tr.textContent.toLowerCase().includes(q);
-        const matchCat = !cat || tr.dataset.cat === cat;
-        tr.style.display = (matchTexto && matchCat) ? '' : 'none';
-      });
+    window.addEventListener('storage', function (event) {
+      if (event.key === StudioSession.KEY) renderSesion();
+    });
+
+    // Abrir la sección indicada en la URL: al cargar (p. ej. desde useradmin.html)
+    // y cuando cambia el #hash (p. ej. "Configuración" en el menú del navbar)
+    function seccionDesdeHash() {
+      let seccion = '';
+      try {
+        seccion = decodeURIComponent(window.location.hash.replace('#', ''));
+      } catch (e) {
+        seccion = '';
+      }
+      if (seccion) mostrarSeccion(seccion);
     }
 
-    document.getElementById('buscarProductoInput').addEventListener('input', filtrarTablaProductos);
-    document.getElementById('filtroCategoriaSelect').addEventListener('change', filtrarTablaProductos);
+    window.addEventListener('hashchange', seccionDesdeHash);
+    seccionDesdeHash();
 
-    // Ajuste Rápido (+1 / -1) directamente en la Tabla
-    window.ajusteRapido = function (codigo, delta) {
-      const tr = document.querySelector(`tr[data-codigo="${codigo}"]`);
-      if (!tr) return;
-      const cell = tr.querySelector('.stock-cell');
-      const actual = parseInt(cell.textContent, 10) || 0;
-      const nuevo = Math.max(0, actual + delta);
-      cell.textContent = nuevo;
-
-      if (delta > 0) {
-        tr.dataset.entradas = (parseInt(tr.dataset.entradas, 10) || 0) + delta;
-        const statE = document.getElementById('statEntradas');
-        statE.textContent = parseInt(statE.textContent, 10) + delta;
-      } else if (actual > 0) {
-        tr.dataset.salidas = (parseInt(tr.dataset.salidas, 10) || 0) + Math.abs(delta);
-        const statS = document.getElementById('statSalidas');
-        statS.textContent = parseInt(statS.textContent, 10) + Math.abs(delta);
-      }
-
-      actualizarTotalStock();
-      mostrarMensaje(`${delta > 0 ? 'Entrada (+1)' : 'Salida (-1)'} aplicada en ${codigo}`);
-    };
-
-    function actualizarTotalStock() {
-      let total = 0;
-      document.querySelectorAll('#productosTableBody tr').forEach(tr => {
-        const val = parseInt(tr.querySelector('.stock-cell').textContent, 10) || 0;
-        total += val;
-        const bar = tr.querySelector('.stock-bar');
-        const badge = tr.querySelector('.status-badge');
-        if (bar) bar.style.width = Math.min(100, Math.round((val / 80) * 100)) + '%';
-        if (badge) {
-          if (val === 0) {
-            badge.className = 'badge text-bg-danger status-badge';
-            badge.textContent = 'Agotado';
-          } else if (val < 15) {
-            badge.className = 'badge text-bg-warning status-badge';
-            badge.textContent = 'Bajo';
-          } else {
-            badge.className = 'badge text-bg-success status-badge';
-            badge.textContent = 'Disponible';
-          }
-        }
-      });
-      document.getElementById('statTotalProductos').textContent = total;
-      redibujarGraficos();
-    }
-
-    document.getElementById('formEntrada').addEventListener('submit', function (e) {
-      e.preventDefault();
-      const codigo = document.getElementById('entradaProducto').value;
-      const cant = parseInt(document.getElementById('entradaCantidad').value, 10) || 0;
-      const tr = document.querySelector(`tr[data-codigo="${codigo}"]`);
-      if (tr) {
-        const cell = tr.querySelector('.stock-cell');
-        cell.textContent = parseInt(cell.textContent, 10) + cant;
-        tr.dataset.entradas = (parseInt(tr.dataset.entradas, 10) || 0) + cant;
-      }
-      const statEntradas = document.getElementById('statEntradas');
-      statEntradas.textContent = parseInt(statEntradas.textContent, 10) + cant;
-      actualizarTotalStock();
-      mostrarMensaje(`Entrada registrada: +${cant} uds en ${codigo}`);
-    });
-
-    document.getElementById('formSalida').addEventListener('submit', function (e) {
-      e.preventDefault();
-      const codigo = document.getElementById('salidaProducto').value;
-      const cant = parseInt(document.getElementById('salidaCantidad').value, 10) || 0;
-      const tr = document.querySelector(`tr[data-codigo="${codigo}"]`);
-      if (tr) {
-        const cell = tr.querySelector('.stock-cell');
-        const actual = parseInt(cell.textContent, 10);
-        cell.textContent = Math.max(0, actual - cant);
-        tr.dataset.salidas = (parseInt(tr.dataset.salidas, 10) || 0) + cant;
-      }
-      const statSalidas = document.getElementById('statSalidas');
-      statSalidas.textContent = parseInt(statSalidas.textContent, 10) + cant;
-      actualizarTotalStock();
-      mostrarMensaje(`Salida registrada: -${cant} uds en ${codigo}`);
-    });
-
-    document.getElementById('formAddAdmin').addEventListener('submit', function (e) {
-      e.preventDefault();
-      const nombre = document.getElementById('adminNameInput').value;
-      const tbody = document.getElementById('adminTableBody');
-      const tr = document.createElement('tr');
-      tr.dataset.user = nombre;
-      tr.innerHTML = `
-        <td><img src="../assets/imagenes/user.jpg" alt="" class="avatar-sm me-1">${nombre}</td>
-        <td class="text-end"><span class="badge text-bg-success">Admin</span></td>
-      `;
-      tbody.appendChild(tr);
-
-      const selectRestar = document.getElementById('selectUserRestar');
-      const opt = document.createElement('option');
-      opt.value = nombre;
-      opt.textContent = `${nombre} (Admin)`;
-      selectRestar.appendChild(opt);
-
-      document.getElementById('statUsuarios').textContent = tbody.querySelectorAll('tr').length;
-      this.reset();
-      mostrarMensaje('Administrador "' + nombre + '" agregado.');
-    });
-
-    document.getElementById('formRestarUsuario').addEventListener('submit', function (e) {
-      e.preventDefault();
-      const user = document.getElementById('selectUserRestar').value;
-      const accion = document.getElementById('selectAccionRestar').value;
-      if (accion === 'Eliminar de lista') {
-        const row = document.querySelector(`#adminTableBody tr[data-user="${user}"]`);
-        if (row) row.remove();
-        const opt = document.querySelector(`#selectUserRestar option[value="${user}"]`);
-        if (opt) opt.remove();
-        document.getElementById('statUsuarios').textContent =
-          document.querySelectorAll('#adminTableBody tr').length;
-      }
-      mostrarMensaje(`${accion} aplicado a ${user}`);
-    });
-
-    document.getElementById('formPassword').addEventListener('submit', function (e) {
-      e.preventDefault();
-      this.reset();
-      mostrarMensaje('Password actualizado con éxito.');
-    });
-
-    document.getElementById('formEmail').addEventListener('submit', function (e) {
-      e.preventDefault();
-      const nuevoEmail = document.getElementById('newEmailInput').value;
-      document.getElementById('currentEmailInput').value = nuevoEmail;
-      document.getElementById('newEmailInput').value = '';
-      mostrarMensaje('Email actualizado a: ' + nuevoEmail);
-    });
+    redibujarGraficos(true);
   </script>
 </body>
 </html>

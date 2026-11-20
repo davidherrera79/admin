@@ -6,7 +6,8 @@
   <title>Studio play - Sidebar</title>
   <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
   <link rel="stylesheet" href="../assets/css/sidebar.css">
-  <link rel="stylesheet" href="../../node_modules/bootstrap-icons/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../assets/icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../assets/css/theme.css">
 </head>
 <body>
 
@@ -14,9 +15,9 @@
     <div class="w-100">
       <!-- Barra superior para retraer o expandir el Sidebar -->
       <div class="sidebar-toggle-bar">
-        <span class="fw-bold text-muted sidebar-label" style="font-size: 0.72rem; letter-spacing: 0.04em;">MENÚ</span>
-        <button type="button" class="sidebar-toggle-btn" id="collapseSidebarBtn" title="Retraer / Expandir Sidebar">
-          <i class="bi bi-chevron-bar-left" id="collapseSidebarIcon"></i>
+        <span class="fw-bold text-muted sidebar-label sidebar-menu-title">MENÚ</span>
+        <button type="button" class="sidebar-toggle-btn" id="collapseSidebarBtn" title="Fijar menú abierto" aria-pressed="false">
+          <i class="bi bi-pin-angle" id="collapseSidebarIcon"></i>
         </button>
       </div>
 
@@ -112,7 +113,7 @@
       <img src="../assets/imagenes/user.jpg" alt="Avatar Usuario" class="sidebar-user-avatar">
       <div class="overflow-hidden sidebar-user-info">
         <div class="fw-bold small text-truncate">Admin Studio</div>
-        <div class="text-muted text-truncate" style="font-size: 0.7rem;">Sesión activa</div>
+        <div class="text-muted text-truncate fs-xs">Sesión activa</div>
       </div>
     </div>
   </aside>
@@ -141,25 +142,100 @@
       });
     });
 
-    function alternarSidebar() {
-      const isCollapsed = document.body.classList.toggle('collapsed');
-      collapseIcon.className = isCollapsed ? 'bi bi-chevron-bar-right' : 'bi bi-chevron-bar-left';
+    // =======================================================
+    // RETRAER AUTOMÁTICO
+    // - Por defecto el menú está retraído (solo iconos).
+    // - Se expande solo al pasar el ratón o al navegar con teclado,
+    //   flotando sobre el contenido, y se retrae al salir.
+    // - El botón de "pin" lo deja fijo abierto (se recuerda).
+    // =======================================================
+    const PIN_KEY = 'studioSidebarPinned';
+    const EXPAND_DELAY = 120;
+    const COLLAPSE_DELAY = 300;
+    const sidebarEl = document.querySelector('.sidebar-studio');
+    const isEmbedded = window.parent && window.parent !== window;
 
-      if (window.frameElement) {
-        window.frameElement.classList.toggle('collapsed', isCollapsed);
-      }
-      if (window.parent && window.parent !== window) {
-        window.parent.postMessage({ type: 'sidebar-resized' }, '*');
+    function leerPin() {
+      try { return window.localStorage.getItem(PIN_KEY) === '1'; } catch (e) { return false; }
+    }
+
+    function guardarPin(valor) {
+      try { window.localStorage.setItem(PIN_KEY, valor ? '1' : '0'); } catch (e) { /* sin almacenamiento */ }
+    }
+
+    let pinned = leerPin();
+    let hovering = false;
+    let pointerInside = false;
+    let hoverTimer = null;
+
+    function aplicarEstado(cambioDeAncho) {
+      const expanded = pinned || hovering;
+      document.body.classList.toggle('collapsed', !expanded);
+
+      collapseIcon.className = pinned ? 'bi bi-pin-angle-fill' : 'bi bi-pin-angle';
+      collapseBtn.title = pinned ? 'Desfijar (retraer automáticamente)' : 'Fijar menú abierto';
+      collapseBtn.setAttribute('aria-pressed', String(pinned));
+      collapseBtn.classList.toggle('pinned', pinned);
+
+      if (isEmbedded) {
+        window.parent.postMessage({ type: 'sidebar-state', pinned: pinned, peek: hovering && !pinned }, '*');
+        // Solo cuando cambia el ancho real del layout (fijar/desfijar) hace falta recalcular el contenido
+        if (cambioDeAncho) {
+          window.parent.postMessage({ type: 'sidebar-resized' }, '*');
+        }
       }
     }
 
-    collapseBtn.addEventListener('click', alternarSidebar);
+    function programarHover(valor, delay) {
+      clearTimeout(hoverTimer);
+      hoverTimer = setTimeout(function () {
+        if (hovering === valor) return;
+        hovering = valor;
+        aplicarEstado(false);
+      }, delay);
+    }
 
-    window.addEventListener('message', function (event) {
-      if (event.data === 'toggle-sidebar') {
-        alternarSidebar();
-      }
+    function alternarPin() {
+      pinned = !pinned;
+      guardarPin(pinned);
+      // al desfijar con el ratón encima, se mantiene abierto hasta que salga
+      aplicarEstado(true);
+    }
+
+    sidebarEl.addEventListener('pointerenter', function (e) {
+      if (e.pointerType !== 'mouse' && e.pointerType !== 'pen') return;
+      pointerInside = true;
+      programarHover(true, EXPAND_DELAY);
     });
+
+    sidebarEl.addEventListener('pointerleave', function (e) {
+      if (e.pointerType !== 'mouse' && e.pointerType !== 'pen') return;
+      pointerInside = false;
+      // Se retrae al salir el ratón aunque un enlace haya quedado con foco por un clic
+      programarHover(false, COLLAPSE_DELAY);
+    });
+
+    // Al salir el ratón del iframe por completo (p. ej. moviéndose rápido)
+    document.documentElement.addEventListener('mouseleave', function () {
+      pointerInside = false;
+      programarHover(false, COLLAPSE_DELAY);
+    });
+
+    // Accesibilidad: expandir al navegar con teclado dentro del menú
+    sidebarEl.addEventListener('focusin', function () {
+      programarHover(true, 0);
+    });
+
+    // Al perder el foco solo se retrae si el ratón no está encima
+    sidebarEl.addEventListener('focusout', function () {
+      setTimeout(function () {
+        if (!pointerInside && !sidebarEl.contains(document.activeElement)) programarHover(false, 0);
+      }, 0);
+    });
+
+    collapseBtn.addEventListener('click', alternarPin);
+
+    aplicarEstado(false);
   </script>
 </body>
 </html>

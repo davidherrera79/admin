@@ -5,57 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Studio play - Registrar Usuario Nuevo</title>
   <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
-  <link rel="stylesheet" href="../../node_modules/bootstrap-icons/font/bootstrap-icons.min.css">
-  <style>
-    body {
-      background-color: #f8fafc;
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      font-size: 0.85rem;
-    }
-
-    .form-card {
-      border: 1px solid #e2e8f0;
-      border-radius: 0.75rem;
-      background-color: #ffffff;
-      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
-    }
-
-    .role-card {
-      border: 1px solid #e2e8f0;
-      border-radius: 0.5rem;
-      padding: 0.5rem 0.85rem;
-      background-color: #f8fafc;
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
-
-    .role-card:hover {
-      background-color: #f1f5f9;
-      border-color: #cbd5e1;
-    }
-
-    .role-card:has(input:checked) {
-      background-color: #eef2ff;
-      border-color: #6366f1;
-      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
-      font-weight: 600;
-    }
-
-    .edit-banner {
-      background-color: #eff6ff;
-      border: 1px solid #bfdbfe;
-      border-radius: 0.5rem;
-    }
-  </style>
+  <link rel="stylesheet" href="../assets/icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../assets/css/theme.css">
+  <link rel="stylesheet" href="../assets/css/usernew.css">
 </head>
 <body>
   <main class="container py-3">
-    <div class="card form-card mx-auto" style="max-width: 760px;">
+    <div class="card form-card mx-auto">
       <div class="card-body p-3 p-md-4">
         <!-- Encabezado -->
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 pb-3 mb-3 border-bottom">
           <div class="d-flex align-items-center gap-2">
-            <img src="../assets/imagenes/logo.jpg" alt="Studio play" style="height: 34px; border-radius: 6px;">
+            <img src="../assets/imagenes/logo.jpg" alt="Studio play" class="form-logo">
             <div>
               <h1 class="h5 fw-bold mb-0" id="formTitle">
                 <i class="bi bi-person-plus-fill me-1"></i>Registro de Usuarios Nuevos
@@ -119,7 +80,7 @@
           </div>
 
           <div class="row g-3 mb-3">
-            <div class="col-md-7">
+            <div class="col-12">
               <label for="userEmail" class="form-label fw-semibold small mb-1">Correo electrónico (email)</label>
               <div class="input-group input-group-sm has-validation">
                 <span class="input-group-text bg-light"><i class="bi bi-envelope-at"></i></span>
@@ -127,16 +88,39 @@
                 <div class="invalid-feedback">Ingresa un correo electrónico válido.</div>
               </div>
             </div>
+          </div>
 
-            <div class="col-md-5" id="passwordGroup">
-              <label for="userPassword" class="form-label fw-semibold small mb-1">Contraseña de acceso</label>
-              <div class="input-group input-group-sm has-validation">
-                <span class="input-group-text bg-light"><i class="bi bi-key"></i></span>
-                <input type="password" class="form-control" id="userPassword" minlength="6" placeholder="Mínimo 6 caracteres" autocomplete="new-password" required>
-                <button type="button" class="btn btn-outline-secondary" id="togglePassword" aria-label="Mostrar contraseña" title="Mostrar / ocultar">
-                  <i class="bi bi-eye"></i>
-                </button>
-                <div class="invalid-feedback">Mínimo 6 caracteres.</div>
+          <!-- Contraseña: obligatoria al registrar; opcional al editar -->
+          <div class="password-section mb-3">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+              <span class="fw-semibold small"><i class="bi bi-key me-1"></i>Contraseña de acceso</span>
+              <div class="form-check form-switch m-0 d-none" id="changePasswordWrap">
+                <input class="form-check-input" type="checkbox" role="switch" id="changePasswordSwitch">
+                <label class="form-check-label small fw-semibold" for="changePasswordSwitch">Cambiar contraseña</label>
+              </div>
+            </div>
+            <p class="text-muted small mb-2 d-none" id="passwordStatus"></p>
+
+            <div class="row g-3" id="passwordFields">
+              <div class="col-md-6">
+                <label for="userPassword" class="form-label small mb-1">Nueva contraseña</label>
+                <div class="input-group input-group-sm has-validation">
+                  <span class="input-group-text bg-light"><i class="bi bi-lock"></i></span>
+                  <input type="password" class="form-control" id="userPassword" minlength="6" placeholder="Mínimo 6 caracteres" autocomplete="new-password" required>
+                  <button type="button" class="btn btn-outline-secondary" id="togglePassword" aria-label="Mostrar contraseñas" title="Mostrar / ocultar">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                  <div class="invalid-feedback">Mínimo 6 caracteres.</div>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <label for="userPasswordConfirm" class="form-label small mb-1">Confirmar contraseña</label>
+                <div class="input-group input-group-sm has-validation">
+                  <span class="input-group-text bg-light"><i class="bi bi-shield-check"></i></span>
+                  <input type="password" class="form-control" id="userPasswordConfirm" placeholder="Repite la contraseña" autocomplete="new-password" required>
+                  <div class="invalid-feedback">Las contraseñas no coinciden.</div>
+                </div>
               </div>
             </div>
           </div>
@@ -201,40 +185,87 @@
     const roleError = document.getElementById('roleError');
     const roleInputs = Array.from(document.querySelectorAll('input[name="roles"]'));
     const saveAndStayButton = document.getElementById('saveAndStayButton');
-    const passwordGroup = document.getElementById('passwordGroup');
     const passwordInput = document.getElementById('userPassword');
+    const passwordConfirmInput = document.getElementById('userPasswordConfirm');
+    const passwordFields = document.getElementById('passwordFields');
+    const passwordStatus = document.getElementById('passwordStatus');
+    const changePasswordWrap = document.getElementById('changePasswordWrap');
+    const changePasswordSwitch = document.getElementById('changePasswordSwitch');
+    const saveUserButton = document.getElementById('saveUserButton');
     const editBanner = document.getElementById('editBanner');
     const cancelEditButton = document.getElementById('cancelEditButton');
     const textInputs = ['firstName', 'lastName'].map(id => document.getElementById(id));
-    const isEmbedded = window.frameElement && window.frameElement.id === 'frameUserNew' && window.parent;
+    // Se usa window.name (atributo name del iframe) porque frameElement es null
+    // cuando las páginas se abren como archivos locales (file://).
+    const isEmbedded = window.parent !== window && window.name === 'frameUserNew';
     const editId = new URLSearchParams(window.location.search).get('id');
     let currentUserId = null;
+
+    // ---------- Contraseña ----------
+    // Muestra u oculta los campos y los hace obligatorios solo cuando se van a usar
+    function setPasswordFieldsActive(activo) {
+      passwordFields.classList.toggle('d-none', !activo);
+      passwordInput.required = activo;
+      passwordConfirmInput.required = activo;
+      if (!activo) {
+        passwordInput.value = '';
+        passwordConfirmInput.value = '';
+        passwordConfirmInput.setCustomValidity('');
+      }
+    }
+
+    function passwordFieldsActive() {
+      return !passwordFields.classList.contains('d-none');
+    }
+
+    function validarConfirmacion() {
+      const coincide = passwordConfirmInput.value === passwordInput.value;
+      passwordConfirmInput.setCustomValidity(coincide ? '' : 'Las contraseñas no coinciden.');
+    }
+
+    passwordInput.addEventListener('input', validarConfirmacion);
+    passwordConfirmInput.addEventListener('input', validarConfirmacion);
+
+    changePasswordSwitch.addEventListener('change', function () {
+      setPasswordFieldsActive(this.checked);
+      if (this.checked) passwordInput.focus();
+    });
 
     function setEditMode(user) {
       currentUserId = user.id;
       userIdInput.value = user.id;
       formTitle.innerHTML = '<i class="bi bi-pencil-square me-1"></i>Editar Usuario ';
       formTitle.append(user.id);
-      document.getElementById('saveUserButton').innerHTML = '<i class="bi bi-check2-circle me-1"></i>Guardar Cambios';
+      saveUserButton.innerHTML = '<i class="bi bi-check2-circle me-1"></i>Guardar Cambios';
       saveAndStayButton.classList.add('d-none');
       document.getElementById('resetButton').classList.add('d-none');
       cancelEditButton.classList.remove('d-none');
       editBanner.classList.remove('d-none');
-      // La contraseña no se modifica desde la edición
-      passwordGroup.classList.add('d-none');
-      passwordInput.required = false;
+
+      // Al editar, la contraseña solo se cambia si se activa el interruptor
+      changePasswordWrap.classList.remove('d-none');
+      changePasswordSwitch.checked = false;
+      setPasswordFieldsActive(false);
+      passwordStatus.textContent = StudioUserStore.hasPassword(user)
+        ? 'Este usuario ya tiene contraseña. Activa «Cambiar contraseña» para asignarle una nueva.'
+        : 'Este usuario aún no tiene contraseña. Activa «Cambiar contraseña» para asignarle una.';
+      passwordStatus.classList.remove('d-none');
     }
 
     function setNewMode() {
       currentUserId = null;
       formTitle.innerHTML = '<i class="bi bi-person-plus-fill me-1"></i>Registro de Usuarios Nuevos';
-      document.getElementById('saveUserButton').innerHTML = '<i class="bi bi-person-check-fill me-1"></i>Registrar Usuario';
+      saveUserButton.innerHTML = '<i class="bi bi-person-check-fill me-1"></i>Registrar Usuario';
       saveAndStayButton.classList.remove('d-none');
       document.getElementById('resetButton').classList.remove('d-none');
       cancelEditButton.classList.add('d-none');
       editBanner.classList.add('d-none');
-      passwordGroup.classList.remove('d-none');
-      passwordInput.required = true;
+
+      // Al registrar, la contraseña es obligatoria
+      changePasswordWrap.classList.add('d-none');
+      changePasswordSwitch.checked = false;
+      passwordStatus.classList.add('d-none');
+      setPasswordFieldsActive(true);
       userForm.reset();
       userForm.classList.remove('was-validated');
       roleError.classList.add('d-none');
@@ -250,11 +281,12 @@
       });
     });
 
+    // Mostrar / ocultar ambas contraseñas a la vez
     document.getElementById('togglePassword').addEventListener('click', function () {
       const show = passwordInput.type === 'password';
-      passwordInput.type = show ? 'text' : 'password';
+      passwordInput.type = passwordConfirmInput.type = show ? 'text' : 'password';
       this.innerHTML = show ? '<i class="bi bi-eye-slash"></i>' : '<i class="bi bi-eye"></i>';
-      this.setAttribute('aria-label', show ? 'Ocultar contraseña' : 'Mostrar contraseña');
+      this.setAttribute('aria-label', show ? 'Ocultar contraseñas' : 'Mostrar contraseñas');
     });
 
     userActiveSwitch.addEventListener('change', function () {
@@ -306,7 +338,7 @@
       }
     } catch (error) {
       showError(error.message);
-      document.getElementById('saveUserButton').disabled = true;
+      saveUserButton.disabled = true;
     }
 
     roleInputs.forEach(input => {
@@ -317,8 +349,14 @@
       });
     });
 
-    function guardarUsuario(redirigirALista) {
+    function setGuardando(guardando) {
+      saveUserButton.disabled = guardando;
+      saveAndStayButton.disabled = guardando;
+    }
+
+    async function guardarUsuario(redirigirALista) {
       textInputs.forEach(input => input.setCustomValidity(input.value.trim() === '' ? 'vacío' : ''));
+      validarConfirmacion();
       userForm.classList.add('was-validated');
       roleError.classList.toggle('d-none', getSelectedRoles().length > 0);
       userFormError.classList.add('d-none');
@@ -326,7 +364,7 @@
 
       if (!userForm.checkValidity() || getSelectedRoles().length === 0) return;
 
-      const user = {
+      const datos = {
         id: currentUserId || userIdInput.value,
         nombre: document.getElementById('firstName').value.trim(),
         apellido: document.getElementById('lastName').value.trim(),
@@ -334,45 +372,55 @@
         roles: getSelectedRoles(),
         activo: userActiveSwitch.checked
       };
+      const cambiaPassword = passwordFieldsActive();
 
+      setGuardando(true);
       try {
+        // El cifrado es asíncrono: se hace antes de leer y escribir la lista
+        const credencial = cambiaPassword ? await StudioUserStore.hashPassword(passwordInput.value) : null;
+
         const users = StudioUserStore.getUsers();
         const duplicateEmail = users.some(item =>
-          item.id !== user.id && item.email.toLowerCase() === user.email.toLowerCase()
+          item.id !== datos.id && String(item.email || '').toLowerCase() === datos.email
         );
         if (duplicateEmail) {
           showError('Ya existe un usuario registrado con ese correo electrónico.');
           return;
         }
 
-        const existingIndex = users.findIndex(item => item.id === user.id);
-        if (existingIndex >= 0) {
+        const existingIndex = users.findIndex(item => item.id === datos.id);
+        const wasEditing = existingIndex >= 0;
+        // Se combinan con el registro existente para conservar la contraseña si no se cambia
+        const user = Object.assign({}, wasEditing ? users[existingIndex] : {}, datos, credencial || {});
+        if (wasEditing) {
           users[existingIndex] = user;
         } else {
           users.push(user);
         }
+
+        // No permitir quedarse sin un Super Admin activo
+        const guardError = StudioUserStore.validateAdminGuard(users);
+        if (guardError) {
+          showError(guardError);
+          return;
+        }
+
         StudioUserStore.saveUsers(users);
 
-        if (redirigirALista && !(window.frameElement && window.frameElement.id === 'frameUserNew')) {
+        if (redirigirALista && !isEmbedded) {
           window.location.href = './userlist.html';
         } else {
-          currentUserId = null;
-          formTitle.innerHTML = '<i class="bi bi-person-plus-fill me-1"></i>Registro de Usuarios Nuevos';
-          document.getElementById('saveUserButton').innerHTML = '<i class="bi bi-person-check-fill me-1"></i>Registrar Usuario';
-          saveAndStayButton.classList.remove('d-none');
-          document.getElementById('resetButton').classList.remove('d-none');
-          userForm.reset();
-          userForm.classList.remove('was-validated');
-          userActiveSwitch.checked = true;
-          userActiveSwitch.dispatchEvent(new Event('change'));
-          updateNextId();
-          showSuccess(`Usuario ${user.id} (${user.nombre} ${user.apellido}) guardado exitosamente.`);
-          if (redirigirALista && window.parent && window.parent !== window) {
-            window.parent.postMessage({ type: 'studio-user-saved', id: user.id }, '*');
+          setNewMode();
+          const extra = wasEditing && cambiaPassword ? ' La contraseña se actualizó.' : '';
+          showSuccess(`Usuario ${user.id} (${user.nombre} ${user.apellido}) ${wasEditing ? 'actualizado' : 'registrado'} exitosamente.${extra}`);
+          if (redirigirALista && isEmbedded) {
+            window.parent.postMessage({ type: 'studio-user-saved', id: user.id, edited: wasEditing }, '*');
           }
         }
       } catch (error) {
         showError(error.message);
+      } finally {
+        setGuardando(false);
       }
     }
 
@@ -385,8 +433,26 @@
       guardarUsuario(false);
     });
 
+    cancelEditButton.addEventListener('click', function () {
+      userFormError.classList.add('d-none');
+      userFormSuccess.classList.add('d-none');
+      try {
+        setNewMode();
+      } catch (error) {
+        showError(error.message);
+      }
+      if (isEmbedded) {
+        window.parent.postMessage({ type: 'studio-user-cancel' }, '*');
+      }
+    });
+
+    // Dentro de la vista admin la tabla ya está visible: el enlace sirve para cerrar el formulario
+    if (isEmbedded) {
+      document.getElementById('cancelButton').innerHTML = '<i class="bi bi-x-lg me-1"></i>Cerrar';
+    }
+
     document.getElementById('cancelButton').addEventListener('click', function (event) {
-      if (window.frameElement && window.frameElement.id === 'frameUserNew' && window.parent) {
+      if (isEmbedded) {
         event.preventDefault();
         window.parent.postMessage({ type: 'studio-user-cancel' }, '*');
       }

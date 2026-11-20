@@ -5,116 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Studio play - Lista de Usuarios</title>
   <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
-  <link rel="stylesheet" href="../../node_modules/bootstrap-icons/font/bootstrap-icons.min.css">
-  <style>
-    body {
-      background-color: #f8fafc;
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      font-size: 0.85rem;
-    }
-
-    /* ---------- Toolbar ---------- */
-    .toolbar .form-control,
-    .toolbar .form-select {
-      font-size: 0.8rem;
-    }
-
-    /* ---------- Tabla ---------- */
-    .table thead th {
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-      color: #64748b;
-      white-space: nowrap;
-    }
-
-    .sortable {
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .sortable:hover {
-      color: #0f172a;
-    }
-
-    .sortable .sort-icon {
-      opacity: 0.35;
-      font-size: 0.7rem;
-    }
-
-    .sortable.sorted .sort-icon {
-      opacity: 1;
-    }
-
-    .user-avatar {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.7rem;
-      font-weight: 700;
-      flex-shrink: 0;
-    }
-
-    .user-row-inactive td:not(.actions-cell):not(.select-cell) {
-      opacity: 0.55;
-    }
-
-    .user-row-selected {
-      --bs-table-bg: #eef2ff;
-    }
-
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      display: inline-block;
-    }
-
-    /* ---------- Sección de acciones ---------- */
-    .actions-group .btn {
-      width: 30px;
-      height: 30px;
-      padding: 0;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border-color: #e2e8f0;
-      background-color: #ffffff;
-      color: #475569;
-    }
-
-    .actions-group .btn:hover:not(:disabled) {
-      color: #ffffff;
-    }
-
-    .actions-group .btn-act-view:hover { background-color: #0dcaf0; border-color: #0dcaf0; }
-    .actions-group .btn-act-edit:hover { background-color: #0d6efd; border-color: #0d6efd; }
-    .actions-group .btn-act-on:hover { background-color: #198754; border-color: #198754; }
-    .actions-group .btn-act-off:hover { background-color: #fd7e14; border-color: #fd7e14; }
-    .actions-group .btn-act-del:hover { background-color: #dc3545; border-color: #dc3545; }
-
-    .actions-group .btn-act-on { color: #198754; }
-    .actions-group .btn-act-off { color: #fd7e14; }
-    .actions-group .btn-act-del { color: #dc3545; }
-
-    .actions-group .btn:disabled {
-      opacity: 0.35;
-    }
-
-    /* ---------- Barra de acciones masivas ---------- */
-    .bulk-bar {
-      background-color: #0f172a;
-      color: #ffffff;
-      border-radius: 0.5rem;
-    }
-
-    .bulk-bar .btn {
-      font-size: 0.75rem;
-    }
-  </style>
+  <link rel="stylesheet" href="../assets/icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../assets/css/theme.css">
+  <link rel="stylesheet" href="../assets/css/userlist.css">
 </head>
 <body>
   <main class="container-fluid p-3">
@@ -174,7 +67,7 @@
         <table class="table table-hover align-middle mb-0">
           <thead class="table-light">
             <tr>
-              <th scope="col" class="ps-3" style="width: 36px;">
+              <th scope="col" class="ps-3 col-select">
                 <input class="form-check-input" type="checkbox" id="selectAll" aria-label="Seleccionar todos">
               </th>
               <th scope="col" class="sortable" data-sort="id">Id User <i class="bi bi-arrow-down-up sort-icon"></i></th>
@@ -213,7 +106,7 @@
         </div>
         <div class="modal-body pt-3">
           <div class="d-flex align-items-center gap-3 p-3 rounded bg-light mb-3">
-            <span class="user-avatar text-bg-dark" id="detailAvatar" style="width: 52px; height: 52px; font-size: 1rem;">?</span>
+            <span class="user-avatar user-avatar-lg text-bg-dark" id="detailAvatar">?</span>
             <div class="min-w-0">
               <div class="fw-bold fs-6" id="detailFullName">-</div>
               <div class="text-muted small text-truncate" id="detailEmailHeader">-</div>
@@ -240,6 +133,10 @@
             <li class="list-group-item d-flex justify-content-between align-items-center px-0">
               <span class="text-muted">Roles:</span>
               <span id="detailRoles">-</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+              <span class="text-muted">Contraseña:</span>
+              <span class="fw-semibold" id="detailPassword">-</span>
             </li>
           </ul>
         </div>
@@ -304,7 +201,9 @@
     const feedbackToastEl = document.getElementById('feedbackToast');
     const feedbackToast = bootstrap.Toast.getOrCreateInstance(feedbackToastEl, { delay: 3000 });
 
-    const isEmbedded = window.frameElement && window.frameElement.id === 'frameUserList' && window.parent;
+    // Se usa window.name (atributo name del iframe) porque frameElement es null
+    // cuando las páginas se abren como archivos locales (file://).
+    const isEmbedded = window.parent !== window && window.name === 'frameUserList';
 
     const state = {
       search: '',
@@ -474,6 +373,18 @@
       const rolesEl = document.getElementById('detailRoles');
       rolesEl.replaceChildren(...user.roles.map(makeRoleBadge));
 
+      const passwordEl = document.getElementById('detailPassword');
+      if (Store.hasPassword(user)) {
+        const fecha = new Date(user.passwordUpdatedAt);
+        passwordEl.textContent = isNaN(fecha)
+          ? 'Asignada'
+          : `Asignada · ${fecha.toLocaleDateString('es', { day: '2-digit', month: 'short', year: 'numeric' })}`;
+        passwordEl.className = 'fw-semibold text-success';
+      } else {
+        passwordEl.textContent = 'Sin asignar';
+        passwordEl.className = 'fw-semibold text-secondary';
+      }
+
       const statusBadge = document.getElementById('detailStatusBadge');
       statusBadge.className = `badge mt-1 ${activo ? 'text-bg-success' : 'text-bg-secondary'}`;
       statusBadge.textContent = activo ? 'Usuario Activo' : 'Usuario Desactivado';
@@ -561,7 +472,11 @@
       btn.setAttribute('data-bs-title', title);
       btn.innerHTML = `<i class="bi ${icon}"></i>`;
       btn.disabled = Boolean(disabled);
-      btn.addEventListener('click', onClick);
+      btn.addEventListener('click', function (event) {
+        // Ocultar descripciones para que no queden visibles sobre los modales
+        tooltips.forEach(t => t.hide());
+        onClick(event);
+      });
 
       // Los botones deshabilitados no disparan eventos: envolver para mostrar el tooltip
       if (disabled) {
@@ -735,14 +650,22 @@
       }, 150);
     });
 
+    function notifyFilterChange() {
+      if (isEmbedded) {
+        window.parent.postMessage({ type: 'studio-userlist-filter-changed', status: state.status, role: state.role }, '*');
+      }
+    }
+
     roleFilter.addEventListener('change', function () {
       state.role = roleFilter.value;
       safeRender();
+      notifyFilterChange();
     });
 
     statusFilter.addEventListener('change', function () {
       state.status = statusFilter.value;
       safeRender();
+      notifyFilterChange();
     });
 
     document.getElementById('clearFilters').addEventListener('click', function () {
@@ -751,6 +674,7 @@
       roleFilter.value = '';
       statusFilter.value = '';
       safeRender();
+      notifyFilterChange();
     });
 
     document.querySelectorAll('.sortable').forEach(th => {
