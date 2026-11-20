@@ -347,10 +347,8 @@
           // Ya estamos en la administración: llevar a la lista
           document.getElementById('userListCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
         } else if (sec === 'usuario-restar') {
-          // "Restar" = desactivar / eliminar: mostrar la lista filtrada por activos
-          document.getElementById('userListCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
-          const activos = kpiCards.find(c => c.dataset.filterStatus === 'activo');
-          if (activos && !activos.classList.contains('kpi-active')) aplicarFiltroKPI(activos);
+          // "Restaurar contraseña" tiene su propia vista
+          window.location.href = './restar.html';
         } else {
           window.location.href = `./dashboard.html#${encodeURIComponent(sec)}`;
         }

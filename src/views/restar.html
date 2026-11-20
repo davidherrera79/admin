@@ -42,12 +42,23 @@
         <!-- Barra Superior -->
         <div class="dashboard-topbar d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
           <div class="d-flex align-items-center gap-2">
-            <span class="stat-icon stat-icon-md tone-warning"><i class="bi bi-person-dash-fill"></i></span>
+            <span class="stat-icon stat-icon-md tone-warning"><i class="bi bi-key-fill"></i></span>
             <div>
               <h1 class="h6 fw-bold mb-0">Restar Usuarios</h1>
-              <div class="text-muted fs-xs">Desactiva o elimina usuarios del equipo</div>
+              <div class="text-muted fs-xs">Asigna una contraseña nueva a un usuario del equipo</div>
             </div>
           </div>
+        </div>
+
+        <!-- Componente Restaurar Contraseña -->
+        <div class="component-iframe-card mb-3" id="resetPasswordCard">
+          <iframe
+            src="../components/restaruser.html"
+            id="frameRestarUser"
+            name="frameRestarUser"
+            class="component-frame frame-form-height"
+            title="Restaurar contraseña">
+          </iframe>
         </div>
 
         <!-- Componente Lista de Usuarios -->
@@ -79,6 +90,7 @@
     const navbarFrame = document.getElementById('navbarFrame');
     const sidebarFrame = document.getElementById('sidebarFrame');
     const frameUserList = document.getElementById('frameUserList');
+    const frameRestarUser = document.getElementById('frameRestarUser');
 
     // Botón "Actualizar tabla": pide al iframe de la lista que se recargue
     document.getElementById('btnRefreshListFrame').addEventListener('click', function () {
@@ -98,10 +110,30 @@
       const fromNavbar = event.source === navbarFrame.contentWindow;
       const fromSidebar = event.source === sidebarFrame.contentWindow;
       const fromUserList = event.source === frameUserList.contentWindow;
+      const fromRestarUser = event.source === frameRestarUser.contentWindow;
 
-      // "Nuevo" y "Editar" de la lista se gestionan en la Administración de Usuarios
-      if ((event.data.type === 'studio-user-new' || event.data.type === 'studio-user-edit') && fromUserList) {
+      // "Editar" en la lista: elegir ese usuario en el formulario de restaurar contraseña
+      if (event.data.type === 'studio-user-edit' && fromUserList && typeof event.data.id === 'string') {
+        frameRestarUser.contentWindow.postMessage({ type: 'studio-password-reset-select', id: event.data.id }, '*');
+        document.getElementById('resetPasswordCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+      }
+
+      // "Nuevo usuario" se gestiona en la Administración de Usuarios
+      if (event.data.type === 'studio-user-new' && fromUserList) {
         window.location.href = './useradmin.html';
+        return;
+      }
+
+      // Contraseña restaurada: refrescar la tabla
+      if (event.data.type === 'studio-password-reset' && fromRestarUser) {
+        frameUserList.contentWindow.postMessage({ type: 'studio-userlist-refresh' }, '*');
+        return;
+      }
+
+      // La tabla cambió usuarios (activar, eliminar…): recargar el selector del formulario
+      if (event.data.type === 'studio-users-updated' && fromUserList) {
+        frameRestarUser.contentWindow.postMessage({ type: 'studio-userlist-refresh' }, '*');
         return;
       }
 

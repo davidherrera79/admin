@@ -1377,6 +1377,10 @@
           window.location.href = './useradmin.html';
           return;
         }
+        if (event.data.section === 'usuario-restar') {
+          window.location.href = './restar.html';
+          return;
+        }
         mostrarSeccion(event.data.section);
       } else if (event.data.type === 'sidebar-resized') {
         setTimeout(() => redibujarGraficos(false), 260);

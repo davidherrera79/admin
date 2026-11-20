@@ -7,13 +7,231 @@
   <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
   <link rel="stylesheet" href="../assets/icons/bootstrap-icons.min.css">
   <link rel="stylesheet" href="../assets/css/theme.css">
+  <link rel="stylesheet" href="../assets/css/usernew.css">
 </head>
 <body>
   <main class="container py-3">
-    <!-- Contenido del componente Restar Usuario -->
+    <div class="card form-card mx-auto">
+      <div class="card-body p-3 p-md-4">
+        <!-- Encabezado -->
+        <div class="d-flex align-items-center gap-2 pb-3 mb-3 border-bottom">
+          <img src="../assets/imagenes/logo.jpg" alt="Studio play" class="form-logo">
+          <div>
+            <h1 class="h5 fw-bold mb-0"><i class="bi bi-key-fill me-1"></i>Restar Usuario</h1>
+            <p class="text-muted small mb-0">Elige un usuario y asígnale una contraseña nueva</p>
+          </div>
+        </div>
+
+        <!-- Alertas -->
+        <div class="alert alert-danger d-none py-2 small" id="resetError" role="alert"></div>
+        <div class="alert alert-success d-none py-2 small" id="resetSuccess" role="status"></div>
+
+        <form id="resetForm" novalidate>
+          <!-- Usuario -->
+          <div class="mb-3">
+            <label for="resetUser" class="form-label small fw-semibold mb-1">Usuario</label>
+            <div class="input-group input-group-sm has-validation">
+              <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
+              <select class="form-select" id="resetUser" required></select>
+              <div class="invalid-feedback">Selecciona un usuario.</div>
+            </div>
+            <p class="text-muted small mt-1 mb-0" id="resetUserStatus"></p>
+          </div>
+
+          <!-- Contraseña nueva -->
+          <div class="password-section mb-3">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="resetPassword" class="form-label small mb-1">Nueva contraseña</label>
+                <div class="input-group input-group-sm has-validation">
+                  <span class="input-group-text bg-light"><i class="bi bi-lock"></i></span>
+                  <input type="password" class="form-control" id="resetPassword" minlength="6" placeholder="Mínimo 6 caracteres" autocomplete="new-password" required>
+                  <button type="button" class="btn btn-outline-secondary" id="togglePassword" aria-label="Mostrar contraseñas" title="Mostrar / ocultar">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                  <div class="invalid-feedback">Mínimo 6 caracteres.</div>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <label for="resetPasswordConfirm" class="form-label small mb-1">Confirmar contraseña</label>
+                <div class="input-group input-group-sm has-validation">
+                  <span class="input-group-text bg-light"><i class="bi bi-shield-check"></i></span>
+                  <input type="password" class="form-control" id="resetPasswordConfirm" placeholder="Repite la contraseña" autocomplete="new-password" required>
+                  <div class="invalid-feedback">Las contraseñas no coinciden.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2">
+            <button type="reset" class="btn btn-outline-secondary btn-sm">Limpiar</button>
+            <button type="submit" class="btn btn-dark btn-sm" id="resetSubmit">
+              <i class="bi bi-key me-1"></i>Restaurar contraseña
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   </main>
 
   <script src="../assets/js/bootstrap.bundle.min.js"></script>
   <script src="../assets/js/user-admin-store.js"></script>
+  <script>
+    const resetForm = document.getElementById('resetForm');
+    const resetUser = document.getElementById('resetUser');
+    const resetUserStatus = document.getElementById('resetUserStatus');
+    const passwordInput = document.getElementById('resetPassword');
+    const confirmInput = document.getElementById('resetPasswordConfirm');
+    const togglePassword = document.getElementById('togglePassword');
+    const resetError = document.getElementById('resetError');
+    const resetSuccess = document.getElementById('resetSuccess');
+    const resetSubmit = document.getElementById('resetSubmit');
+
+    function mostrarError(mensaje) {
+      resetSuccess.classList.add('d-none');
+      resetError.textContent = mensaje;
+      resetError.classList.remove('d-none');
+    }
+
+    function mostrarExito(mensaje) {
+      resetError.classList.add('d-none');
+      resetSuccess.textContent = mensaje;
+      resetSuccess.classList.remove('d-none');
+    }
+
+    function ocultarAlertas() {
+      resetError.classList.add('d-none');
+      resetSuccess.classList.add('d-none');
+    }
+
+    // Rellena el selector con los usuarios guardados (mantiene la selección si existe)
+    function cargarUsuarios(idSeleccionado) {
+      let users;
+      try {
+        users = StudioUserStore.getUsers();
+      } catch (error) {
+        mostrarError(error.message);
+        return;
+      }
+
+      const seleccion = idSeleccionado || resetUser.value;
+      resetUser.replaceChildren();
+
+      const vacio = document.createElement('option');
+      vacio.value = '';
+      vacio.textContent = 'Selecciona un usuario…';
+      resetUser.append(vacio);
+
+      users.forEach(user => {
+        const option = document.createElement('option');
+        option.value = user.id;
+        option.textContent = `${user.id} · ${user.nombre} ${user.apellido} (${user.email})`;
+        resetUser.append(option);
+      });
+
+      resetUser.value = users.some(u => u.id === seleccion) ? seleccion : '';
+      actualizarEstadoUsuario();
+    }
+
+    // Indica si el usuario elegido ya tiene contraseña y si está activo
+    function actualizarEstadoUsuario() {
+      resetUserStatus.textContent = '';
+      if (!resetUser.value) return;
+      const user = StudioUserStore.getUsers().find(u => u.id === resetUser.value);
+      if (!user) return;
+
+      const partes = [];
+      if (StudioUserStore.hasPassword(user)) {
+        const fecha = user.passwordUpdatedAt ? new Date(user.passwordUpdatedAt).toLocaleString('es') : null;
+        partes.push(fecha ? `Contraseña actual asignada el ${fecha}.` : 'Tiene una contraseña asignada.');
+      } else {
+        partes.push('Este usuario aún no tiene contraseña.');
+      }
+      if (!StudioUserStore.isActive(user)) {
+        partes.push('Está desactivado: no podrá iniciar sesión hasta que lo actives.');
+      }
+      resetUserStatus.textContent = partes.join(' ');
+    }
+
+    function validarConfirmacion() {
+      const coincide = confirmInput.value === passwordInput.value;
+      confirmInput.setCustomValidity(coincide ? '' : 'Las contraseñas no coinciden.');
+    }
+
+    passwordInput.addEventListener('input', validarConfirmacion);
+    confirmInput.addEventListener('input', validarConfirmacion);
+    resetUser.addEventListener('change', function () {
+      ocultarAlertas();
+      actualizarEstadoUsuario();
+    });
+
+    togglePassword.addEventListener('click', function () {
+      const mostrar = passwordInput.type === 'password';
+      passwordInput.type = mostrar ? 'text' : 'password';
+      confirmInput.type = mostrar ? 'text' : 'password';
+      togglePassword.querySelector('i').className = mostrar ? 'bi bi-eye-slash' : 'bi bi-eye';
+    });
+
+    resetForm.addEventListener('reset', function () {
+      resetForm.classList.remove('was-validated');
+      confirmInput.setCustomValidity('');
+      ocultarAlertas();
+      setTimeout(actualizarEstadoUsuario, 0);
+    });
+
+    resetForm.addEventListener('submit', async function (event) {
+      event.preventDefault();
+      ocultarAlertas();
+      validarConfirmacion();
+      resetForm.classList.add('was-validated');
+      if (!resetForm.checkValidity()) return;
+
+      resetSubmit.disabled = true;
+      try {
+        const users = StudioUserStore.getUsers();
+        const index = users.findIndex(u => u.id === resetUser.value);
+        if (index === -1) {
+          mostrarError('El usuario seleccionado ya no existe. Actualiza la lista.');
+          cargarUsuarios();
+          return;
+        }
+
+        const credenciales = await StudioUserStore.hashPassword(passwordInput.value);
+        users[index] = Object.assign({}, users[index], credenciales);
+        StudioUserStore.saveUsers(users);
+
+        const user = users[index];
+        const id = user.id;
+        resetForm.reset();
+        cargarUsuarios(id);
+        mostrarExito(`Contraseña restaurada para ${user.nombre} ${user.apellido}.`);
+        window.parent.postMessage({ type: 'studio-password-reset', id: id }, '*');
+      } catch (error) {
+        mostrarError(error.message);
+      } finally {
+        resetSubmit.disabled = false;
+      }
+    });
+
+    // Mensajes del contenedor: seleccionar un usuario o recargar la lista
+    window.addEventListener('message', function (event) {
+      if (event.source !== window.parent || !event.data || typeof event.data !== 'object') return;
+      if (event.data.type === 'studio-password-reset-select' && typeof event.data.id === 'string') {
+        ocultarAlertas();
+        cargarUsuarios(event.data.id);
+        passwordInput.focus();
+      } else if (event.data.type === 'studio-userlist-refresh') {
+        cargarUsuarios();
+      }
+    });
+
+    window.addEventListener('storage', function (event) {
+      if (event.key === 'studioPlayUsers') cargarUsuarios();
+    });
+
+    // Permite abrir el componente con un usuario preseleccionado: restaruser.html?id=USR-001
+    cargarUsuarios(new URLSearchParams(window.location.search).get('id'));
+  </script>
 </body>
 </html>
