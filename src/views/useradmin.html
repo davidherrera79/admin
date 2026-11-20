@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Studio play - Administración de Usuarios (useradmin.html)</title>
+  <!-- Estilos Bootstrap, Navbar, Sidebar y Dashboard -->
+  <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../assets/css/navbar.css">
+  <link rel="stylesheet" href="../assets/css/sidebar.css">
+  <link rel="stylesheet" href="../assets/css/dashboard.css">
+  <link rel="stylesheet" href="../../node_modules/bootstrap-icons/font/bootstrap-icons.min.css">
+  <style>
+    .component-iframe-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 0.65rem;
+      background-color: #ffffff;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+      overflow: hidden;
+    }
+
+    .component-frame {
+      width: 100%;
+      border: 0;
+      display: block;
+      background-color: #f8fafc;
+    }
+
+    .navbar-iframe {
+      display: block;
+      width: 100%;
+      height: var(--navbar-height);
+      border: 0;
+      flex-shrink: 0;
+    }
+
+    .frame-list-height {
+      height: 460px;
+    }
+
+    .frame-form-height {
+      height: 460px;
+    }
+  </style>
+</head>
+<body>
+
+  <iframe
+    src="../components/navbar.html"
+    id="navbarFrame"
+    title="Navbar Studio play"
+    class="navbar-iframe">
+  </iframe>
+
+  <!-- =======================================================
+       CONTENEDOR PRINCIPAL: SIDEBAR (IFRAME) + USERADMIN
+       ======================================================= -->
+  <div class="workspace-shell">
+    <!-- Iframe del Sidebar Retráctil -->
+    <iframe
+      src="../components/sidebar.html?section=usuario-admin"
+      name="sidebarFrame"
+      id="sidebarFrame"
+      title="Sidebar Studio play"
+      class="sidebar-iframe">
+    </iframe>
+
+    <!-- Contenido Principal de Administración de Usuarios -->
+    <main class="dashboard-main-scroll">
+      <div class="dashboard-container container-fluid">
+
+        <!-- Barra Superior de Administración de Usuarios -->
+        <div class="dashboard-topbar d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge text-bg-dark"><i class="bi bi-shield-check me-1"></i>Views / useradmin.html</span>
+            <h1 class="h6 fw-bold mb-0">Administración y Registro de Usuarios</h1>
+          </div>
+
+        </div>
+
+        <!-- FILA 1: 4 TARJETAS KPI DE USUARIOS EN TIEMPO REAL -->
+        <div class="row g-2 mb-2">
+          <div class="col-6 col-md-3">
+            <div class="card stat-card p-2">
+              <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="stat-icon bg-dark text-white"><i class="bi bi-people-fill"></i></div>
+                  <div>
+                    <div class="text-muted" style="font-size: 0.7rem;">Total Usuarios</div>
+                    <div class="fw-bold fs-5 lh-1" id="kpiTotalUsers">0</div>
+                  </div>
+                </div>
+                <span class="badge text-bg-light border">Registrados</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-6 col-md-3">
+            <div class="card stat-card p-2">
+              <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="stat-icon bg-success-subtle text-success"><i class="bi bi-toggle-on"></i></div>
+                  <div>
+                    <div class="text-muted" style="font-size: 0.7rem;">Usuarios Activos</div>
+                    <div class="fw-bold fs-5 lh-1 text-success" id="kpiActiveUsers">0</div>
+                  </div>
+                </div>
+                <span class="badge text-bg-success-subtle text-success border border-success-subtle">Habilitados</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-6 col-md-3">
+            <div class="card stat-card p-2">
+              <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="stat-icon bg-secondary-subtle text-secondary"><i class="bi bi-toggle-off"></i></div>
+                  <div>
+                    <div class="text-muted" style="font-size: 0.7rem;">Usuarios Inactivos</div>
+                    <div class="fw-bold fs-5 lh-1 text-secondary" id="kpiInactiveUsers">0</div>
+                  </div>
+                </div>
+                <span class="badge text-bg-secondary-subtle text-secondary border border-secondary-subtle">Pausados</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-6 col-md-3">
+            <div class="card stat-card p-2">
+              <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="stat-icon bg-primary-subtle text-primary"><i class="bi bi-person-badge-fill"></i></div>
+                  <div>
+                    <div class="text-muted" style="font-size: 0.7rem;">Super Admins</div>
+                    <div class="fw-bold fs-5 lh-1 text-primary" id="kpiAdminUsers">0</div>
+                  </div>
+                </div>
+                <span class="badge text-bg-primary-subtle text-primary border border-primary-subtle">Control Total</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="component-iframe-card mb-2">
+          <div class="module-header bg-white">
+            <span class="fw-bold"><i class="bi bi-table me-1 text-primary"></i>Lista de Usuarios</span>
+            <button type="button" class="btn btn-outline-dark btn-sm py-0 px-2" style="font-size: 0.7rem;" id="btnRefreshListFrame" title="Actualizar tabla">
+              <i class="bi bi-arrow-repeat me-1"></i>Actualizar tabla
+            </button>
+          </div>
+          <iframe
+            src="../components/userlist.html"
+            id="frameUserList"
+            class="component-frame frame-list-height"
+            title="Tabla de Usuarios">
+          </iframe>
+        </div>
+
+        <div class="accordion" id="userNewAccordion">
+          <div class="accordion-item component-iframe-card">
+            <div class="d-flex align-items-center">
+              <h2 class="accordion-header flex-grow-1" id="userNewHeading">
+                <button
+                  class="accordion-button collapsed"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#userNewCollapse"
+                  aria-expanded="false"
+                  aria-controls="userNewCollapse">
+                  <i class="bi bi-person-plus-fill me-2 text-success"></i>Registrar usuario
+                </button>
+              </h2>
+              <button type="button" class="btn btn-outline-secondary btn-sm mx-2" id="btnRefreshNewFrame" title="Formulario nuevo">
+                <i class="bi bi-arrow-clockwise"></i>
+              </button>
+            </div>
+            <div
+              id="userNewCollapse"
+              class="accordion-collapse collapse"
+              aria-labelledby="userNewHeading"
+              data-bs-parent="#userNewAccordion">
+              <div class="accordion-body p-0">
+                <iframe
+                  src="../components/usernew.html"
+                  id="frameUserNew"
+                  class="component-frame frame-form-height"
+                  title="Formulario de Registro de Usuarios">
+                </iframe>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <div class="modal fade" id="navbarLoginModal" tabindex="-1" aria-labelledby="navbarLoginModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-header border-0 pb-0">
+          <div class="d-flex align-items-center gap-2">
+            <img src="../assets/imagenes/logo.jpg" alt="Studio play" class="modal-brand-logo">
+            <h2 class="modal-title h5 fw-bold" id="navbarLoginModalLabel">Iniciar Sesión - Studio play</h2>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body pt-3">
+          <form id="navbarLoginForm">
+            <div class="mb-3">
+              <label for="navbarLoginEmail" class="form-label small fw-semibold">Correo electrónico</label>
+              <input type="email" class="form-control" id="navbarLoginEmail" autocomplete="email" required>
+            </div>
+            <div class="mb-3">
+              <label for="navbarLoginPassword" class="form-label small fw-semibold">Contraseña</label>
+              <input type="password" class="form-control" id="navbarLoginPassword" autocomplete="current-password" required>
+            </div>
+            <div class="d-grid">
+              <button type="submit" class="btn btn-dark">Iniciar Sesión</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts de Bootstrap y Almacén de Usuarios -->
+  <script src="../assets/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/js/user-admin-store.js"></script>
+  <script>
+    const navbarFrame = document.getElementById('navbarFrame');
+    const sidebarFrame = document.getElementById('sidebarFrame');
+    const frameUserNew = document.getElementById('frameUserNew');
+    const frameUserList = document.getElementById('frameUserList');
+    const userNewCollapseEl = document.getElementById('userNewCollapse');
+    const userNewCollapse = bootstrap.Collapse.getOrCreateInstance(userNewCollapseEl, { toggle: false });
+    const navbarLoginModalEl = document.getElementById('navbarLoginModal');
+    const navbarLoginModal = bootstrap.Modal.getOrCreateInstance(navbarLoginModalEl);
+    const navbarLoginForm = document.getElementById('navbarLoginForm');
+
+    function actualizarKPIsUsuarios() {
+      const users = StudioUserStore.getUsers();
+      const total = users.length;
+      const activos = users.filter(u => u.activo !== false).length;
+      const inactivos = total - activos;
+      const superAdmins = users.filter(u => Array.isArray(u.roles) ? u.roles.includes('Super Admin') : u.roles === 'Super Admin').length;
+
+      document.getElementById('kpiTotalUsers').textContent = total;
+      document.getElementById('kpiActiveUsers').textContent = activos;
+      document.getElementById('kpiInactiveUsers').textContent = inactivos;
+      document.getElementById('kpiAdminUsers').textContent = superAdmins;
+    }
+
+    function abrirFormularioUsuario() {
+      userNewCollapse.show();
+    }
+
+    document.getElementById('btnRefreshNewFrame').addEventListener('click', function () {
+      frameUserNew.src = '../components/usernew.html';
+      abrirFormularioUsuario();
+    });
+
+    document.getElementById('btnRefreshListFrame').addEventListener('click', function () {
+      if (frameUserList.contentWindow) {
+        frameUserList.contentWindow.location.reload();
+      }
+      actualizarKPIsUsuarios();
+    });
+
+    window.addEventListener('message', function (event) {
+      if (!event.data || typeof event.data !== 'object') return;
+
+      const fromNavbar = event.source === navbarFrame.contentWindow;
+      const fromSidebar = event.source === sidebarFrame.contentWindow;
+      const fromUserList = event.source === frameUserList.contentWindow;
+      const fromUserNew = event.source === frameUserNew.contentWindow;
+
+      if (event.data.type === 'navbar-login-request' && fromNavbar) {
+        navbarLoginModal.show();
+        return;
+      }
+
+      if (event.data.type === 'toggle-sidebar' && fromNavbar) {
+        sidebarFrame.contentWindow.postMessage('toggle-sidebar', '*');
+        return;
+      }
+
+      if (event.data.type === 'navigate-section' && fromSidebar) {
+        const sec = event.data.section;
+        if (sec === 'usuario-admin' || sec === 'usuario-restar') {
+          abrirFormularioUsuario();
+        } else {
+          window.location.href = `./dashboard.html#${encodeURIComponent(sec)}`;
+        }
+        return;
+      }
+
+      if (event.data.type === 'studio-user-edit' && fromUserList && typeof event.data.id === 'string') {
+        frameUserNew.src = `../components/usernew.html?id=${encodeURIComponent(event.data.id)}`;
+        abrirFormularioUsuario();
+        return;
+      }
+
+      if (event.data.type === 'studio-user-new' && fromUserList) {
+        frameUserNew.src = '../components/usernew.html';
+        abrirFormularioUsuario();
+        return;
+      }
+
+      if (event.data.type === 'studio-users-updated' && (fromUserList || fromUserNew)) {
+        actualizarKPIsUsuarios();
+        if (!fromUserList && frameUserList.contentWindow) {
+          frameUserList.contentWindow.location.reload();
+        }
+        return;
+      }
+
+      if ((event.data.type === 'studio-user-saved' || event.data.type === 'studio-user-cancel') && fromUserNew) {
+        actualizarKPIsUsuarios();
+        if (frameUserList.contentWindow) {
+          frameUserList.contentWindow.location.reload();
+        }
+        if (event.data.type === 'studio-user-cancel') {
+          frameUserNew.src = '../components/usernew.html';
+          userNewCollapse.hide();
+        }
+      }
+    });
+
+    navbarLoginForm.addEventListener('submit', function (event) {
+      event.preventDefault();
+      if (!navbarLoginForm.reportValidity()) return;
+
+      const email = document.getElementById('navbarLoginEmail').value.trim();
+      navbarFrame.contentWindow.postMessage({ type: 'navbar-login-success', email: email }, '*');
+      navbarLoginForm.reset();
+      navbarLoginModal.hide();
+    });
+
+    window.addEventListener('storage', function (event) {
+      if (event.key === 'studioPlayUsers') {
+        actualizarKPIsUsuarios();
+      }
+    });
+
+    actualizarKPIsUsuarios();
+  </script>
+</body>
+</html>

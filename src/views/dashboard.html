@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Studio play - Dashboard</title>
+  <!-- Estilos Bootstrap, Navbar, Sidebar y Dashboard -->
+  <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../assets/css/navbar.css">
+  <link rel="stylesheet" href="../assets/css/sidebar.css">
+  <link rel="stylesheet" href="../assets/css/dashboard.css">
+  <link rel="stylesheet" href="../../node_modules/bootstrap-icons/font/bootstrap-icons.min.css">
+</head>
+<body>
+
+  <!-- =======================================================
+       NAVBAR SUPERIOR (Movido a dashboard.html)
+       ======================================================= -->
+  <nav class="navbar navbar-expand-lg navbar-studio sticky-top">
+    <div class="container-fluid">
+      <!-- Botón retráctil del Sidebar + Logo y Nombre (debajo del logo) -->
+      <div class="d-flex align-items-center gap-3">
+        <button type="button" class="btn btn-outline-dark btn-sm px-2 py-1" id="navbarSidebarToggle" title="Retraer / Expandir Sidebar">
+          <i class="bi bi-layout-sidebar-inset"></i>
+        </button>
+
+        <a class="navbar-brand d-flex flex-column align-items-center m-0 lh-1" href="#todos" onclick="mostrarSeccion('todos')">
+          <img src="../assets/imagenes/logo.jpg" alt="Logo Studio play" class="brand-logo">
+          <span class="brand-title">Studio play</span>
+        </a>
+      </div>
+
+      <!-- Acceso / Perfil de Usuario en la derecha del Navbar -->
+      <div class="d-flex align-items-center gap-3 ms-auto">
+        <!-- Vista cuando la sesión está INICIADA: Perfil (user.jpg) + Cerrar sesión -->
+        <div class="d-flex align-items-center gap-2" id="loggedInSection">
+          <div class="dropdown" id="userDropdownContainer">
+            <a href="#" class="user-profile-btn dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+              <img src="../assets/imagenes/user.jpg" alt="Usuario Studio play" class="user-avatar">
+              <span class="small fw-semibold d-none d-sm-inline" id="navbarUserName">Mi Cuenta</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2" aria-labelledby="userDropdown">
+              <li class="px-3 py-2 border-bottom">
+                <div class="d-flex align-items-center gap-2">
+                  <img src="../assets/imagenes/user.jpg" alt="Usuario" class="user-avatar">
+                  <div>
+                    <div class="fw-bold small" id="dropdownUserTitle">Usuario Studio</div>
+                    <div class="text-muted" style="font-size: 0.75rem;" id="dropdownUserEmail">usuario@studioplay.com</div>
+                  </div>
+                </div>
+              </li>
+              <li><a class="dropdown-item small py-2" href="#usuario-admin" onclick="mostrarSeccion('usuario-admin')"><i class="bi bi-person me-2"></i>Mi perfil</a></li>
+              <li><a class="dropdown-item small py-2" href="#config-password" onclick="mostrarSeccion('config-password')"><i class="bi bi-gear me-2"></i>Configuración</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <button type="button" class="dropdown-item small py-2 text-danger" id="dropdownLogoutBtn">
+                  <i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          <button type="button" class="btn btn-outline-dark btn-sm px-3" id="navLogoutBtn">
+            <i class="bi bi-box-arrow-right me-1"></i>Cerrar sesión
+          </button>
+        </div>
+
+        <!-- Vista cuando la sesión está CERRADA: solo botón Iniciar sesión -->
+        <div class="d-none" id="loggedOutSection">
+          <button type="button" class="btn btn-dark btn-sm px-3" data-bs-toggle="modal" data-bs-target="#loginModal">
+            <i class="bi bi-box-arrow-in-right me-1"></i>Iniciar sesión
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- =======================================================
+       CONTENEDOR PRINCIPAL: SIDEBAR (IFRAME) + DASHBOARD
+       ======================================================= -->
+  <div class="workspace-shell">
+    <!-- Iframe del Sidebar Retráctil -->
+    <iframe
+      src="../components/sidebar.html"
+      name="sidebarFrame"
+      id="sidebarFrame"
+      title="Sidebar Studio play"
+      class="sidebar-iframe">
+    </iframe>
+
+    <!-- Contenido del Dashboard -->
+    <main class="dashboard-main-scroll">
+      <div class="dashboard-container container-fluid">
+        <!-- Barra Superior con Filtros Rápidos -->
+        <div class="dashboard-topbar d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge text-bg-dark"><i class="bi bi-broadcast me-1"></i>En vivo</span>
+            <h1 class="h6 fw-bold mb-0">Panel de Control · Studio play</h1>
+          </div>
+
+          <div class="d-flex flex-wrap align-items-center gap-1" id="quickFilterBar">
+            <button type="button" class="filter-pill active" data-filter="todos">
+              <i class="bi bi-grid-1x2 me-1"></i>Todo
+            </button>
+            <button type="button" class="filter-pill" data-filter="grupo-inventario">
+              <i class="bi bi-box-seam me-1"></i>Inventario
+            </button>
+            <button type="button" class="filter-pill" data-filter="grupo-usuario">
+              <i class="bi bi-people me-1"></i>Usuarios
+            </button>
+            <button type="button" class="filter-pill" data-filter="grupo-config">
+              <i class="bi bi-gear me-1"></i>Configuración
+            </button>
+          </div>
+        </div>
+
+        <!-- FILA 1: 4 KPI CARDS + 3 STUDIO CARDS INTERACTIVAS -->
+        <div class="row g-2 mb-2 section-panel" data-group="general">
+          <div class="col-6 col-md-3">
+            <div class="card stat-card p-2">
+              <div class="d-flex align-items-center justify-content-between mb-1">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="stat-icon bg-dark text-white"><i class="bi bi-boxes"></i></div>
+                  <div>
+                    <div class="text-muted" style="font-size: 0.7rem;">Stock Total</div>
+                    <div class="fw-bold fs-5 lh-1" id="statTotalProductos">170</div>
+                  </div>
+                </div>
+                <span class="badge text-bg-success-subtle text-success border border-success-subtle">+12.4%</span>
+              </div>
+              <div class="progress" style="height: 4px;">
+                <div class="progress-bar bg-dark" id="kpiBarStock" style="width: 82%"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-6 col-md-3">
+            <div class="card stat-card p-2">
+              <div class="d-flex align-items-center justify-content-between mb-1">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="stat-icon bg-success-subtle text-success"><i class="bi bi-box-arrow-in-down"></i></div>
+                  <div>
+                    <div class="text-muted" style="font-size: 0.7rem;">Entradas (+)</div>
+                    <div class="fw-bold fs-5 lh-1 text-success" id="statEntradas">57</div>
+                  </div>
+                </div>
+                <span class="badge text-bg-success-subtle text-success border border-success-subtle">Activas</span>
+              </div>
+              <div class="progress" style="height: 4px;">
+                <div class="progress-bar bg-success" style="width: 74%"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-6 col-md-3">
+            <div class="card stat-card p-2">
+              <div class="d-flex align-items-center justify-content-between mb-1">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="stat-icon bg-danger-subtle text-danger"><i class="bi bi-box-arrow-up"></i></div>
+                  <div>
+                    <div class="text-muted" style="font-size: 0.7rem;">Salidas (-)</div>
+                    <div class="fw-bold fs-5 lh-1 text-danger" id="statSalidas">23</div>
+                  </div>
+                </div>
+                <span class="badge text-bg-warning-subtle text-warning-emphasis border border-warning-subtle">Control</span>
+              </div>
+              <div class="progress" style="height: 4px;">
+                <div class="progress-bar bg-danger" style="width: 42%"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-6 col-md-3">
+            <div class="card stat-card p-2">
+              <div class="d-flex align-items-center justify-content-between mb-1">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="stat-icon bg-primary-subtle text-primary"><i class="bi bi-person-check"></i></div>
+                  <div>
+                    <div class="text-muted" style="font-size: 0.7rem;">Usuarios Admin</div>
+                    <div class="fw-bold fs-5 lh-1 text-primary" id="statUsuarios">3</div>
+                  </div>
+                </div>
+                <span class="badge text-bg-primary-subtle text-primary border border-primary-subtle">En línea</span>
+              </div>
+              <div class="progress" style="height: 4px;">
+                <div class="progress-bar bg-primary" style="width: 88%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3 Cards Destacadas de Acceso Rápido -->
+        <div class="row g-2 mb-2 section-panel" data-group="general">
+          <div class="col-12 col-md-4">
+            <div class="card feature-card" onclick="filtrarPorGrupo('grupo-inventario')">
+              <div class="feature-card-banner bg-dark"></div>
+              <div class="card-body py-2 px-3 d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                  <img src="../assets/imagenes/logo.jpg" alt="Studio" class="avatar-sm border">
+                  <div>
+                    <div class="fw-bold" style="font-size: 0.79rem;">Card · Estudio Principal 4K</div>
+                    <div class="text-muted" style="font-size: 0.69rem;">Cámaras, Audio e Iluminación</div>
+                  </div>
+                </div>
+                <span class="badge text-bg-dark">Ver Stock <i class="bi bi-arrow-right-short"></i></span>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-4">
+            <div class="card feature-card" onclick="filtrarPorGrupo('grupo-usuario')">
+              <div class="feature-card-banner bg-primary"></div>
+              <div class="card-body py-2 px-3 d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                  <img src="../assets/imagenes/user.jpg" alt="User" class="avatar-sm border">
+                  <div>
+                    <div class="fw-bold" style="font-size: 0.79rem;">Card · Gestión de Usuarios</div>
+                    <div class="text-muted" style="font-size: 0.69rem;">Administradores y Permisos</div>
+                  </div>
+                </div>
+                <span class="badge text-bg-primary">Usuarios <i class="bi bi-arrow-right-short"></i></span>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-4">
+            <div class="card feature-card" onclick="filtrarPorGrupo('grupo-config')">
+              <div class="feature-card-banner bg-success"></div>
+              <div class="card-body py-2 px-3 d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="bi bi-shield-lock-fill text-success fs-5"></i>
+                  <div>
+                    <div class="fw-bold" style="font-size: 0.79rem;">Card · Seguridad de Cuenta</div>
+                    <div class="text-muted" style="font-size: 0.69rem;">Password y Correo de acceso</div>
+                  </div>
+                </div>
+                <span class="badge text-bg-success">Ajustes <i class="bi bi-arrow-right-short"></i></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FILA 2: 2 GRÁFICOS HD EN TIEMPO REAL (Barras + Donut) -->
+        <div class="row g-2 mb-2 section-panel" data-group="general">
+          <div class="col-12 col-lg-7">
+            <div class="card module-card h-100">
+              <div class="module-header">
+                <span class="fw-bold"><i class="bi bi-bar-chart-fill me-1 text-primary"></i>Gráfico · Comparativa Stock, Entradas y Salidas</span>
+                <div style="font-size: 0.71rem;">
+                  <span class="me-2"><span class="chart-legend-dot" style="background:#111111;"></span>Stock</span>
+                  <span class="me-2"><span class="chart-legend-dot" style="background:#16a34a;"></span>Entradas</span>
+                  <span><span class="chart-legend-dot" style="background:#dc2626;"></span>Salidas</span>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="chart-canvas-wrapper">
+                  <canvas id="barChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-lg-5">
+            <div class="card module-card h-100">
+              <div class="module-header">
+                <span class="fw-bold"><i class="bi bi-pie-chart-fill me-1 text-success"></i>Gráfico · Distribución por Categoría</span>
+                <span class="badge text-bg-light border">Interactivo</span>
+              </div>
+              <div class="card-body">
+                <div class="chart-canvas-wrapper">
+                  <canvas id="donutChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FILA 3: TABLA DE PRODUCTOS + ENTRADA / SALIDA -->
+        <div class="row g-2 mb-2">
+          <!-- Tabla de Inventario de Productos -->
+          <div class="col-12 col-lg-7 section-panel" id="inventario-productos" data-group="grupo-inventario">
+            <div class="card module-card h-100">
+              <div class="module-header flex-wrap gap-1">
+                <span class="fw-bold"><i class="bi bi-table me-1"></i>Tabla · Inventario de Productos</span>
+                <div class="d-flex align-items-center gap-1">
+                  <select id="filtroCategoriaSelect" class="form-select form-select-sm py-0" style="width: 105px; font-size: 0.73rem;">
+                    <option value="">Categorías</option>
+                    <option value="Video">Video</option>
+                    <option value="Audio">Audio</option>
+                    <option value="Luz">Luz</option>
+                    <option value="Rig">Rig</option>
+                  </select>
+                  <input type="search" id="buscarProductoInput" class="form-control form-control-sm py-0" placeholder="Buscar..." style="width: 130px; font-size: 0.73rem;">
+                </div>
+              </div>
+              <div class="card-body p-0">
+                <div class="table-responsive">
+                  <table class="table table-sm table-hover align-middle mb-0">
+                    <thead class="table-light">
+                      <tr>
+                        <th class="ps-3">Cód.</th>
+                        <th>Producto</th>
+                        <th>Cat.</th>
+                        <th>Nivel</th>
+                        <th>Stock</th>
+                        <th>Ajuste Rápido</th>
+                        <th class="pe-3">Estado</th>
+                      </tr>
+                    </thead>
+                    <tbody id="productosTableBody">
+                      <tr data-codigo="SP-001" data-cat="Video" data-entradas="15" data-salidas="6">
+                        <td class="ps-3 fw-semibold">SP-001</td>
+                        <td>Cámara Sony FX3 Cinema</td>
+                        <td><span class="badge text-bg-light border">Video</span></td>
+                        <td style="width: 75px;">
+                          <div class="progress" style="height: 5px;"><div class="progress-bar bg-dark stock-bar" style="width: 75%"></div></div>
+                        </td>
+                        <td class="fw-bold stock-cell">45</td>
+                        <td>
+                          <button type="button" class="btn btn-outline-success btn-qty" onclick="ajusteRapido('SP-001', 1)" title="+1 Entrada">+</button>
+                          <button type="button" class="btn btn-outline-danger btn-qty" onclick="ajusteRapido('SP-001', -1)" title="-1 Salida">-</button>
+                        </td>
+                        <td class="pe-3"><span class="badge text-bg-success status-badge">Disponible</span></td>
+                      </tr>
+                      <tr data-codigo="SP-002" data-cat="Audio" data-entradas="20" data-salidas="8">
+                        <td class="ps-3 fw-semibold">SP-002</td>
+                        <td>Micrófono Shure SM7B</td>
+                        <td><span class="badge text-bg-light border">Audio</span></td>
+                        <td style="width: 75px;">
+                          <div class="progress" style="height: 5px;"><div class="progress-bar bg-dark stock-bar" style="width: 90%"></div></div>
+                        </td>
+                        <td class="fw-bold stock-cell">60</td>
+                        <td>
+                          <button type="button" class="btn btn-outline-success btn-qty" onclick="ajusteRapido('SP-002', 1)" title="+1 Entrada">+</button>
+                          <button type="button" class="btn btn-outline-danger btn-qty" onclick="ajusteRapido('SP-002', -1)" title="-1 Salida">-</button>
+                        </td>
+                        <td class="pe-3"><span class="badge text-bg-success status-badge">Disponible</span></td>
+                      </tr>
+                      <tr data-codigo="SP-003" data-cat="Luz" data-entradas="12" data-salidas="5">
+                        <td class="ps-3 fw-semibold">SP-003</td>
+                        <td>Panel LED Aputure 600d</td>
+                        <td><span class="badge text-bg-light border">Luz</span></td>
+                        <td style="width: 75px;">
+                          <div class="progress" style="height: 5px;"><div class="progress-bar bg-dark stock-bar" style="width: 65%"></div></div>
+                        </td>
+                        <td class="fw-bold stock-cell">40</td>
+                        <td>
+                          <button type="button" class="btn btn-outline-success btn-qty" onclick="ajusteRapido('SP-003', 1)" title="+1 Entrada">+</button>
+                          <button type="button" class="btn btn-outline-danger btn-qty" onclick="ajusteRapido('SP-003', -1)" title="-1 Salida">-</button>
+                        </td>
+                        <td class="pe-3"><span class="badge text-bg-success status-badge">Disponible</span></td>
+                      </tr>
+                      <tr data-codigo="SP-004" data-cat="Rig" data-entradas="10" data-salidas="4">
+                        <td class="ps-3 fw-semibold">SP-004</td>
+                        <td>Estabilizador DJI RS3 Pro</td>
+                        <td><span class="badge text-bg-light border">Rig</span></td>
+                        <td style="width: 75px;">
+                          <div class="progress" style="height: 5px;"><div class="progress-bar bg-dark stock-bar" style="width: 45%"></div></div>
+                        </td>
+                        <td class="fw-bold stock-cell">25</td>
+                        <td>
+                          <button type="button" class="btn btn-outline-success btn-qty" onclick="ajusteRapido('SP-004', 1)" title="+1 Entrada">+</button>
+                          <button type="button" class="btn btn-outline-danger btn-qty" onclick="ajusteRapido('SP-004', -1)" title="-1 Salida">-</button>
+                        </td>
+                        <td class="pe-3"><span class="badge text-bg-success status-badge">Disponible</span></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Entrada y Salida de Inventario -->
+          <div class="col-12 col-lg-5">
+            <div class="row g-2">
+              <div class="col-12 section-panel" id="inventario-entrada" data-group="grupo-inventario">
+                <div class="card module-card">
+                  <div class="module-header">
+                    <span class="fw-bold text-success"><i class="bi bi-box-arrow-in-down me-1"></i>Inventario · Entrada (+)</span>
+                    <span class="badge text-bg-success-subtle text-success">Sumar Stock</span>
+                  </div>
+                  <div class="card-body">
+                    <form id="formEntrada" class="row g-1 align-items-center">
+                      <div class="col-5">
+                        <select class="form-select form-select-sm py-1" id="entradaProducto" style="font-size: 0.76rem;">
+                          <option value="SP-001">SP-001 · Sony FX3</option>
+                          <option value="SP-002">SP-002 · Shure SM7B</option>
+                          <option value="SP-003">SP-003 · LED Aputure</option>
+                          <option value="SP-004">SP-004 · DJI RS3</option>
+                        </select>
+                      </div>
+                      <div class="col-3">
+                        <input type="number" class="form-control form-control-sm py-1" id="entradaCantidad" min="1" value="5" style="font-size: 0.76rem;" required>
+                      </div>
+                      <div class="col-4 d-grid">
+                        <button type="submit" class="btn btn-success btn-sm py-1" style="font-size: 0.76rem;">
+                          <i class="bi bi-plus-lg me-1"></i>Entrada
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12 section-panel" id="inventario-salida" data-group="grupo-inventario">
+                <div class="card module-card">
+                  <div class="module-header">
+                    <span class="fw-bold text-danger"><i class="bi bi-box-arrow-up me-1"></i>Inventario · Salida (-)</span>
+                    <span class="badge text-bg-danger-subtle text-danger">Restar Stock</span>
+                  </div>
+                  <div class="card-body">
+                    <form id="formSalida" class="row g-1 align-items-center">
+                      <div class="col-5">
+                        <select class="form-select form-select-sm py-1" id="salidaProducto" style="font-size: 0.76rem;">
+                          <option value="SP-001">SP-001 · Sony FX3</option>
+                          <option value="SP-002">SP-002 · Shure SM7B</option>
+                          <option value="SP-003">SP-003 · LED Aputure</option>
+                          <option value="SP-004">SP-004 · DJI RS3</option>
+                        </select>
+                      </div>
+                      <div class="col-3">
+                        <input type="number" class="form-control form-control-sm py-1" id="salidaCantidad" min="1" value="2" style="font-size: 0.76rem;" required>
+                      </div>
+                      <div class="col-4 d-grid">
+                        <button type="submit" class="btn btn-danger btn-sm py-1" style="font-size: 0.76rem;">
+                          <i class="bi bi-dash-lg me-1"></i>Salida
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FILA 4: USUARIO (Admin / Restar) Y CONFIGURACIÓN (Password / Email) -->
+        <div class="row g-2">
+          <!-- Usuario: Admin -->
+          <div class="col-12 col-md-6 col-xl-3 section-panel" id="usuario-admin" data-group="grupo-usuario">
+            <div class="card module-card h-100">
+              <div class="module-header">
+                <span class="fw-bold"><i class="bi bi-person-badge me-1 text-primary"></i>Usuario · Admin</span>
+                <span class="badge text-bg-light border">Roles</span>
+              </div>
+              <div class="card-body">
+                <form id="formAddAdmin" class="d-flex gap-1 mb-2">
+                  <input type="text" class="form-control form-control-sm py-1" id="adminNameInput" placeholder="Nombre Admin..." style="font-size: 0.75rem;" required>
+                  <button type="submit" class="btn btn-studio-dark btn-sm py-1 px-2" style="font-size: 0.75rem;" title="Agregar Admin">
+                    <i class="bi bi-person-plus"></i>
+                  </button>
+                </form>
+                <table class="table table-sm align-middle mb-0" style="font-size: 0.75rem;">
+                  <tbody id="adminTableBody">
+                    <tr data-user="Carlos M.">
+                      <td><img src="../assets/imagenes/user.jpg" alt="" class="avatar-sm me-1">Carlos M.</td>
+                      <td class="text-end"><span class="badge text-bg-success">Super Admin</span></td>
+                    </tr>
+                    <tr data-user="Elena R.">
+                      <td><img src="../assets/imagenes/logo.jpg" alt="" class="avatar-sm me-1">Elena R.</td>
+                      <td class="text-end"><span class="badge text-bg-primary">Inventario</span></td>
+                    </tr>
+                    <tr data-user="Marco D.">
+                      <td><img src="../assets/imagenes/user.jpg" alt="" class="avatar-sm me-1">Marco D.</td>
+                      <td class="text-end"><span class="badge text-bg-secondary">Soporte</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Usuario: Restar -->
+          <div class="col-12 col-md-6 col-xl-3 section-panel" id="usuario-restar" data-group="grupo-usuario">
+            <div class="card module-card h-100">
+              <div class="module-header">
+                <span class="fw-bold"><i class="bi bi-person-dash me-1 text-danger"></i>Usuario · Restar</span>
+                <span class="badge text-bg-warning-subtle text-warning-emphasis">Bajas</span>
+              </div>
+              <div class="card-body">
+                <form id="formRestarUsuario">
+                  <select class="form-select form-select-sm py-1 mb-2" id="selectUserRestar" style="font-size: 0.75rem;">
+                    <option value="Carlos M.">Carlos M. (Super Admin)</option>
+                    <option value="Elena R.">Elena R. (Inventario)</option>
+                    <option value="Marco D.">Marco D. (Soporte)</option>
+                  </select>
+                  <select class="form-select form-select-sm py-1 mb-2" id="selectAccionRestar" style="font-size: 0.75rem;">
+                    <option value="Restar permisos">Restar permisos</option>
+                    <option value="Restablecer sesión">Restablecer sesión</option>
+                    <option value="Eliminar de lista">Eliminar de lista</option>
+                  </select>
+                  <button type="submit" class="btn btn-outline-danger btn-sm w-100 py-1" style="font-size: 0.75rem;">
+                    <i class="bi bi-person-x me-1"></i>Aplicar a Usuario
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <!-- Configuración: Password -->
+          <div class="col-12 col-md-6 col-xl-3 section-panel" id="config-password" data-group="grupo-config">
+            <div class="card module-card h-100">
+              <div class="module-header">
+                <span class="fw-bold"><i class="bi bi-key me-1"></i>Config · Password</span>
+                <span class="badge text-bg-light border">Clave</span>
+              </div>
+              <div class="card-body">
+                <form id="formPassword">
+                  <div class="input-group input-group-sm mb-2">
+                    <span class="input-group-text bg-light"><i class="bi bi-lock"></i></span>
+                    <input type="password" class="form-control py-1" placeholder="Clave actual" style="font-size: 0.75rem;" required>
+                  </div>
+                  <div class="input-group input-group-sm mb-2">
+                    <span class="input-group-text bg-light"><i class="bi bi-shield-lock"></i></span>
+                    <input type="password" class="form-control py-1" placeholder="Nueva clave" style="font-size: 0.75rem;" required minlength="4">
+                  </div>
+                  <button type="submit" class="btn btn-studio-dark btn-sm w-100 py-1" style="font-size: 0.75rem;">
+                    <i class="bi bi-check2-circle me-1"></i>Actualizar Password
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <!-- Configuración: Email -->
+          <div class="col-12 col-md-6 col-xl-3 section-panel" id="config-email" data-group="grupo-config">
+            <div class="card module-card h-100">
+              <div class="module-header">
+                <span class="fw-bold"><i class="bi bi-envelope-at me-1"></i>Config · Email</span>
+                <span class="badge text-bg-light border">Correo</span>
+              </div>
+              <div class="card-body">
+                <form id="formEmail">
+                  <div class="input-group input-group-sm mb-2">
+                    <span class="input-group-text bg-light"><i class="bi bi-envelope"></i></span>
+                    <input type="email" class="form-control bg-light py-1" id="currentEmailInput" value="admin@studioplay.com" style="font-size: 0.75rem;" readonly>
+                  </div>
+                  <div class="input-group input-group-sm mb-2">
+                    <span class="input-group-text bg-light"><i class="bi bi-pencil-square"></i></span>
+                    <input type="email" class="form-control py-1" id="newEmailInput" placeholder="nuevo@studioplay.com" style="font-size: 0.75rem;" required>
+                  </div>
+                  <button type="submit" class="btn btn-studio-dark btn-sm w-100 py-1" style="font-size: 0.75rem;">
+                    <i class="bi bi-save me-1"></i>Guardar Email
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal de Login de Acceso -->
+  <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-header border-0 pb-0">
+          <div class="d-flex align-items-center gap-2">
+            <img src="../assets/imagenes/logo.jpg" alt="Studio play" class="modal-brand-logo">
+            <h5 class="modal-title fw-bold" id="loginModalLabel">Iniciar Sesión - Studio play</h5>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body pt-3">
+          <div class="text-center mb-3">
+            <img src="../assets/imagenes/user.jpg" alt="Usuario" class="rounded-circle border mb-2" style="width: 68px; height: 68px; object-fit: cover;">
+            <p class="text-muted small mb-0">Ingresa tus credenciales para acceder a tu cuenta</p>
+          </div>
+          <form id="modalLoginForm">
+            <div class="mb-3">
+              <label for="modalEmail" class="form-label small fw-semibold">Correo electrónico</label>
+              <input type="email" class="form-control" id="modalEmail" placeholder="usuario@studioplay.com" required>
+            </div>
+            <div class="mb-3">
+              <label for="modalPassword" class="form-label small fw-semibold">Contraseña</label>
+              <input type="password" class="form-control" id="modalPassword" placeholder="••••••••" required>
+            </div>
+            <div class="d-grid">
+              <button type="submit" class="btn btn-studio">Iniciar Sesión</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notificación Toast Flotante -->
+  <div id="studioToast" class="studio-toast d-none">
+    <i class="bi bi-check-circle-fill text-success"></i>
+    <span id="studioToastText">Acción completada</span>
+  </div>
+
+  <script src="../assets/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // =======================================================
+    // LÓGICA DEL NAVBAR Y CONTROL DEL SIDEBAR RETRÁCTIL
+    // =======================================================
+    const loggedInSection = document.getElementById('loggedInSection');
+    const loggedOutSection = document.getElementById('loggedOutSection');
+    const navLogoutBtn = document.getElementById('navLogoutBtn');
+    const dropdownLogoutBtn = document.getElementById('dropdownLogoutBtn');
+    const modalLoginForm = document.getElementById('modalLoginForm');
+    const loginModalEl = document.getElementById('loginModal');
+    const navbarSidebarToggle = document.getElementById('navbarSidebarToggle');
+    const sidebarFrame = document.getElementById('sidebarFrame');
+
+    navbarSidebarToggle.addEventListener('click', function () {
+      if (sidebarFrame && sidebarFrame.contentWindow) {
+        sidebarFrame.contentWindow.postMessage('toggle-sidebar', '*');
+      }
+    });
+
+    function cerrarSesion() {
+      loggedInSection.classList.add('d-none');
+      loggedOutSection.classList.remove('d-none');
+    }
+
+    navLogoutBtn.addEventListener('click', cerrarSesion);
+    dropdownLogoutBtn.addEventListener('click', cerrarSesion);
+
+    modalLoginForm.addEventListener('submit', function (event) {
+      event.preventDefault();
+      const email = document.getElementById('modalEmail').value;
+      const username = email.split('@')[0] || 'Mi Cuenta';
+
+      document.getElementById('navbarUserName').textContent = username;
+      document.getElementById('dropdownUserTitle').textContent = username;
+      document.getElementById('dropdownUserEmail').textContent = email;
+
+      loggedOutSection.classList.add('d-none');
+      loggedInSection.classList.remove('d-none');
+
+      const modalInstance = bootstrap.Modal.getInstance(loginModalEl);
+      if (modalInstance) modalInstance.hide();
+    });
+
+    // =======================================================
+    // LÓGICA DEL DASHBOARD (GRÁFICOS, TABLAS Y CARDS)
+    // =======================================================
+    const toastEl = document.getElementById('studioToast');
+    const toastText = document.getElementById('studioToastText');
+    const panels = document.querySelectorAll('.section-panel');
+    const filterPills = document.querySelectorAll('.filter-pill');
+    let toastTimer = null;
+
+    function mostrarMensaje(texto) {
+      toastText.textContent = texto;
+      toastEl.classList.remove('d-none');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toastEl.classList.add('d-none'), 3000);
+    }
+
+    function obtenerDatosInventario() {
+      const filas = document.querySelectorAll('#productosTableBody tr');
+      const items = [];
+      filas.forEach(tr => {
+        items.push({
+          codigo: tr.dataset.codigo,
+          categoria: tr.dataset.cat,
+          stock: parseInt(tr.querySelector('.stock-cell').textContent, 10) || 0,
+          entradas: parseInt(tr.dataset.entradas, 10) || 0,
+          salidas: parseInt(tr.dataset.salidas, 10) || 0
+        });
+      });
+      return items;
+    }
+
+    function prepararCanvas(canvas) {
+      const parent = canvas.parentElement;
+      const dpr = window.devicePixelRatio || 1;
+      const rectW = parent.clientWidth || 420;
+      const rectH = parent.clientHeight || 155;
+      canvas.width = rectW * dpr;
+      canvas.height = rectH * dpr;
+      canvas.style.width = rectW + 'px';
+      canvas.style.height = rectH + 'px';
+      const ctx = canvas.getContext('2d');
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      return { ctx, W: rectW, H: rectH };
+    }
+
+    function dibujarGraficoBarras() {
+      const canvas = document.getElementById('barChart');
+      if (!canvas || canvas.offsetParent === null) return;
+      const { ctx, W, H } = prepararCanvas(canvas);
+      ctx.clearRect(0, 0, W, H);
+
+      const datos = obtenerDatosInventario();
+      const padLeft = 34;
+      const padBottom = 22;
+      const padTop = 18;
+      const chartW = W - padLeft - 12;
+      const chartH = H - padBottom - padTop;
+      const maxVal = Math.max(70, ...datos.map(d => Math.max(d.stock, d.entradas, d.salidas)));
+
+      ctx.strokeStyle = '#f1f5f9';
+      ctx.fillStyle = '#64748b';
+      ctx.font = '10px system-ui, sans-serif';
+      for (let i = 0; i <= 3; i++) {
+        const val = Math.round((maxVal / 3) * i);
+        const y = padTop + chartH - (chartH * (i / 3));
+        ctx.beginPath();
+        ctx.moveTo(padLeft, y);
+        ctx.lineTo(W - 8, y);
+        ctx.stroke();
+        ctx.fillText(val.toString(), 6, y + 3);
+      }
+
+      const groupW = chartW / datos.length;
+      const barW = Math.min(18, Math.max(10, Math.floor(groupW / 4.5)));
+      datos.forEach((d, idx) => {
+        const groupX = padLeft + idx * groupW + (groupW - (barW * 3 + 6)) / 2;
+        const series = [
+          { val: d.stock, color: '#111111' },
+          { val: d.entradas, color: '#16a34a' },
+          { val: d.salidas, color: '#dc2626' }
+        ];
+
+        series.forEach((s, sIdx) => {
+          const bHeight = Math.max(2, (s.val / maxVal) * chartH);
+          const x = groupX + sIdx * (barW + 3);
+          const y = padTop + chartH - bHeight;
+
+          ctx.fillStyle = s.color;
+          ctx.beginPath();
+          ctx.roundRect(x, y, barW, bHeight, [3, 3, 0, 0]);
+          ctx.fill();
+
+          ctx.fillStyle = '#334155';
+          ctx.font = 'bold 9px system-ui, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(s.val.toString(), x + barW / 2, y - 3);
+        });
+
+        ctx.fillStyle = '#334155';
+        ctx.font = '600 10px system-ui, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(`${d.codigo} (${d.categoria})`, padLeft + idx * groupW + groupW / 2, H - 5);
+      });
+      ctx.textAlign = 'start';
+    }
+
+    function dibujarGraficoDonut() {
+      const canvas = document.getElementById('donutChart');
+      if (!canvas || canvas.offsetParent === null) return;
+      const { ctx, W, H } = prepararCanvas(canvas);
+      ctx.clearRect(0, 0, W, H);
+
+      const datos = obtenerDatosInventario();
+      const colores = ['#111111', '#2563eb', '#16a34a', '#ea580c'];
+      const total = datos.reduce((acc, d) => acc + d.stock, 0) || 1;
+
+      const cx = Math.min(90, W * 0.3);
+      const cy = H / 2;
+      const radius = Math.min(60, H * 0.4);
+      const innerRadius = radius * 0.6;
+
+      let startAngle = -Math.PI / 2;
+      datos.forEach((d, i) => {
+        const sliceAngle = (d.stock / total) * Math.PI * 2;
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius, startAngle, startAngle + sliceAngle);
+        ctx.arc(cx, cy, innerRadius, startAngle + sliceAngle, startAngle, true);
+        ctx.closePath();
+        ctx.fillStyle = colores[i % colores.length];
+        ctx.fill();
+        startAngle += sliceAngle;
+      });
+
+      ctx.fillStyle = '#0f172a';
+      ctx.font = 'bold 14px system-ui, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(total.toString(), cx, cy + 2);
+      ctx.fillStyle = '#64748b';
+      ctx.font = '9px system-ui, sans-serif';
+      ctx.fillText('TOTAL', cx, cy + 13);
+      ctx.textAlign = 'start';
+
+      const legendX = cx + radius + 22;
+      datos.forEach((d, i) => {
+        const ly = 22 + i * 31;
+        const pct = Math.round((d.stock / total) * 100);
+        ctx.fillStyle = colores[i % colores.length];
+        ctx.beginPath();
+        ctx.roundRect(legendX, ly, 10, 10, 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#1e293b';
+        ctx.font = '600 11px system-ui, sans-serif';
+        ctx.fillText(`${d.categoria}: ${pct}% (${d.stock} uds)`, legendX + 16, ly + 9);
+      });
+    }
+
+    function redibujarGraficos() {
+      dibujarGraficoBarras();
+      dibujarGraficoDonut();
+    }
+
+    window.addEventListener('resize', redibujarGraficos);
+
+    // Mostrar una sección específica o un grupo
+    function mostrarSeccion(seccion) {
+      if (!seccion || seccion === 'todos') {
+        filtrarPorGrupo('todos');
+        return;
+      }
+      filterPills.forEach(btn => btn.classList.remove('active'));
+      panels.forEach(p => {
+        if (p.id === seccion) {
+          p.classList.remove('d-none');
+        } else {
+          p.classList.add('d-none');
+        }
+      });
+    }
+
+    function filtrarPorGrupo(grupo) {
+      filterPills.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.filter === grupo);
+      });
+
+      if (grupo === 'todos') {
+        panels.forEach(p => p.classList.remove('d-none'));
+        setTimeout(redibujarGraficos, 20);
+        return;
+      }
+
+      panels.forEach(p => {
+        if (p.dataset.group === grupo) {
+          p.classList.remove('d-none');
+        } else {
+          p.classList.add('d-none');
+        }
+      });
+    }
+
+    filterPills.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filtrarPorGrupo(btn.dataset.filter);
+      });
+    });
+
+    // Escuchar mensajes enviados desde el iframe de sidebar.html
+    window.addEventListener('message', function (event) {
+      if (event.data && event.data.type === 'navigate-section') {
+        if (event.data.section === 'usuario-admin') {
+          window.location.href = './useradmin.html';
+          return;
+        }
+        mostrarSeccion(event.data.section);
+      } else if (event.data && event.data.type === 'sidebar-resized') {
+        setTimeout(redibujarGraficos, 260);
+      }
+    });
+
+    redibujarGraficos();
+
+    // Filtros combinados en la Tabla de Productos
+    function filtrarTablaProductos() {
+      const q = document.getElementById('buscarProductoInput').value.toLowerCase();
+      const cat = document.getElementById('filtroCategoriaSelect').value;
+      document.querySelectorAll('#productosTableBody tr').forEach(tr => {
+        const matchTexto = tr.textContent.toLowerCase().includes(q);
+        const matchCat = !cat || tr.dataset.cat === cat;
+        tr.style.display = (matchTexto && matchCat) ? '' : 'none';
+      });
+    }
+
+    document.getElementById('buscarProductoInput').addEventListener('input', filtrarTablaProductos);
+    document.getElementById('filtroCategoriaSelect').addEventListener('change', filtrarTablaProductos);
+
+    // Ajuste Rápido (+1 / -1) directamente en la Tabla
+    window.ajusteRapido = function (codigo, delta) {
+      const tr = document.querySelector(`tr[data-codigo="${codigo}"]`);
+      if (!tr) return;
+      const cell = tr.querySelector('.stock-cell');
+      const actual = parseInt(cell.textContent, 10) || 0;
+      const nuevo = Math.max(0, actual + delta);
+      cell.textContent = nuevo;
+
+      if (delta > 0) {
+        tr.dataset.entradas = (parseInt(tr.dataset.entradas, 10) || 0) + delta;
+        const statE = document.getElementById('statEntradas');
+        statE.textContent = parseInt(statE.textContent, 10) + delta;
+      } else if (actual > 0) {
+        tr.dataset.salidas = (parseInt(tr.dataset.salidas, 10) || 0) + Math.abs(delta);
+        const statS = document.getElementById('statSalidas');
+        statS.textContent = parseInt(statS.textContent, 10) + Math.abs(delta);
+      }
+
+      actualizarTotalStock();
+      mostrarMensaje(`${delta > 0 ? 'Entrada (+1)' : 'Salida (-1)'} aplicada en ${codigo}`);
+    };
+
+    function actualizarTotalStock() {
+      let total = 0;
+      document.querySelectorAll('#productosTableBody tr').forEach(tr => {
+        const val = parseInt(tr.querySelector('.stock-cell').textContent, 10) || 0;
+        total += val;
+        const bar = tr.querySelector('.stock-bar');
+        const badge = tr.querySelector('.status-badge');
+        if (bar) bar.style.width = Math.min(100, Math.round((val / 80) * 100)) + '%';
+        if (badge) {
+          if (val === 0) {
+            badge.className = 'badge text-bg-danger status-badge';
+            badge.textContent = 'Agotado';
+          } else if (val < 15) {
+            badge.className = 'badge text-bg-warning status-badge';
+            badge.textContent = 'Bajo';
+          } else {
+            badge.className = 'badge text-bg-success status-badge';
+            badge.textContent = 'Disponible';
+          }
+        }
+      });
+      document.getElementById('statTotalProductos').textContent = total;
+      redibujarGraficos();
+    }
+
+    document.getElementById('formEntrada').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const codigo = document.getElementById('entradaProducto').value;
+      const cant = parseInt(document.getElementById('entradaCantidad').value, 10) || 0;
+      const tr = document.querySelector(`tr[data-codigo="${codigo}"]`);
+      if (tr) {
+        const cell = tr.querySelector('.stock-cell');
+        cell.textContent = parseInt(cell.textContent, 10) + cant;
+        tr.dataset.entradas = (parseInt(tr.dataset.entradas, 10) || 0) + cant;
+      }
+      const statEntradas = document.getElementById('statEntradas');
+      statEntradas.textContent = parseInt(statEntradas.textContent, 10) + cant;
+      actualizarTotalStock();
+      mostrarMensaje(`Entrada registrada: +${cant} uds en ${codigo}`);
+    });
+
+    document.getElementById('formSalida').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const codigo = document.getElementById('salidaProducto').value;
+      const cant = parseInt(document.getElementById('salidaCantidad').value, 10) || 0;
+      const tr = document.querySelector(`tr[data-codigo="${codigo}"]`);
+      if (tr) {
+        const cell = tr.querySelector('.stock-cell');
+        const actual = parseInt(cell.textContent, 10);
+        cell.textContent = Math.max(0, actual - cant);
+        tr.dataset.salidas = (parseInt(tr.dataset.salidas, 10) || 0) + cant;
+      }
+      const statSalidas = document.getElementById('statSalidas');
+      statSalidas.textContent = parseInt(statSalidas.textContent, 10) + cant;
+      actualizarTotalStock();
+      mostrarMensaje(`Salida registrada: -${cant} uds en ${codigo}`);
+    });
+
+    document.getElementById('formAddAdmin').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const nombre = document.getElementById('adminNameInput').value;
+      const tbody = document.getElementById('adminTableBody');
+      const tr = document.createElement('tr');
+      tr.dataset.user = nombre;
+      tr.innerHTML = `
+        <td><img src="../assets/imagenes/user.jpg" alt="" class="avatar-sm me-1">${nombre}</td>
+        <td class="text-end"><span class="badge text-bg-success">Admin</span></td>
+      `;
+      tbody.appendChild(tr);
+
+      const selectRestar = document.getElementById('selectUserRestar');
+      const opt = document.createElement('option');
+      opt.value = nombre;
+      opt.textContent = `${nombre} (Admin)`;
+      selectRestar.appendChild(opt);
+
+      document.getElementById('statUsuarios').textContent = tbody.querySelectorAll('tr').length;
+      this.reset();
+      mostrarMensaje('Administrador "' + nombre + '" agregado.');
+    });
+
+    document.getElementById('formRestarUsuario').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const user = document.getElementById('selectUserRestar').value;
+      const accion = document.getElementById('selectAccionRestar').value;
+      if (accion === 'Eliminar de lista') {
+        const row = document.querySelector(`#adminTableBody tr[data-user="${user}"]`);
+        if (row) row.remove();
+        const opt = document.querySelector(`#selectUserRestar option[value="${user}"]`);
+        if (opt) opt.remove();
+        document.getElementById('statUsuarios').textContent =
+          document.querySelectorAll('#adminTableBody tr').length;
+      }
+      mostrarMensaje(`${accion} aplicado a ${user}`);
+    });
+
+    document.getElementById('formPassword').addEventListener('submit', function (e) {
+      e.preventDefault();
+      this.reset();
+      mostrarMensaje('Password actualizado con éxito.');
+    });
+
+    document.getElementById('formEmail').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const nuevoEmail = document.getElementById('newEmailInput').value;
+      document.getElementById('currentEmailInput').value = nuevoEmail;
+      document.getElementById('newEmailInput').value = '';
+      mostrarMensaje('Email actualizado a: ' + nuevoEmail);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+:root {
+  --studio-dark: #111111;
+  --studio-accent: #212529;
+  --studio-bg: transparent;
+  --navbar-height: 60px;
+}
+
+body {
+  background-color: var(--studio-bg);
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Navbar Superior Compacto */
+.navbar-studio {
+  min-height: var(--navbar-height);
+  background-color: #ffffff;
+  border-bottom: 1px solid #e9ecef;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.04);
+  padding: 0.25rem 1rem;
+  z-index: 1030;
+}
+
+.navbar-brand {
+  color: var(--studio-dark) !important;
+  text-decoration: none;
+  gap: 0.1rem;
+}
+
+.brand-logo {
+  height: 30px;
+  width: auto;
+  object-fit: contain;
+  border-radius: 4px;
+  transition: transform 0.2s ease;
+}
+
+.brand-title {
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: -0.2px;
+  color: var(--studio-dark);
+}
+
+.navbar-brand:hover .brand-logo {
+  transform: scale(1.05);
+}
+
+/* Perfil de usuario y acceso en Navbar */
+.user-avatar {
+  width: 30px;
+  height: 30px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 1.5px solid #212529;
+}
+
+.user-profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 50rem;
+  border: 1px solid #dee2e6;
+  background-color: #f8f9fa;
+  color: #212529;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.user-profile-btn:hover {
+  background-color: #e9ecef;
+  color: #000000;
+}
+
+.btn-studio {
+  background-color: #111111;
+  color: #ffffff;
+  font-weight: 600;
+  padding: 0.45rem 1rem;
+  border-radius: 0.4rem;
+  border: 1px solid #111111;
+  transition: all 0.2s ease;
+}
+
+.btn-studio:hover {
+  background-color: #343a40;
+  border-color: #343a40;
+  color: #ffffff;
+}
+
+.modal-brand-logo {
+  height: 28px;
+  width: auto;
+}

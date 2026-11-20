@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Studio play - Sidebar</title>
+  <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../assets/css/sidebar.css">
+  <link rel="stylesheet" href="../../node_modules/bootstrap-icons/font/bootstrap-icons.min.css">
+</head>
+<body>
+
+  <aside class="sidebar-studio">
+    <div class="w-100">
+      <!-- Barra superior para retraer o expandir el Sidebar -->
+      <div class="sidebar-toggle-bar">
+        <span class="fw-bold text-muted sidebar-label" style="font-size: 0.72rem; letter-spacing: 0.04em;">MENÚ</span>
+        <button type="button" class="sidebar-toggle-btn" id="collapseSidebarBtn" title="Retraer / Expandir Sidebar">
+          <i class="bi bi-chevron-bar-left" id="collapseSidebarIcon"></i>
+        </button>
+      </div>
+
+      <!-- Botón Resumen General -->
+      <div class="mb-2">
+        <a href="#todos" data-section="todos" class="sidebar-link" title="Dashboard General">
+          <i class="bi bi-grid-1x2-fill"></i>
+          <span class="sidebar-label">Dashboard General</span>
+        </a>
+      </div>
+
+      <!-- 1. CONFIGURACIÓN -->
+      <div class="sidebar-group">
+        <div class="sidebar-group-header" data-bs-toggle="collapse" data-bs-target="#menuConfiguracion" aria-expanded="true" title="Configuración">
+          <span><i class="bi bi-gear-fill me-2"></i><span class="sidebar-group-title-text">Configuración</span></span>
+          <i class="bi bi-chevron-down small sidebar-chevron"></i>
+        </div>
+        <div class="collapse show" id="menuConfiguracion">
+          <ul class="sidebar-nav">
+            <li>
+              <a href="#config-password" data-section="config-password" class="sidebar-link" title="Configuración · Password">
+                <i class="bi bi-key"></i>
+                <span class="sidebar-label">Password</span>
+              </a>
+            </li>
+            <li>
+              <a href="#config-email" data-section="config-email" class="sidebar-link" title="Configuración · Email">
+                <i class="bi bi-envelope-at"></i>
+                <span class="sidebar-label">Email</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 2. USUARIO -->
+      <div class="sidebar-group">
+        <div class="sidebar-group-header" data-bs-toggle="collapse" data-bs-target="#menuUsuario" aria-expanded="true" title="Usuario">
+          <span><i class="bi bi-people-fill me-2"></i><span class="sidebar-group-title-text">Usuario</span></span>
+          <i class="bi bi-chevron-down small sidebar-chevron"></i>
+        </div>
+        <div class="collapse show" id="menuUsuario">
+          <ul class="sidebar-nav">
+            <li>
+              <a href="#usuario-admin" data-section="usuario-admin" class="sidebar-link" title="Usuario · Admin">
+                <i class="bi bi-person-badge"></i>
+                <span class="sidebar-label">Admin</span>
+              </a>
+            </li>
+            <li>
+              <a href="#usuario-restar" data-section="usuario-restar" class="sidebar-link" title="Usuario · Restar">
+                <i class="bi bi-person-dash"></i>
+                <span class="sidebar-label">Restar</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 3. INVENTARIO -->
+      <div class="sidebar-group">
+        <div class="sidebar-group-header" data-bs-toggle="collapse" data-bs-target="#menuInventario" aria-expanded="true" title="Inventario">
+          <span><i class="bi bi-box-seam-fill me-2"></i><span class="sidebar-group-title-text">Inventario</span></span>
+          <i class="bi bi-chevron-down small sidebar-chevron"></i>
+        </div>
+        <div class="collapse show" id="menuInventario">
+          <ul class="sidebar-nav">
+            <li>
+              <a href="#inventario-productos" data-section="inventario-productos" class="sidebar-link" title="Inventario · Productos">
+                <i class="bi bi-boxes"></i>
+                <span class="sidebar-label">Productos</span>
+              </a>
+            </li>
+            <li>
+              <a href="#inventario-entrada" data-section="inventario-entrada" class="sidebar-link" title="Inventario · Entrada">
+                <i class="bi bi-box-arrow-in-down"></i>
+                <span class="sidebar-label">Entrada</span>
+              </a>
+            </li>
+            <li>
+              <a href="#inventario-salida" data-section="inventario-salida" class="sidebar-link" title="Inventario · Salida">
+                <i class="bi bi-box-arrow-up"></i>
+                <span class="sidebar-label">Salida</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pie del Sidebar -->
+    <div class="sidebar-user-card w-100" title="Admin Studio · Sesión activa">
+      <img src="../assets/imagenes/user.jpg" alt="Avatar Usuario" class="sidebar-user-avatar">
+      <div class="overflow-hidden sidebar-user-info">
+        <div class="fw-bold small text-truncate">Admin Studio</div>
+        <div class="text-muted text-truncate" style="font-size: 0.7rem;">Sesión activa</div>
+      </div>
+    </div>
+  </aside>
+
+  <script src="../assets/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const links = document.querySelectorAll('.sidebar-link');
+    const collapseBtn = document.getElementById('collapseSidebarBtn');
+    const collapseIcon = document.getElementById('collapseSidebarIcon');
+    const activeSection = new URLSearchParams(window.location.search).get('section') || 'todos';
+
+    links.forEach(link => {
+      link.classList.toggle('active', link.dataset.section === activeSection);
+    });
+
+    links.forEach(link => {
+      link.addEventListener('click', function (e) {
+        if (!this.dataset.section) return;
+        e.preventDefault();
+        links.forEach(l => l.classList.remove('active'));
+        this.classList.add('active');
+        const section = this.dataset.section || 'todos';
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'navigate-section', section: section }, '*');
+        }
+      });
+    });
+
+    function alternarSidebar() {
+      const isCollapsed = document.body.classList.toggle('collapsed');
+      collapseIcon.className = isCollapsed ? 'bi bi-chevron-bar-right' : 'bi bi-chevron-bar-left';
+
+      if (window.frameElement) {
+        window.frameElement.classList.toggle('collapsed', isCollapsed);
+      }
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'sidebar-resized' }, '*');
+      }
+    }
+
+    collapseBtn.addEventListener('click', alternarSidebar);
+
+    window.addEventListener('message', function (event) {
+      if (event.data === 'toggle-sidebar') {
+        alternarSidebar();
+      }
+    });
+  </script>
+</body>
+</html>

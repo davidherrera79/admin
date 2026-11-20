@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Studio play - Registrar Usuario Nuevo</title>
+  <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../../node_modules/bootstrap-icons/font/bootstrap-icons.min.css">
+  <style>
+    body {
+      background-color: #f8fafc;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-size: 0.85rem;
+    }
+
+    .form-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 0.75rem;
+      background-color: #ffffff;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+    }
+
+    .role-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 0.5rem;
+      padding: 0.5rem 0.85rem;
+      background-color: #f8fafc;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .role-card:hover {
+      background-color: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+
+    .role-card:has(input:checked) {
+      background-color: #eef2ff;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+      font-weight: 600;
+    }
+
+    .edit-banner {
+      background-color: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <main class="container py-3">
+    <div class="card form-card mx-auto" style="max-width: 760px;">
+      <div class="card-body p-3 p-md-4">
+        <!-- Encabezado -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 pb-3 mb-3 border-bottom">
+          <div class="d-flex align-items-center gap-2">
+            <img src="../assets/imagenes/logo.jpg" alt="Studio play" style="height: 34px; border-radius: 6px;">
+            <div>
+              <h1 class="h5 fw-bold mb-0" id="formTitle">
+                <i class="bi bi-person-plus-fill me-1"></i>Registro de Usuarios Nuevos
+              </h1>
+              <p class="text-muted small mb-0">Ingresa los datos para dar de alta un nuevo usuario en Studio play</p>
+            </div>
+          </div>
+          <a href="./userlist.html" class="btn btn-outline-dark btn-sm" id="cancelButton">
+            <i class="bi bi-table me-1"></i>Ver Tabla de Usuarios
+          </a>
+        </div>
+
+        <!-- Alertas -->
+        <div class="alert alert-danger d-none py-2 small" id="userFormError" role="alert"></div>
+        <div class="alert alert-success d-none py-2 small" id="userFormSuccess" role="status"></div>
+        <div class="edit-banner d-none small px-3 py-2 mb-3 d-flex align-items-center gap-2" id="editBanner">
+          <i class="bi bi-info-circle-fill text-primary"></i>
+          <span>Estás editando un usuario existente. Los cambios se aplican al guardar.</span>
+        </div>
+
+        <!-- Formulario de Registro de Usuarios -->
+        <form id="userForm" novalidate>
+          <div class="row g-3 mb-3 align-items-center">
+            <div class="col-sm-6">
+              <label for="userId" class="form-label fw-semibold small mb-1">Id User (Autogenerado)</label>
+              <div class="input-group input-group-sm">
+                <span class="input-group-text bg-light"><i class="bi bi-hash"></i></span>
+                <input type="text" class="form-control bg-light fw-bold" id="userId" readonly>
+              </div>
+            </div>
+
+            <div class="col-sm-6">
+              <label class="form-label fw-semibold small mb-1 d-block">Estado Inicial</label>
+              <div class="form-check form-switch pt-1">
+                <input class="form-check-input" type="checkbox" role="switch" id="userActiveSwitch" checked>
+                <label class="form-check-label fw-semibold text-success" for="userActiveSwitch" id="userActiveLabel">
+                  Activo
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label for="firstName" class="form-label fw-semibold small mb-1">Nombre</label>
+              <div class="input-group input-group-sm has-validation">
+                <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
+                <input type="text" class="form-control" id="firstName" maxlength="80" placeholder="Ej. Valentina" required>
+                <div class="invalid-feedback">Por favor ingresa el nombre del usuario.</div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label for="lastName" class="form-label fw-semibold small mb-1">Apellido</label>
+              <div class="input-group input-group-sm has-validation">
+                <span class="input-group-text bg-light"><i class="bi bi-person-vcard"></i></span>
+                <input type="text" class="form-control" id="lastName" maxlength="80" placeholder="Ej. Gómez" required>
+                <div class="invalid-feedback">Por favor ingresa el apellido del usuario.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-7">
+              <label for="userEmail" class="form-label fw-semibold small mb-1">Correo electrónico (email)</label>
+              <div class="input-group input-group-sm has-validation">
+                <span class="input-group-text bg-light"><i class="bi bi-envelope-at"></i></span>
+                <input type="email" class="form-control" id="userEmail" maxlength="254" placeholder="valentina@studioplay.com" required>
+                <div class="invalid-feedback">Ingresa un correo electrónico válido.</div>
+              </div>
+            </div>
+
+            <div class="col-md-5" id="passwordGroup">
+              <label for="userPassword" class="form-label fw-semibold small mb-1">Contraseña de acceso</label>
+              <div class="input-group input-group-sm has-validation">
+                <span class="input-group-text bg-light"><i class="bi bi-key"></i></span>
+                <input type="password" class="form-control" id="userPassword" minlength="6" placeholder="Mínimo 6 caracteres" autocomplete="new-password" required>
+                <button type="button" class="btn btn-outline-secondary" id="togglePassword" aria-label="Mostrar contraseña" title="Mostrar / ocultar">
+                  <i class="bi bi-eye"></i>
+                </button>
+                <div class="invalid-feedback">Mínimo 6 caracteres.</div>
+              </div>
+            </div>
+          </div>
+
+          <fieldset class="mb-4">
+            <legend class="form-label fw-semibold small mb-2">Asignar Roles</legend>
+            <div class="d-flex flex-wrap gap-2" id="roleOptions">
+              <label class="role-card form-check m-0 d-flex align-items-center gap-2" for="roleAdmin">
+                <input class="form-check-input m-0" type="checkbox" name="roles" id="roleAdmin" value="Super Admin">
+                <span><i class="bi bi-shield-lock text-dark me-1"></i>Super Admin</span>
+              </label>
+
+              <label class="role-card form-check m-0 d-flex align-items-center gap-2" for="roleInventory">
+                <input class="form-check-input m-0" type="checkbox" name="roles" id="roleInventory" value="Inventario">
+                <span><i class="bi bi-box-seam text-primary me-1"></i>Inventario</span>
+              </label>
+
+              <label class="role-card form-check m-0 d-flex align-items-center gap-2" for="roleSupport">
+                <input class="form-check-input m-0" type="checkbox" name="roles" id="roleSupport" value="Soporte">
+                <span><i class="bi bi-headset text-success me-1"></i>Soporte</span>
+              </label>
+
+              <label class="role-card form-check m-0 d-flex align-items-center gap-2" for="roleOperator">
+                <input class="form-check-input m-0" type="checkbox" name="roles" id="roleOperator" value="Operador">
+                <span><i class="bi bi-camera-reels text-secondary me-1"></i>Operador</span>
+              </label>
+            </div>
+            <div class="invalid-feedback d-block d-none mt-1" id="roleError">
+              Debes seleccionar al menos un rol para el usuario.
+            </div>
+          </fieldset>
+
+          <div class="d-flex flex-wrap gap-2 pt-2 border-top">
+            <button type="submit" class="btn btn-dark btn-sm px-3" id="saveUserButton">
+              <i class="bi bi-person-check-fill me-1"></i>Registrar Usuario
+            </button>
+            <button type="button" class="btn btn-outline-dark btn-sm px-3" id="saveAndStayButton">
+              <i class="bi bi-plus-circle me-1"></i>Registrar y crear otro
+            </button>
+            <button type="button" class="btn btn-outline-secondary btn-sm px-3 d-none" id="cancelEditButton">
+              <i class="bi bi-x-circle me-1"></i>Cancelar edición
+            </button>
+            <button type="reset" class="btn btn-outline-secondary btn-sm px-3 ms-auto" id="resetButton">
+              <i class="bi bi-eraser me-1"></i>Limpiar campos
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <script src="../assets/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/js/user-admin-store.js"></script>
+  <script>
+    const userForm = document.getElementById('userForm');
+    const userIdInput = document.getElementById('userId');
+    const userActiveSwitch = document.getElementById('userActiveSwitch');
+    const userActiveLabel = document.getElementById('userActiveLabel');
+    const formTitle = document.getElementById('formTitle');
+    const userFormError = document.getElementById('userFormError');
+    const userFormSuccess = document.getElementById('userFormSuccess');
+    const roleError = document.getElementById('roleError');
+    const roleInputs = Array.from(document.querySelectorAll('input[name="roles"]'));
+    const saveAndStayButton = document.getElementById('saveAndStayButton');
+    const passwordGroup = document.getElementById('passwordGroup');
+    const passwordInput = document.getElementById('userPassword');
+    const editBanner = document.getElementById('editBanner');
+    const cancelEditButton = document.getElementById('cancelEditButton');
+    const textInputs = ['firstName', 'lastName'].map(id => document.getElementById(id));
+    const isEmbedded = window.frameElement && window.frameElement.id === 'frameUserNew' && window.parent;
+    const editId = new URLSearchParams(window.location.search).get('id');
+    let currentUserId = null;
+
+    function setEditMode(user) {
+      currentUserId = user.id;
+      userIdInput.value = user.id;
+      formTitle.innerHTML = '<i class="bi bi-pencil-square me-1"></i>Editar Usuario ';
+      formTitle.append(user.id);
+      document.getElementById('saveUserButton').innerHTML = '<i class="bi bi-check2-circle me-1"></i>Guardar Cambios';
+      saveAndStayButton.classList.add('d-none');
+      document.getElementById('resetButton').classList.add('d-none');
+      cancelEditButton.classList.remove('d-none');
+      editBanner.classList.remove('d-none');
+      // La contraseña no se modifica desde la edición
+      passwordGroup.classList.add('d-none');
+      passwordInput.required = false;
+    }
+
+    function setNewMode() {
+      currentUserId = null;
+      formTitle.innerHTML = '<i class="bi bi-person-plus-fill me-1"></i>Registro de Usuarios Nuevos';
+      document.getElementById('saveUserButton').innerHTML = '<i class="bi bi-person-check-fill me-1"></i>Registrar Usuario';
+      saveAndStayButton.classList.remove('d-none');
+      document.getElementById('resetButton').classList.remove('d-none');
+      cancelEditButton.classList.add('d-none');
+      editBanner.classList.add('d-none');
+      passwordGroup.classList.remove('d-none');
+      passwordInput.required = true;
+      userForm.reset();
+      userForm.classList.remove('was-validated');
+      roleError.classList.add('d-none');
+      userActiveSwitch.checked = true;
+      userActiveSwitch.dispatchEvent(new Event('change'));
+      updateNextId();
+    }
+
+    // Rechazar campos con solo espacios
+    textInputs.forEach(input => {
+      input.addEventListener('input', function () {
+        input.setCustomValidity(input.value.trim() === '' ? 'vacío' : '');
+      });
+    });
+
+    document.getElementById('togglePassword').addEventListener('click', function () {
+      const show = passwordInput.type === 'password';
+      passwordInput.type = show ? 'text' : 'password';
+      this.innerHTML = show ? '<i class="bi bi-eye-slash"></i>' : '<i class="bi bi-eye"></i>';
+      this.setAttribute('aria-label', show ? 'Ocultar contraseña' : 'Mostrar contraseña');
+    });
+
+    userActiveSwitch.addEventListener('change', function () {
+      userActiveLabel.textContent = this.checked ? 'Activo' : 'Inactivo';
+      userActiveLabel.className = this.checked
+        ? 'form-check-label fw-semibold text-success'
+        : 'form-check-label fw-semibold text-secondary';
+    });
+
+    function showError(message) {
+      userFormError.textContent = message;
+      userFormError.classList.remove('d-none');
+      userFormSuccess.classList.add('d-none');
+    }
+
+    function showSuccess(message) {
+      userFormSuccess.textContent = message;
+      userFormSuccess.classList.remove('d-none');
+      userFormError.classList.add('d-none');
+    }
+
+    function getSelectedRoles() {
+      return roleInputs.filter(input => input.checked).map(input => input.value);
+    }
+
+    function updateNextId() {
+      userIdInput.value = StudioUserStore.getNextId(StudioUserStore.getUsers());
+    }
+
+    try {
+      const users = StudioUserStore.getUsers();
+      if (editId) {
+        const user = users.find(item => item.id === editId);
+        if (!user) {
+          throw new Error('No se encontró el usuario que deseas editar.');
+        }
+
+        document.getElementById('firstName').value = user.nombre;
+        document.getElementById('lastName').value = user.apellido;
+        document.getElementById('userEmail').value = user.email;
+        userActiveSwitch.checked = user.activo !== false;
+        userActiveSwitch.dispatchEvent(new Event('change'));
+        roleInputs.forEach(input => {
+          input.checked = Array.isArray(user.roles) && user.roles.includes(input.value);
+        });
+        setEditMode(user);
+      } else {
+        updateNextId();
+      }
+    } catch (error) {
+      showError(error.message);
+      document.getElementById('saveUserButton').disabled = true;
+    }
+
+    roleInputs.forEach(input => {
+      input.addEventListener('change', function () {
+        if (getSelectedRoles().length > 0) {
+          roleError.classList.add('d-none');
+        }
+      });
+    });
+
+    function guardarUsuario(redirigirALista) {
+      textInputs.forEach(input => input.setCustomValidity(input.value.trim() === '' ? 'vacío' : ''));
+      userForm.classList.add('was-validated');
+      roleError.classList.toggle('d-none', getSelectedRoles().length > 0);
+      userFormError.classList.add('d-none');
+      userFormSuccess.classList.add('d-none');
+
+      if (!userForm.checkValidity() || getSelectedRoles().length === 0) return;
+
+      const user = {
+        id: currentUserId || userIdInput.value,
+        nombre: document.getElementById('firstName').value.trim(),
+        apellido: document.getElementById('lastName').value.trim(),
+        email: document.getElementById('userEmail').value.trim().toLowerCase(),
+        roles: getSelectedRoles(),
+        activo: userActiveSwitch.checked
+      };
+
+      try {
+        const users = StudioUserStore.getUsers();
+        const duplicateEmail = users.some(item =>
+          item.id !== user.id && item.email.toLowerCase() === user.email.toLowerCase()
+        );
+        if (duplicateEmail) {
+          showError('Ya existe un usuario registrado con ese correo electrónico.');
+          return;
+        }
+
+        const existingIndex = users.findIndex(item => item.id === user.id);
+        if (existingIndex >= 0) {
+          users[existingIndex] = user;
+        } else {
+          users.push(user);
+        }
+        StudioUserStore.saveUsers(users);
+
+        if (redirigirALista && !(window.frameElement && window.frameElement.id === 'frameUserNew')) {
+          window.location.href = './userlist.html';
+        } else {
+          currentUserId = null;
+          formTitle.innerHTML = '<i class="bi bi-person-plus-fill me-1"></i>Registro de Usuarios Nuevos';
+          document.getElementById('saveUserButton').innerHTML = '<i class="bi bi-person-check-fill me-1"></i>Registrar Usuario';
+          saveAndStayButton.classList.remove('d-none');
+          document.getElementById('resetButton').classList.remove('d-none');
+          userForm.reset();
+          userForm.classList.remove('was-validated');
+          userActiveSwitch.checked = true;
+          userActiveSwitch.dispatchEvent(new Event('change'));
+          updateNextId();
+          showSuccess(`Usuario ${user.id} (${user.nombre} ${user.apellido}) guardado exitosamente.`);
+          if (redirigirALista && window.parent && window.parent !== window) {
+            window.parent.postMessage({ type: 'studio-user-saved', id: user.id }, '*');
+          }
+        }
+      } catch (error) {
+        showError(error.message);
+      }
+    }
+
+    userForm.addEventListener('submit', function (event) {
+      event.preventDefault();
+      guardarUsuario(true);
+    });
+
+    saveAndStayButton.addEventListener('click', function () {
+      guardarUsuario(false);
+    });
+
+    document.getElementById('cancelButton').addEventListener('click', function (event) {
+      if (window.frameElement && window.frameElement.id === 'frameUserNew' && window.parent) {
+        event.preventDefault();
+        window.parent.postMessage({ type: 'studio-user-cancel' }, '*');
+      }
+    });
+
+    document.getElementById('resetButton').addEventListener('click', function () {
+      window.setTimeout(function () {
+        userForm.classList.remove('was-validated');
+        userFormError.classList.add('d-none');
+        userFormSuccess.classList.add('d-none');
+        roleError.classList.add('d-none');
+        userActiveSwitch.checked = true;
+        userActiveSwitch.dispatchEvent(new Event('change'));
+        try {
+          updateNextId();
+        } catch (error) {
+          showError(error.message);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

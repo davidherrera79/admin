@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Studio play - Lista de Usuarios</title>
+  <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../../node_modules/bootstrap-icons/font/bootstrap-icons.min.css">
+  <style>
+    body {
+      background-color: #f8fafc;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-size: 0.85rem;
+    }
+
+    /* ---------- Toolbar ---------- */
+    .toolbar .form-control,
+    .toolbar .form-select {
+      font-size: 0.8rem;
+    }
+
+    /* ---------- Tabla ---------- */
+    .table thead th {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: #64748b;
+      white-space: nowrap;
+    }
+
+    .sortable {
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .sortable:hover {
+      color: #0f172a;
+    }
+
+    .sortable .sort-icon {
+      opacity: 0.35;
+      font-size: 0.7rem;
+    }
+
+    .sortable.sorted .sort-icon {
+      opacity: 1;
+    }
+
+    .user-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .user-row-inactive td:not(.actions-cell):not(.select-cell) {
+      opacity: 0.55;
+    }
+
+    .user-row-selected {
+      --bs-table-bg: #eef2ff;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    /* ---------- Sección de acciones ---------- */
+    .actions-group .btn {
+      width: 30px;
+      height: 30px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-color: #e2e8f0;
+      background-color: #ffffff;
+      color: #475569;
+    }
+
+    .actions-group .btn:hover:not(:disabled) {
+      color: #ffffff;
+    }
+
+    .actions-group .btn-act-view:hover { background-color: #0dcaf0; border-color: #0dcaf0; }
+    .actions-group .btn-act-edit:hover { background-color: #0d6efd; border-color: #0d6efd; }
+    .actions-group .btn-act-on:hover { background-color: #198754; border-color: #198754; }
+    .actions-group .btn-act-off:hover { background-color: #fd7e14; border-color: #fd7e14; }
+    .actions-group .btn-act-del:hover { background-color: #dc3545; border-color: #dc3545; }
+
+    .actions-group .btn-act-on { color: #198754; }
+    .actions-group .btn-act-off { color: #fd7e14; }
+    .actions-group .btn-act-del { color: #dc3545; }
+
+    .actions-group .btn:disabled {
+      opacity: 0.35;
+    }
+
+    /* ---------- Barra de acciones masivas ---------- */
+    .bulk-bar {
+      background-color: #0f172a;
+      color: #ffffff;
+      border-radius: 0.5rem;
+    }
+
+    .bulk-bar .btn {
+      font-size: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+  <main class="container-fluid p-3">
+    <!-- Encabezado -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+      <div>
+        <h1 class="h5 fw-bold mb-0">
+          <i class="bi bi-people-fill me-2"></i>Listado de Usuarios
+        </h1>
+        <p class="text-muted small mb-0">
+          Mostrando <span id="visibleCount" class="fw-semibold">0</span> de
+          <span id="userCount" class="fw-semibold">0</span> usuarios registrados
+        </p>
+      </div>
+      <button type="button" class="btn btn-dark btn-sm px-3" id="newUserButton">
+        <i class="bi bi-person-plus-fill me-1"></i>Nuevo Usuario
+      </button>
+    </div>
+
+    <!-- Filtros -->
+    <div class="toolbar row g-2 mb-2">
+      <div class="col-12 col-md-6">
+        <div class="input-group input-group-sm">
+          <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+          <input type="search" class="form-control" id="searchInput" placeholder="Buscar por Id, nombre, apellido o email…" autocomplete="off">
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <select class="form-select form-select-sm" id="roleFilter" aria-label="Filtrar por rol">
+          <option value="">Todos los roles</option>
+        </select>
+      </div>
+      <div class="col-6 col-md-3">
+        <select class="form-select form-select-sm" id="statusFilter" aria-label="Filtrar por estado">
+          <option value="">Todos los estados</option>
+          <option value="activo">Solo activos</option>
+          <option value="inactivo">Solo inactivos</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Barra de acciones masivas -->
+    <div class="bulk-bar d-none align-items-center flex-wrap gap-2 px-3 py-2 mb-2" id="bulkBar">
+      <span class="small"><i class="bi bi-check2-square me-1"></i><strong id="bulkCount">0</strong> seleccionados</span>
+      <div class="ms-auto d-flex flex-wrap gap-1">
+        <button type="button" class="btn btn-success btn-sm py-0" id="bulkActivate"><i class="bi bi-person-check-fill me-1"></i>Activar</button>
+        <button type="button" class="btn btn-warning btn-sm py-0" id="bulkDeactivate"><i class="bi bi-person-slash me-1"></i>Desactivar</button>
+        <button type="button" class="btn btn-danger btn-sm py-0" id="bulkDelete"><i class="bi bi-trash3-fill me-1"></i>Eliminar</button>
+        <button type="button" class="btn btn-outline-light btn-sm py-0" id="bulkClear"><i class="bi bi-x-lg"></i></button>
+      </div>
+    </div>
+
+    <div class="alert alert-danger d-none py-2 small d-flex align-items-start gap-2" id="userListError" role="alert"></div>
+
+    <div class="card border-0 shadow-sm">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th scope="col" class="ps-3" style="width: 36px;">
+                <input class="form-check-input" type="checkbox" id="selectAll" aria-label="Seleccionar todos">
+              </th>
+              <th scope="col" class="sortable" data-sort="id">Id User <i class="bi bi-arrow-down-up sort-icon"></i></th>
+              <th scope="col" class="sortable" data-sort="nombre">Nombre <i class="bi bi-arrow-down-up sort-icon"></i></th>
+              <th scope="col" class="sortable" data-sort="apellido">Apellido <i class="bi bi-arrow-down-up sort-icon"></i></th>
+              <th scope="col" class="sortable" data-sort="email">Email <i class="bi bi-arrow-down-up sort-icon"></i></th>
+              <th scope="col">Roles</th>
+              <th scope="col" class="sortable" data-sort="activo">Estado <i class="bi bi-arrow-down-up sort-icon"></i></th>
+              <th scope="col" class="text-end pe-3">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="userTableBody"></tbody>
+        </table>
+      </div>
+      <div class="p-4 text-center text-muted d-none" id="emptyUsers">
+        <i class="bi bi-inbox fs-3 d-block mb-1"></i>
+        <span id="emptyUsersText">No hay usuarios registrados todavía.</span>
+        <div class="mt-2 d-none" id="clearFiltersWrap">
+          <button type="button" class="btn btn-outline-secondary btn-sm" id="clearFilters">
+            <i class="bi bi-funnel me-1"></i>Limpiar filtros
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal de Detalles del Usuario -->
+  <div class="modal fade" id="userDetailsModal" tabindex="-1" aria-labelledby="userDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-header border-bottom-0 pb-0">
+          <h5 class="modal-title fw-bold" id="userDetailsModalLabel">
+            <i class="bi bi-person-vcard me-2"></i>Detalles del Usuario
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body pt-3">
+          <div class="d-flex align-items-center gap-3 p-3 rounded bg-light mb-3">
+            <span class="user-avatar text-bg-dark" id="detailAvatar" style="width: 52px; height: 52px; font-size: 1rem;">?</span>
+            <div class="min-w-0">
+              <div class="fw-bold fs-6" id="detailFullName">-</div>
+              <div class="text-muted small text-truncate" id="detailEmailHeader">-</div>
+              <span class="badge mt-1" id="detailStatusBadge">Activo</span>
+            </div>
+          </div>
+          <ul class="list-group list-group-flush small">
+            <li class="list-group-item d-flex justify-content-between px-0">
+              <span class="text-muted">Id User:</span>
+              <span class="fw-semibold" id="detailId">-</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between px-0">
+              <span class="text-muted">Nombre:</span>
+              <span class="fw-semibold" id="detailNombre">-</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between px-0">
+              <span class="text-muted">Apellido:</span>
+              <span class="fw-semibold" id="detailApellido">-</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between px-0">
+              <span class="text-muted">Email:</span>
+              <span class="fw-semibold text-break text-end" id="detailEmail">-</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+              <span class="text-muted">Roles:</span>
+              <span id="detailRoles">-</span>
+            </li>
+          </ul>
+        </div>
+        <div class="modal-footer border-top-0 pt-0">
+          <button type="button" class="btn btn-outline-primary btn-sm" id="detailEditBtn"><i class="bi bi-pencil-square me-1"></i>Editar</button>
+          <button type="button" class="btn btn-sm" id="detailToggleBtn">-</button>
+          <button type="button" class="btn btn-dark btn-sm px-3 ms-auto" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Confirmación -->
+  <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-body text-center pt-4">
+          <div class="fs-1 mb-2" id="confirmIcon"><i class="bi bi-exclamation-triangle-fill text-danger"></i></div>
+          <h5 class="fw-bold mb-1" id="confirmModalLabel">¿Confirmar?</h5>
+          <p class="text-muted small mb-0" id="confirmMessage"></p>
+        </div>
+        <div class="modal-footer border-top-0 justify-content-center pt-0 pb-3">
+          <button type="button" class="btn btn-outline-secondary btn-sm px-3" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-danger btn-sm px-3" id="confirmOkBtn">Confirmar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast de notificaciones -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div class="toast align-items-center border-0" id="feedbackToast" role="status" aria-live="polite" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body small" id="feedbackToastBody"></div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/js/user-admin-store.js"></script>
+  <script>
+    const Store = StudioUserStore;
+
+    const userTableBody = document.getElementById('userTableBody');
+    const emptyUsers = document.getElementById('emptyUsers');
+    const emptyUsersText = document.getElementById('emptyUsersText');
+    const clearFiltersWrap = document.getElementById('clearFiltersWrap');
+    const userCount = document.getElementById('userCount');
+    const visibleCount = document.getElementById('visibleCount');
+    const userListError = document.getElementById('userListError');
+    const searchInput = document.getElementById('searchInput');
+    const roleFilter = document.getElementById('roleFilter');
+    const statusFilter = document.getElementById('statusFilter');
+    const selectAll = document.getElementById('selectAll');
+    const bulkBar = document.getElementById('bulkBar');
+    const bulkCount = document.getElementById('bulkCount');
+
+    const detailsModal = new bootstrap.Modal(document.getElementById('userDetailsModal'));
+    const confirmModalEl = document.getElementById('confirmModal');
+    const confirmModal = new bootstrap.Modal(confirmModalEl);
+    const feedbackToastEl = document.getElementById('feedbackToast');
+    const feedbackToast = bootstrap.Toast.getOrCreateInstance(feedbackToastEl, { delay: 3000 });
+
+    const isEmbedded = window.frameElement && window.frameElement.id === 'frameUserList' && window.parent;
+
+    const state = {
+      search: '',
+      role: '',
+      status: '',
+      sortKey: 'id',
+      sortDir: 1,
+      selected: new Set(),
+      detailUserId: null
+    };
+
+    let pendingConfirm = null;
+    let tooltips = [];
+
+    // ---------- Utilidades de UI ----------
+    function showError(message) {
+      userListError.replaceChildren();
+      const icon = document.createElement('i');
+      icon.className = 'bi bi-exclamation-octagon-fill';
+      const text = document.createElement('span');
+      text.textContent = message;
+      userListError.append(icon, text);
+      userListError.classList.remove('d-none');
+    }
+
+    function hideError() {
+      userListError.classList.add('d-none');
+    }
+
+    function showToast(message, variant) {
+      feedbackToastEl.className = `toast align-items-center border-0 text-bg-${variant || 'dark'}`;
+      document.getElementById('feedbackToastBody').textContent = message;
+      feedbackToast.show();
+    }
+
+    function askConfirm(options) {
+      document.getElementById('confirmModalLabel').textContent = options.title;
+      document.getElementById('confirmMessage').textContent = options.message;
+      const okBtn = document.getElementById('confirmOkBtn');
+      okBtn.className = `btn btn-${options.variant || 'danger'} btn-sm px-3`;
+      okBtn.textContent = options.okText || 'Confirmar';
+      document.getElementById('confirmIcon').innerHTML =
+        `<i class="bi ${options.icon || 'bi-exclamation-triangle-fill'} text-${options.variant || 'danger'}"></i>`;
+      pendingConfirm = options.onConfirm;
+      confirmModal.show();
+    }
+
+    document.getElementById('confirmOkBtn').addEventListener('click', function () {
+      const action = pendingConfirm;
+      pendingConfirm = null;
+      confirmModal.hide();
+      if (action) action();
+    });
+
+    confirmModalEl.addEventListener('hidden.bs.modal', function () {
+      pendingConfirm = null;
+    });
+
+    function makeRoleBadge(rol) {
+      const meta = Store.roleCatalog.find(r => r.value === rol);
+      const badge = document.createElement('span');
+      badge.className = `badge rounded-pill bg-${meta ? meta.color : 'secondary'}-subtle text-${meta ? meta.color : 'secondary'}-emphasis border border-${meta ? meta.color : 'secondary'}-subtle me-1`;
+      if (meta) {
+        const i = document.createElement('i');
+        i.className = `bi ${meta.icon} me-1`;
+        badge.appendChild(i);
+      }
+      badge.append(rol);
+      return badge;
+    }
+
+    function avatarClass(user) {
+      if (!Store.isActive(user)) return 'text-bg-secondary';
+      return Store.isSuperAdmin(user) ? 'text-bg-dark' : 'text-bg-primary';
+    }
+
+    // ---------- Operaciones sobre usuarios ----------
+    function applyChange(transform, successMessage) {
+      try {
+        const current = Store.getUsers();
+        const next = transform(current);
+        const guardError = Store.validateAdminGuard(next);
+        if (guardError) {
+          showError(guardError);
+          return false;
+        }
+        Store.saveUsers(next);
+        hideError();
+        renderUsers();
+        showToast(successMessage, 'dark');
+        return true;
+      } catch (error) {
+        showError(error.message);
+        return false;
+      }
+    }
+
+    function setUsersStatus(ids, activo) {
+      const idSet = new Set(ids);
+      const label = activo ? 'activado' : 'desactivado';
+      return applyChange(
+        users => users.map(u => idSet.has(u.id) ? Object.assign({}, u, { activo: activo }) : u),
+        ids.length === 1 ? `Usuario ${ids[0]} ${label} correctamente.` : `${ids.length} usuarios ${label}s correctamente.`
+      );
+    }
+
+    function deleteUsers(ids) {
+      const idSet = new Set(ids);
+      const ok = applyChange(
+        users => users.filter(u => !idSet.has(u.id)),
+        ids.length === 1 ? `Usuario ${ids[0]} eliminado.` : `${ids.length} usuarios eliminados.`
+      );
+      if (ok) ids.forEach(id => state.selected.delete(id));
+      return ok;
+    }
+
+    function confirmToggle(user) {
+      if (Store.isActive(user)) {
+        askConfirm({
+          title: 'Desactivar usuario',
+          message: `${user.nombre} ${user.apellido} (${user.id}) no podrá acceder hasta que se reactive.`,
+          variant: 'warning',
+          icon: 'bi-person-slash',
+          okText: 'Desactivar',
+          onConfirm: () => setUsersStatus([user.id], false)
+        });
+      } else {
+        setUsersStatus([user.id], true);
+      }
+    }
+
+    function confirmDelete(user) {
+      askConfirm({
+        title: 'Eliminar usuario',
+        message: `Se eliminará a ${user.nombre} ${user.apellido} (${user.id}). Esta acción no se puede deshacer.`,
+        variant: 'danger',
+        icon: 'bi-trash3-fill',
+        okText: 'Eliminar',
+        onConfirm: () => deleteUsers([user.id])
+      });
+    }
+
+    function editUser(user) {
+      if (isEmbedded) {
+        window.parent.postMessage({ type: 'studio-user-edit', id: user.id }, '*');
+      } else {
+        window.location.href = `./usernew.html?id=${encodeURIComponent(user.id)}`;
+      }
+    }
+
+    // ---------- Modal de detalles ----------
+    function mostrarDetalles(user) {
+      state.detailUserId = user.id;
+      const activo = Store.isActive(user);
+
+      const avatar = document.getElementById('detailAvatar');
+      avatar.textContent = Store.getInitials(user);
+      avatar.className = `user-avatar ${avatarClass(user)}`;
+
+      document.getElementById('detailFullName').textContent = `${user.nombre} ${user.apellido}`;
+      document.getElementById('detailEmailHeader').textContent = user.email;
+      document.getElementById('detailId').textContent = user.id;
+      document.getElementById('detailNombre').textContent = user.nombre;
+      document.getElementById('detailApellido').textContent = user.apellido;
+      document.getElementById('detailEmail').textContent = user.email;
+
+      const rolesEl = document.getElementById('detailRoles');
+      rolesEl.replaceChildren(...user.roles.map(makeRoleBadge));
+
+      const statusBadge = document.getElementById('detailStatusBadge');
+      statusBadge.className = `badge mt-1 ${activo ? 'text-bg-success' : 'text-bg-secondary'}`;
+      statusBadge.textContent = activo ? 'Usuario Activo' : 'Usuario Desactivado';
+
+      const toggleBtn = document.getElementById('detailToggleBtn');
+      toggleBtn.className = `btn btn-sm ${activo ? 'btn-outline-warning' : 'btn-outline-success'}`;
+      toggleBtn.innerHTML = activo
+        ? '<i class="bi bi-person-slash me-1"></i>Desactivar'
+        : '<i class="bi bi-person-check-fill me-1"></i>Activar';
+
+      detailsModal.show();
+    }
+
+    function getDetailUser() {
+      return Store.getUsers().find(u => u.id === state.detailUserId);
+    }
+
+    document.getElementById('detailEditBtn').addEventListener('click', function () {
+      const user = getDetailUser();
+      detailsModal.hide();
+      if (user) editUser(user);
+    });
+
+    document.getElementById('detailToggleBtn').addEventListener('click', function () {
+      const user = getDetailUser();
+      detailsModal.hide();
+      if (user) confirmToggle(user);
+    });
+
+    // ---------- Filtros y orden ----------
+    function getVisibleUsers(users) {
+      const term = state.search.trim().toLowerCase();
+      return users
+        .filter(u => {
+          if (state.status === 'activo' && !Store.isActive(u)) return false;
+          if (state.status === 'inactivo' && Store.isActive(u)) return false;
+          if (state.role && !u.roles.includes(state.role)) return false;
+          if (!term) return true;
+          return [u.id, u.nombre, u.apellido, u.email, `${u.nombre} ${u.apellido}`]
+            .some(v => String(v || '').toLowerCase().includes(term));
+        })
+        .sort((a, b) => {
+          const key = state.sortKey;
+          const va = key === 'activo' ? Number(Store.isActive(a)) : String(a[key] || '').toLowerCase();
+          const vb = key === 'activo' ? Number(Store.isActive(b)) : String(b[key] || '').toLowerCase();
+          if (va < vb) return -1 * state.sortDir;
+          if (va > vb) return 1 * state.sortDir;
+          return 0;
+        });
+    }
+
+    function hasActiveFilters() {
+      return Boolean(state.search.trim() || state.role || state.status);
+    }
+
+    function updateSortHeaders() {
+      document.querySelectorAll('.sortable').forEach(th => {
+        const icon = th.querySelector('.sort-icon');
+        const active = th.dataset.sort === state.sortKey;
+        th.classList.toggle('sorted', active);
+        icon.className = `bi sort-icon ${active ? (state.sortDir === 1 ? 'bi-sort-down-alt' : 'bi-sort-up') : 'bi-arrow-down-up'}`;
+      });
+    }
+
+    // ---------- Selección ----------
+    function updateBulkBar(visibleIds) {
+      // Quitar de la selección los usuarios que ya no existen
+      const total = state.selected.size;
+      bulkCount.textContent = String(total);
+      bulkBar.classList.toggle('d-none', total === 0);
+      bulkBar.classList.toggle('d-flex', total > 0);
+
+      const visibleSelected = visibleIds.filter(id => state.selected.has(id)).length;
+      selectAll.checked = visibleIds.length > 0 && visibleSelected === visibleIds.length;
+      selectAll.indeterminate = visibleSelected > 0 && visibleSelected < visibleIds.length;
+    }
+
+    // ---------- Render ----------
+    function createActionButton(cls, icon, title, onClick, disabled) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = `btn ${cls}`;
+      btn.setAttribute('aria-label', title);
+      btn.setAttribute('data-bs-toggle', 'tooltip');
+      btn.setAttribute('data-bs-title', title);
+      btn.innerHTML = `<i class="bi ${icon}"></i>`;
+      btn.disabled = Boolean(disabled);
+      btn.addEventListener('click', onClick);
+
+      // Los botones deshabilitados no disparan eventos: envolver para mostrar el tooltip
+      if (disabled) {
+        const wrap = document.createElement('span');
+        wrap.className = 'd-inline-block';
+        wrap.tabIndex = 0;
+        wrap.setAttribute('data-bs-toggle', 'tooltip');
+        wrap.setAttribute('data-bs-title', title);
+        btn.removeAttribute('data-bs-toggle');
+        wrap.appendChild(btn);
+        return wrap;
+      }
+      return btn;
+    }
+
+    function refreshTooltips() {
+      tooltips.forEach(t => t.dispose());
+      tooltips = Array.from(document.querySelectorAll('#userTableBody [data-bs-toggle="tooltip"]'))
+        .map(el => new bootstrap.Tooltip(el, { trigger: 'hover', container: 'body' }));
+    }
+
+    function renderUsers() {
+      userTableBody.replaceChildren();
+
+      const users = Store.getUsers();
+      const existingIds = new Set(users.map(u => u.id));
+      state.selected.forEach(id => { if (!existingIds.has(id)) state.selected.delete(id); });
+
+      const activeAdmins = users.filter(u => Store.isSuperAdmin(u) && Store.isActive(u)).length;
+      const visible = getVisibleUsers(users);
+
+      userCount.textContent = String(users.length);
+      visibleCount.textContent = String(visible.length);
+
+      emptyUsers.classList.toggle('d-none', visible.length > 0);
+      if (visible.length === 0) {
+        const filtered = users.length > 0 && hasActiveFilters();
+        emptyUsersText.textContent = filtered
+          ? 'Ningún usuario coincide con los filtros aplicados.'
+          : 'No hay usuarios registrados todavía.';
+        clearFiltersWrap.classList.toggle('d-none', !filtered);
+      }
+
+      visible.forEach(user => {
+        const isActivo = Store.isActive(user);
+        // Proteger al último Super Admin activo
+        const isLastAdmin = Store.isSuperAdmin(user) && isActivo && activeAdmins <= 1;
+
+        const row = document.createElement('tr');
+        if (!isActivo) row.classList.add('user-row-inactive');
+        if (state.selected.has(user.id)) row.classList.add('user-row-selected');
+
+        // Selección
+        const selectCell = document.createElement('td');
+        selectCell.className = 'ps-3 select-cell';
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.className = 'form-check-input';
+        checkbox.checked = state.selected.has(user.id);
+        checkbox.setAttribute('aria-label', `Seleccionar ${user.id}`);
+        checkbox.addEventListener('change', function () {
+          if (this.checked) state.selected.add(user.id); else state.selected.delete(user.id);
+          row.classList.toggle('user-row-selected', this.checked);
+          updateBulkBar(visible.map(u => u.id));
+        });
+        selectCell.appendChild(checkbox);
+        row.appendChild(selectCell);
+
+        // Id User
+        const idCell = document.createElement('td');
+        idCell.className = 'fw-semibold text-nowrap';
+        idCell.textContent = user.id;
+        row.appendChild(idCell);
+
+        // Nombre (con avatar)
+        const nombreCell = document.createElement('td');
+        const nameWrap = document.createElement('div');
+        nameWrap.className = 'd-flex align-items-center gap-2';
+        const avatar = document.createElement('span');
+        avatar.className = `user-avatar ${avatarClass(user)}`;
+        avatar.textContent = Store.getInitials(user);
+        const nameText = document.createElement('span');
+        nameText.className = 'fw-semibold';
+        nameText.textContent = user.nombre;
+        nameWrap.append(avatar, nameText);
+        nombreCell.appendChild(nameWrap);
+        row.appendChild(nombreCell);
+
+        // Apellido
+        const apellidoCell = document.createElement('td');
+        apellidoCell.textContent = user.apellido;
+        row.appendChild(apellidoCell);
+
+        // Email
+        const emailCell = document.createElement('td');
+        const emailLink = document.createElement('a');
+        emailLink.href = `mailto:${user.email}`;
+        emailLink.className = 'link-secondary text-decoration-none';
+        emailLink.textContent = user.email;
+        emailCell.appendChild(emailLink);
+        row.appendChild(emailCell);
+
+        // Roles
+        const rolesCell = document.createElement('td');
+        user.roles.forEach(rol => rolesCell.appendChild(makeRoleBadge(rol)));
+        row.appendChild(rolesCell);
+
+        // Estado
+        const statusCell = document.createElement('td');
+        statusCell.className = 'text-nowrap';
+        statusCell.innerHTML = isActivo
+          ? '<span class="status-dot bg-success me-1"></span><span class="text-success fw-semibold">Activo</span>'
+          : '<span class="status-dot bg-secondary me-1"></span><span class="text-secondary fw-semibold">Inactivo</span>';
+        row.appendChild(statusCell);
+
+        // Acciones: Ver | Editar | Activar/Desactivar | Eliminar
+        const actions = document.createElement('td');
+        actions.className = 'text-end text-nowrap pe-3 actions-cell';
+        const group = document.createElement('div');
+        group.className = 'btn-group btn-group-sm actions-group shadow-sm';
+        group.setAttribute('role', 'group');
+        group.setAttribute('aria-label', `Acciones para ${user.id}`);
+
+        group.append(
+          createActionButton('btn-act-view', 'bi-eye-fill', 'Ver detalles', () => mostrarDetalles(user)),
+          createActionButton('btn-act-edit', 'bi-pencil-square', 'Editar usuario', () => editUser(user)),
+          isActivo
+            ? createActionButton(
+                'btn-act-off', 'bi-person-slash',
+                isLastAdmin ? 'No se puede desactivar al único Super Admin activo' : 'Desactivar usuario',
+                () => confirmToggle(user), isLastAdmin)
+            : createActionButton('btn-act-on', 'bi-person-check-fill', 'Activar usuario', () => confirmToggle(user)),
+          createActionButton(
+            'btn-act-del', 'bi-trash3-fill',
+            isLastAdmin ? 'No se puede eliminar al único Super Admin activo' : 'Eliminar usuario',
+            () => confirmDelete(user), isLastAdmin)
+        );
+
+        actions.appendChild(group);
+        row.appendChild(actions);
+        userTableBody.appendChild(row);
+      });
+
+      updateSortHeaders();
+      updateBulkBar(visible.map(u => u.id));
+      refreshTooltips();
+    }
+
+    function safeRender() {
+      try {
+        renderUsers();
+      } catch (error) {
+        showError(error.message);
+      }
+    }
+
+    // ---------- Eventos ----------
+    Store.roleCatalog.forEach(r => {
+      const opt = document.createElement('option');
+      opt.value = r.value;
+      opt.textContent = r.value;
+      roleFilter.appendChild(opt);
+    });
+
+    let searchTimer = null;
+    searchInput.addEventListener('input', function () {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => {
+        state.search = searchInput.value;
+        safeRender();
+      }, 150);
+    });
+
+    roleFilter.addEventListener('change', function () {
+      state.role = roleFilter.value;
+      safeRender();
+    });
+
+    statusFilter.addEventListener('change', function () {
+      state.status = statusFilter.value;
+      safeRender();
+    });
+
+    document.getElementById('clearFilters').addEventListener('click', function () {
+      state.search = state.role = state.status = '';
+      searchInput.value = '';
+      roleFilter.value = '';
+      statusFilter.value = '';
+      safeRender();
+    });
+
+    document.querySelectorAll('.sortable').forEach(th => {
+      th.addEventListener('click', function () {
+        const key = th.dataset.sort;
+        state.sortDir = state.sortKey === key ? -state.sortDir : 1;
+        state.sortKey = key;
+        safeRender();
+      });
+    });
+
+    selectAll.addEventListener('change', function () {
+      const visibleIds = getVisibleUsers(Store.getUsers()).map(u => u.id);
+      visibleIds.forEach(id => {
+        if (selectAll.checked) state.selected.add(id); else state.selected.delete(id);
+      });
+      safeRender();
+    });
+
+    document.getElementById('bulkClear').addEventListener('click', function () {
+      state.selected.clear();
+      safeRender();
+    });
+
+    document.getElementById('bulkActivate').addEventListener('click', function () {
+      setUsersStatus(Array.from(state.selected), true);
+    });
+
+    document.getElementById('bulkDeactivate').addEventListener('click', function () {
+      const ids = Array.from(state.selected);
+      askConfirm({
+        title: 'Desactivar usuarios',
+        message: `Se desactivarán ${ids.length} usuario(s) seleccionados.`,
+        variant: 'warning',
+        icon: 'bi-person-slash',
+        okText: 'Desactivar',
+        onConfirm: () => setUsersStatus(ids, false)
+      });
+    });
+
+    document.getElementById('bulkDelete').addEventListener('click', function () {
+      const ids = Array.from(state.selected);
+      askConfirm({
+        title: 'Eliminar usuarios',
+        message: `Se eliminarán ${ids.length} usuario(s). Esta acción no se puede deshacer.`,
+        variant: 'danger',
+        icon: 'bi-trash3-fill',
+        okText: 'Eliminar',
+        onConfirm: () => deleteUsers(ids)
+      });
+    });
+
+    document.getElementById('newUserButton').addEventListener('click', function () {
+      if (isEmbedded) {
+        window.parent.postMessage({ type: 'studio-user-new' }, '*');
+      } else {
+        window.location.href = './usernew.html';
+      }
+    });
+
+    // Filtros enviados desde la vista padre (p. ej. al hacer clic en un KPI)
+    window.addEventListener('message', function (event) {
+      if (!isEmbedded || event.source !== window.parent) return;
+      const data = event.data;
+      if (!data || typeof data !== 'object') return;
+      if (data.type === 'studio-userlist-refresh') {
+        safeRender();
+        return;
+      }
+      if (data.type !== 'studio-userlist-filter') return;
+      state.status = typeof data.status === 'string' ? data.status : '';
+      state.role = typeof data.role === 'string' ? data.role : '';
+      statusFilter.value = state.status;
+      roleFilter.value = state.role;
+      safeRender();
+    });
+
+    window.addEventListener('storage', function (event) {
+      if (event.key === 'studioPlayUsers') safeRender();
+    });
+
+    safeRender();
+  </script>
+</body>
+</html>
