@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Sincronización del inventario</title>
+</head>
+<body>
+  <script>
+    (function () {
+      const INVENTORY_KEY = 'studioPlayInventario';
+      const BACKUP_KEY = 'studioPlayInventario_origen_loopback';
+      const CONFLICT_PARAM = 'inventory-origin-conflict';
+      const loopbackHosts = ['127.0.0.1', '[::1]', '::1'];
+
+      function showError(message, error) {
+        if (error) window.console.error(message, error);
+        const notice = document.createElement('p');
+        notice.setAttribute('role', 'alert');
+        notice.textContent = message;
+        document.body.replaceChildren(notice);
+      }
+
+      function isValidInventory(value) {
+        if (typeof value !== 'string') return false;
+        try {
+          const inventory = JSON.parse(value);
+          return inventory
+            && typeof inventory === 'object'
+            && Array.isArray(inventory.productos)
+            && Array.isArray(inventory.actividad);
+        } catch (error) {
+          return false;
+        }
+      }
+
+      let transfer;
+      try {
+        const encodedTransfer = new URLSearchParams(window.location.hash.slice(1)).get('transfer');
+        if (!encodedTransfer) {
+          showError('No se encontraron datos para sincronizar. Abre la aplicación desde localhost.');
+          return;
+        }
+        transfer = JSON.parse(encodedTransfer);
+      } catch (error) {
+        showError('No se pudo leer el inventario para sincronizar.', error);
+        return;
+      }
+
+      let source;
+      let returnUrl;
+      try {
+        source = new URL(transfer.sourceOrigin);
+        returnUrl = new URL(transfer.returnUrl);
+      } catch (error) {
+        showError('La dirección del inventario que se va a sincronizar no es válida.', error);
+        return;
+      }
+
+      if (source.protocol !== window.location.protocol
+        || source.port !== window.location.port
+        || loopbackHosts.indexOf(source.hostname) === -1
+        || returnUrl.origin !== window.location.origin) {
+        showError('Se rechazó la sincronización desde un origen no válido.');
+        return;
+      }
+
+      try {
+        const current = window.localStorage.getItem(INVENTORY_KEY);
+        const incoming = transfer.inventory;
+        const hasIncoming = incoming !== null;
+        const incomingValid = hasIncoming && isValidInventory(incoming);
+        const currentValid = isValidInventory(current);
+
+        if (hasIncoming && !incomingValid) {
+          showError('El inventario del origen anterior tiene un formato inválido; no se modificaron los datos.');
+          return;
+        }
+
+        if (incomingValid && !currentValid) {
+          if (current !== null) window.localStorage.setItem(INVENTORY_KEY + '_invalid_backup', current);
+          window.localStorage.setItem(INVENTORY_KEY, incoming);
+        } else if (incomingValid && current !== incoming) {
+          if (window.localStorage.getItem(BACKUP_KEY) !== incoming) {
+            window.localStorage.setItem(BACKUP_KEY, incoming);
+            returnUrl.searchParams.set(CONFLICT_PARAM, '1');
+          }
+        }
+
+        window.location.replace(returnUrl.href);
+      } catch (error) {
+        showError('No se pudo guardar el inventario sincronizado; no se cambió de página.', error);
+      }
+    })();
+  </script>
+</body>
+</html>

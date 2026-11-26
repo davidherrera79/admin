@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Studio play - Dashboard</title>
+  <script src="../assets/js/inventory-origin.js"></script>
   
   <!-- Estilos Bootstrap, Navbar, Sidebar y Dashboard -->
   <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
@@ -228,10 +229,6 @@
                 <div class="d-flex align-items-center gap-2">
                   <select id="filtroCategoriaSelect" class="form-select form-select-sm toolbar-select" aria-label="Filtrar por categoría">
                     <option value="">Todas</option>
-                    <option value="Video">Video</option>
-                    <option value="Audio">Audio</option>
-                    <option value="Luz">Luz</option>
-                    <option value="Rig">Rig</option>
                   </select>
                   <div class="input-group input-group-sm toolbar-search">
                     <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
@@ -484,6 +481,7 @@
   <script src="../assets/js/bootstrap.bundle.min.js"></script>
   <script src="../assets/js/user-admin-store.js"></script>
   <script src="../assets/js/session.js"></script>
+  <script src="../assets/js/inventory-store.js"></script>
   <script>
     // =======================================================
     // NAVBAR Y SIDEBAR
@@ -557,70 +555,32 @@
     // =======================================================
     const STOCK_MAX = 80;      // referencia para la barra de nivel
     const STOCK_BAJO = 15;     // umbral de stock bajo
-
-    const productos = [
-      { codigo: 'SP-001', nombre: 'Cámara Sony FX3 Cinema', corto: 'Sony FX3', categoria: 'Video', icon: 'bi-camera-video', stock: 45, entradas: 15, salidas: 6 },
-      { codigo: 'SP-002', nombre: 'Micrófono Shure SM7B', corto: 'Shure SM7B', categoria: 'Audio', icon: 'bi-mic', stock: 60, entradas: 20, salidas: 8 },
-      { codigo: 'SP-003', nombre: 'Panel LED Aputure 600d', corto: 'LED Aputure', categoria: 'Luz', icon: 'bi-lightbulb', stock: 40, entradas: 12, salidas: 5 },
-      { codigo: 'SP-004', nombre: 'Estabilizador DJI RS3 Pro', corto: 'DJI RS3', categoria: 'Rig', icon: 'bi-aspect-ratio', stock: 25, entradas: 10, salidas: 4 }
-    ];
+    const inventoryState = StudioInventory.load();
+    const productos = inventoryState.productos;
+    let deletedProductIds = inventoryState.deletedProductIds;
 
     // Colores de la paleta del tema (theme.css)
     const COLORES_SERIE = { stock: '#6366f1', entradas: '#10b981', salidas: '#f43f5e' };
     const COLORES_CATEGORIA = ['#6366f1', '#0ea5e9', '#10b981', '#f59e0b'];
 
-    const actividad = [];
+    const actividad = inventoryState.actividad;
 
     // ---------- Persistencia del inventario y la actividad ----------
-    const INVENTARIO_KEY = 'studioPlayInventario';
+    const INVENTARIO_KEY = StudioInventory.KEY;
     const MAX_ACTIVIDAD = 25;
-
-    function esEnteroNoNegativo(n) {
-      return Number.isInteger(n) && n >= 0;
-    }
-
-    function cargarEstadoGuardado() {
-      let data;
-      try {
-        data = JSON.parse(window.localStorage.getItem(INVENTARIO_KEY) || 'null');
-      } catch (e) {
-        return; // datos corruptos: se usan los valores iniciales
-      }
-      if (!data || typeof data !== 'object') return;
-
-      // Solo se restauran las cifras de productos conocidos, validando cada valor
-      if (Array.isArray(data.productos)) {
-        data.productos.forEach(guardado => {
-          const p = productos.find(x => x.codigo === guardado.codigo);
-          if (!p) return;
-          ['stock', 'entradas', 'salidas'].forEach(campo => {
-            if (esEnteroNoNegativo(guardado[campo])) p[campo] = guardado[campo];
-          });
-        });
-      }
-
-      if (Array.isArray(data.actividad)) {
-        data.actividad.slice(0, MAX_ACTIVIDAD).forEach(a => {
-          const fecha = new Date(a.fecha);
-          if (typeof a.tipo === 'string' && typeof a.detalle === 'string' && !isNaN(fecha)) {
-            actividad.push({ tipo: a.tipo, detalle: a.detalle, fecha: fecha });
-          }
-        });
-      }
-    }
 
     function guardarEstado() {
       try {
-        window.localStorage.setItem(INVENTARIO_KEY, JSON.stringify({
-          productos: productos.map(p => ({ codigo: p.codigo, stock: p.stock, entradas: p.entradas, salidas: p.salidas })),
-          actividad: actividad
-        }));
-      } catch (e) {
-        /* sin almacenamiento disponible */
+        StudioInventory.save({
+          productos: productos,
+          actividad: actividad,
+          deletedProductIds: deletedProductIds
+        });
+      } catch (error) {
+        console.error('No se pudo guardar el inventario.', error);
+        mostrarMensaje('No se pudo guardar el inventario.', 'danger');
       }
     }
-
-    cargarEstadoGuardado();
 
     function getProducto(codigo) {
       return productos.find(p => p.codigo === codigo);
@@ -723,7 +683,13 @@
     function renderTablaProductos() {
       const tbody = document.getElementById('productosTableBody');
       const q = document.getElementById('buscarProductoInput').value.trim().toLowerCase();
-      const cat = document.getElementById('filtroCategoriaSelect').value;
+      const categoryFilter = document.getElementById('filtroCategoriaSelect');
+      const selectedCategory = categoryFilter.value;
+      const categories = Array.from(new Set(productos.map(p => p.categoria)));
+      categoryFilter.replaceChildren(new Option('Todas', ''));
+      categories.forEach(category => categoryFilter.add(new Option(category, category)));
+      categoryFilter.value = categories.includes(selectedCategory) ? selectedCategory : '';
+      const cat = categoryFilter.value;
       tbody.replaceChildren();
 
       const visibles = productos.filter(p => {
@@ -734,6 +700,7 @@
       visibles.forEach(p => {
         const est = estadoStock(p.stock);
         const tr = document.createElement('tr');
+        const codigoSeguro = escaparHTML(p.codigo);
         tr.dataset.codigo = p.codigo;
         tr.innerHTML = `
           <td class="ps-3 fw-semibold text-muted"></td>
@@ -749,8 +716,8 @@
           </td>
           <td class="text-end fw-bold">${p.stock}</td>
           <td class="text-center text-nowrap">
-            <button type="button" class="btn-qty plus me-1" data-delta="1" aria-label="Sumar 1 a ${p.codigo}" title="+1 Entrada"><i class="bi bi-plus-lg"></i></button>
-            <button type="button" class="btn-qty minus" data-delta="-1" aria-label="Restar 1 a ${p.codigo}" title="−1 Salida" ${p.stock === 0 ? 'disabled' : ''}><i class="bi bi-dash-lg"></i></button>
+            <button type="button" class="btn-qty plus me-1" data-delta="1" aria-label="Sumar 1 a ${codigoSeguro}" title="+1 Entrada"><i class="bi bi-plus-lg"></i></button>
+            <button type="button" class="btn-qty minus" data-delta="-1" aria-label="Restar 1 a ${codigoSeguro}" title="−1 Salida" ${p.stock === 0 ? 'disabled' : ''}><i class="bi bi-dash-lg"></i></button>
           </td>
           <td class="pe-3"><span class="soft-badge ${est.cls}">${est.texto}</span></td>
         `;
@@ -761,6 +728,16 @@
       });
 
       document.getElementById('productosEmpty').classList.toggle('d-none', visibles.length > 0);
+    }
+
+    function escaparHTML(valor) {
+      return String(valor).replace(/[&<>"']/g, caracter => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      })[caracter]);
     }
 
     document.getElementById('productosTableBody').addEventListener('click', function (e) {
@@ -825,7 +802,7 @@
 
     function leerCantidad(input) {
       const n = Number(input.value);
-      if (!Number.isInteger(n) || n < 1) {
+      if (!Number.isSafeInteger(n) || n < 1) {
         input.classList.add('is-invalid');
         mostrarMensaje('Ingresa una cantidad entera mayor que 0.', 'danger');
         return null;
@@ -1400,6 +1377,18 @@
 
     window.addEventListener('storage', function (event) {
       if (event.key === StudioSession.KEY) renderSesion();
+      if (event.key === INVENTARIO_KEY) {
+        const actualizado = StudioInventory.load();
+        productos.splice(0, productos.length, ...actualizado.productos);
+        actividad.splice(0, actividad.length, ...actualizado.actividad);
+        deletedProductIds = actualizado.deletedProductIds;
+        poblarSelectsProductos();
+        renderTablaProductos();
+        actualizarKPIsInventario();
+        actualizarResumenHero();
+        renderActividad();
+        redibujarGraficos(false);
+      }
     });
 
     // Abrir la sección indicada en la URL: al cargar (p. ej. desde useradmin.html)

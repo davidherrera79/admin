@@ -96,3 +96,48 @@ body {
   height: 28px;
   width: auto;
 }
+
+body {
+  min-height: 100vh;
+  background: var(--sp-slate-50, #f8fafc);
+}
+
+.products-header {
+  background: #fff;
+  border-bottom: 1px solid var(--sp-slate-200, #e2e8f0);
+}
+
+.products-main {
+  max-width: 1200px;
+}
+
+.products-card {
+  border: 1px solid var(--sp-slate-200, #e2e8f0);
+  border-radius: 1rem;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, .04);
+}
+
+.product-icon {
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  place-items: center;
+  border-radius: .75rem;
+  background: #f1f5f9;
+  color: #334155;
+  font-size: 1.15rem;
+}
+
+.stock-track {
+  width: 5rem;
+  height: .4rem;
+  overflow: hidden;
+  border-radius: 1rem;
+  background: #e2e8f0;
+}
+
+.stock-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+}

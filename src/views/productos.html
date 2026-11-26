@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Studio play - Productos</title>
+  <script src="../assets/js/inventory-origin.js"></script>
+  <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../assets/css/navbar.css">
+  <link rel="stylesheet" href="../assets/css/sidebar.css">
+  <link rel="stylesheet" href="../assets/css/dashboard.css">
+  <link rel="stylesheet" href="../assets/icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../assets/css/theme.css">
+  <link rel="stylesheet" href="../assets/css/Productos.css">
+</head>
+<body>
+  <iframe src="../components/navbar.html" id="navbarFrame" title="Navbar Studio play" class="navbar-iframe"></iframe>
+  <div class="workspace-shell">
+    <iframe src="../components/sidebar.html?section=inventario-productos" id="sidebarFrame" name="sidebarFrame" title="Sidebar Studio play" class="sidebar-iframe"></iframe>
+    <main class="dashboard-main-scroll">
+      <div class="dashboard-container container-fluid">
+        <div class="products-page">
+          <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+            <div>
+              <div class="text-primary small fw-semibold text-uppercase mb-1">Inventario</div>
+              <h1 class="h3 fw-bold mb-1">Productos</h1>
+              <p class="text-muted mb-0">Consulta el stock de todos los productos registrados.</p>
+            </div>
+            <div class="d-flex flex-wrap align-items-center gap-2">
+              <span class="text-muted small" id="productsUpdated" aria-live="polite"></span>
+              <button type="button" class="btn btn-primary btn-sm" id="btnTopNewProduct">
+                <i class="bi bi-plus-circle-fill me-1" aria-hidden="true"></i>Nuevo producto
+              </button>
+            </div>
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-12 col-sm-4">
+              <div class="products-summary-card">
+                <span>Unidades en stock</span>
+                <strong id="totalStock">0</strong>
+              </div>
+            </div>
+            <div class="col-12 col-sm-4">
+              <div class="products-summary-card">
+                <span>Productos registrados</span>
+                <strong id="totalProducts">0</strong>
+              </div>
+            </div>
+            <div class="col-12 col-sm-4">
+              <div class="products-summary-card">
+                <span>Productos disponibles</span>
+                <strong id="availableProducts">0</strong>
+              </div>
+            </div>
+          </div>
+
+          <section class="products-card mb-4" aria-labelledby="productsTitle">
+            <div class="products-card-header">
+              <h2 class="h5 fw-bold mb-0" id="productsTitle">Listado de productos</h2>
+              <div class="d-flex flex-wrap gap-2">
+                <select class="form-select form-select-sm" id="categoryFilter" aria-label="Filtrar por categoría">
+                  <option value="">Todas las categorías</option>
+                </select>
+                <input class="form-control form-control-sm" id="productSearch" type="search" placeholder="Buscar producto" aria-label="Buscar producto">
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th scope="col">Código</th>
+                    <th scope="col">Producto</th>
+                    <th scope="col">Categoría</th>
+                    <th scope="col">Stock</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col" class="text-end">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="productsTable"></tbody>
+              </table>
+            </div>
+            <p class="text-center text-muted py-4 mb-0 d-none" id="emptyProducts">No hay productos que coincidan con la búsqueda.</p>
+          </section>
+
+          <div class="alert d-none mb-3" id="productsNotice" role="status" aria-live="polite"></div>
+
+          <div class="modal fade" id="productDetailsModal" tabindex="-1" aria-labelledby="productDetailsTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h2 class="modal-title fs-5" id="productDetailsTitle"><i class="bi bi-eye me-2" aria-hidden="true"></i>Detalles del producto</h2>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                  <dl class="row mb-0">
+                    <dt class="col-5">Código</dt><dd class="col-7" id="detailProductCode"></dd>
+                    <dt class="col-5">Nombre</dt><dd class="col-7" id="detailProductName"></dd>
+                    <dt class="col-5">Categoría</dt><dd class="col-7" id="detailProductCategory"></dd>
+                    <dt class="col-5">Stock actual</dt><dd class="col-7" id="detailProductStock"></dd>
+                    <dt class="col-5">Entradas</dt><dd class="col-7" id="detailProductEntries"></dd>
+                    <dt class="col-5">Salidas</dt><dd class="col-7" id="detailProductExits"></dd>
+                  </dl>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <form id="editProductForm" novalidate>
+                  <div class="modal-header">
+                    <h2 class="modal-title fs-5" id="editProductTitle"><i class="bi bi-pencil-square me-2" aria-hidden="true"></i>Modificar producto</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="alert alert-danger d-none" id="editProductError" role="alert"></div>
+                    <div class="mb-3">
+                      <label for="editProductCode" class="form-label fw-semibold">Código</label>
+                      <input id="editProductCode" class="form-control" type="text" maxlength="32" autocomplete="off" autocapitalize="characters" spellcheck="false" required>
+                      <div class="form-text">Formato: SP-001.</div>
+                    </div>
+                    <div class="mb-3">
+                      <label for="editProductName" class="form-label fw-semibold">Nombre del producto</label>
+                      <input id="editProductName" class="form-control" type="text" maxlength="80" required>
+                    </div>
+                    <div>
+                      <label for="editProductCategory" class="form-label fw-semibold">Categoría</label>
+                      <input id="editProductCategory" class="form-control" type="text" list="editProductCategoryOptions" maxlength="40" required>
+                      <datalist id="editProductCategoryOptions"></datalist>
+                      <div class="form-text">Elige una categoría existente o escribe una nueva.</div>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1" aria-hidden="true"></i>Guardar cambios</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal fade" id="deleteProductModal" tabindex="-1" aria-labelledby="deleteProductTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h2 class="modal-title fs-5 text-danger" id="deleteProductTitle"><i class="bi bi-trash me-2" aria-hidden="true"></i>Eliminar producto</h2>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                  <p class="mb-1">¿Eliminar <strong id="deleteProductName"></strong> (<span id="deleteProductCode"></span>)?</p>
+                  <p class="text-muted mb-0" id="deleteProductWarning"></p>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                  <button type="button" class="btn btn-danger" id="confirmDeleteProduct"><i class="bi bi-trash me-1" aria-hidden="true"></i>Eliminar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion d-none mb-4" id="newProductAccordion">
+            <div class="accordion-item products-card">
+              <div class="d-flex align-items-center">
+                <h2 class="accordion-header flex-grow-1" id="newProductHeading">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#newProductCollapse" aria-expanded="false" aria-controls="newProductCollapse">
+                    <i class="bi bi-box-seam me-2 text-success" aria-hidden="true"></i>Registrar producto
+                  </button>
+                </h2>
+                <button type="button" class="btn btn-outline-secondary btn-sm mx-2" id="btnCloseNewProduct" title="Cerrar formulario" aria-label="Cerrar formulario">
+                  <i class="bi bi-x-lg" aria-hidden="true"></i>
+                </button>
+              </div>
+              <div id="newProductCollapse" class="accordion-collapse collapse" aria-labelledby="newProductHeading" data-bs-parent="#newProductAccordion">
+                <div class="accordion-body p-0">
+                  <iframe src="../components/Nuevo.html" id="newProductFrame" title="Formulario para agregar un producto" class="new-product-frame"></iframe>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../assets/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/js/inventory-store.js"></script>
+  <script src="../assets/js/inventory-navigation.js"></script>
+  <script>
+    (function () {
+      let productos = [];
+      const tabla = document.getElementById('productsTable');
+      const categoryFilter = document.getElementById('categoryFilter');
+      const productSearch = document.getElementById('productSearch');
+      const newProductFrame = document.getElementById('newProductFrame');
+      const newProductAccordion = document.getElementById('newProductAccordion');
+      const newProductCollapseEl = document.getElementById('newProductCollapse');
+      const newProductCollapse = bootstrap.Collapse.getOrCreateInstance(newProductCollapseEl, { toggle: false });
+      const productDetailsModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('productDetailsModal'));
+      const editProductModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('editProductModal'));
+      const deleteProductModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('deleteProductModal'));
+      const editProductForm = document.getElementById('editProductForm');
+      const editProductCode = document.getElementById('editProductCode');
+      const editProductName = document.getElementById('editProductName');
+      const editProductCategory = document.getElementById('editProductCategory');
+      const editProductCategoryOptions = document.getElementById('editProductCategoryOptions');
+      const editProductError = document.getElementById('editProductError');
+      const productsNotice = document.getElementById('productsNotice');
+      let editingProductId = null;
+      let deletingProductId = null;
+
+      function stockStatus(stock) {
+        if (stock === 0) return { text: 'Agotado', className: 'status-empty' };
+        if (stock < 15) return { text: 'Bajo', className: 'status-low' };
+        return { text: 'Disponible', className: 'status-available' };
+      }
+
+      function showProductsNotice(message, type) {
+        productsNotice.textContent = message;
+        productsNotice.className = 'alert alert-' + type + ' mb-3';
+      }
+
+      function populateCategoryOptions() {
+        const categories = Array.from(new Set(productos.map(function (product) {
+          return product.categoria;
+        })));
+        editProductCategoryOptions.replaceChildren();
+        categories.forEach(function (value) {
+          const option = document.createElement('option');
+          option.value = value;
+          editProductCategoryOptions.appendChild(option);
+        });
+      }
+
+      function findProduct(id) {
+        return productos.find(function (product) {
+          return product.id === id;
+        });
+      }
+
+      function openProductDetails(product) {
+        document.getElementById('detailProductCode').textContent = product.codigo;
+        document.getElementById('detailProductName').textContent = product.nombre;
+        document.getElementById('detailProductCategory').textContent = product.categoria;
+        document.getElementById('detailProductStock').textContent = product.stock.toLocaleString('es') + ' unidades';
+        document.getElementById('detailProductEntries').textContent = product.entradas.toLocaleString('es') + ' unidades';
+        document.getElementById('detailProductExits').textContent = product.salidas.toLocaleString('es') + ' unidades';
+        productDetailsModal.show();
+      }
+
+      function openProductEditor(product) {
+        editingProductId = product.id;
+        editProductCode.value = product.codigo;
+        editProductName.value = product.nombre;
+        editProductCategory.value = product.categoria;
+        editProductError.classList.add('d-none');
+        populateCategoryOptions();
+        editProductModal.show();
+      }
+
+      function openDeleteConfirmation(product) {
+        deletingProductId = product.id;
+        document.getElementById('deleteProductName').textContent = product.nombre;
+        document.getElementById('deleteProductCode').textContent = product.codigo;
+        document.getElementById('deleteProductWarning').textContent = product.stock > 0
+          ? 'Se eliminarán también sus ' + product.stock.toLocaleString('es') + ' unidades de stock. Esta acción no se puede deshacer.'
+          : 'Esta acción no se puede deshacer.';
+        deleteProductModal.show();
+      }
+
+      function render() {
+        const state = StudioInventory.load();
+        productos = state.productos;
+        const query = productSearch.value.trim().toLocaleLowerCase();
+        const category = categoryFilter.value;
+        const visible = productos.filter(function (product) {
+          return (!category || product.categoria === category)
+            && [product.codigo, product.nombre, product.categoria].some(function (value) {
+              return value.toLocaleLowerCase().includes(query);
+            });
+        });
+
+        tabla.replaceChildren();
+        visible.forEach(function (product) {
+          const row = document.createElement('tr');
+          const status = stockStatus(product.stock);
+          const code = document.createElement('td');
+          code.className = 'text-muted fw-semibold';
+          code.textContent = product.codigo;
+          const name = document.createElement('td');
+          const nameWrap = document.createElement('div');
+          nameWrap.className = 'd-flex align-items-center gap-2';
+          const icon = document.createElement('span');
+          icon.className = 'product-icon';
+          const iconGlyph = document.createElement('i');
+          iconGlyph.className = 'bi ' + product.icon;
+          iconGlyph.setAttribute('aria-hidden', 'true');
+          icon.appendChild(iconGlyph);
+          const label = document.createElement('span');
+          label.className = 'fw-semibold';
+          label.textContent = product.nombre;
+          nameWrap.append(icon, label);
+          name.appendChild(nameWrap);
+          const category = document.createElement('td');
+          category.textContent = product.categoria;
+          const stock = document.createElement('td');
+          stock.className = 'fw-bold';
+          stock.textContent = product.stock.toLocaleString('es');
+          const statusCell = document.createElement('td');
+          const badge = document.createElement('span');
+          badge.className = 'product-status ' + status.className;
+          badge.textContent = status.text;
+          statusCell.appendChild(badge);
+
+          const actionsCell = document.createElement('td');
+          actionsCell.className = 'text-end';
+          const dropdown = document.createElement('div');
+          dropdown.className = 'dropdown product-actions';
+          const actionsToggle = document.createElement('button');
+          actionsToggle.type = 'button';
+          actionsToggle.className = 'btn btn-outline-secondary btn-sm dropdown-toggle';
+          actionsToggle.setAttribute('data-bs-toggle', 'dropdown');
+          actionsToggle.setAttribute('aria-expanded', 'false');
+          actionsToggle.setAttribute('aria-label', 'Acciones para ' + product.codigo);
+          const toggleIcon = document.createElement('i');
+          toggleIcon.className = 'bi bi-three-dots-vertical';
+          toggleIcon.setAttribute('aria-hidden', 'true');
+          actionsToggle.appendChild(toggleIcon);
+          const menu = document.createElement('ul');
+          menu.className = 'dropdown-menu dropdown-menu-end';
+          [
+            { action: 'view', label: 'Visualizar', icon: 'bi-eye' },
+            { action: 'edit', label: 'Modificar', icon: 'bi-pencil-square' },
+            { action: 'register', label: 'Registrar entrada', icon: 'bi-box-arrow-in-down' },
+            { action: 'delete', label: 'Eliminar', icon: 'bi-trash', destructive: true }
+          ].forEach(function (item) {
+            const menuItem = document.createElement('li');
+            const actionButton = document.createElement('button');
+            actionButton.type = 'button';
+            actionButton.className = 'dropdown-item' + (item.destructive ? ' text-danger' : '');
+            actionButton.dataset.productAction = item.action;
+            actionButton.dataset.productId = product.id;
+            const actionIcon = document.createElement('i');
+            actionIcon.className = 'bi ' + item.icon + ' me-2';
+            actionIcon.setAttribute('aria-hidden', 'true');
+            actionButton.append(actionIcon, document.createTextNode(item.label));
+            menuItem.appendChild(actionButton);
+            menu.appendChild(menuItem);
+          });
+          dropdown.append(actionsToggle, menu);
+          actionsCell.appendChild(dropdown);
+          row.append(code, name, category, stock, statusCell, actionsCell);
+          tabla.appendChild(row);
+        });
+
+        document.getElementById('emptyProducts').classList.toggle('d-none', visible.length > 0);
+        document.getElementById('totalStock').textContent = productos.reduce(function (sum, product) {
+          return sum + product.stock;
+        }, 0).toLocaleString('es');
+        document.getElementById('totalProducts').textContent = productos.length;
+        document.getElementById('availableProducts').textContent = productos.filter(function (product) {
+          return product.stock > 0;
+        }).length;
+        document.getElementById('productsUpdated').textContent = 'Actualizado ' + new Date().toLocaleTimeString('es', {
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+
+        const categories = Array.from(new Set(productos.map(function (product) {
+          return product.categoria;
+        })));
+        const selected = categoryFilter.value;
+        categoryFilter.replaceChildren(new Option('Todas las categorías', ''));
+        categories.forEach(function (value) {
+          categoryFilter.add(new Option(value, value));
+        });
+        categoryFilter.value = categories.includes(selected) ? selected : '';
+      }
+
+      productSearch.addEventListener('input', render);
+      categoryFilter.addEventListener('change', render);
+      tabla.addEventListener('click', function (event) {
+        const actionButton = event.target.closest('button[data-product-action]');
+        if (!actionButton) return;
+
+        const product = findProduct(actionButton.dataset.productId);
+        if (!product) {
+          showProductsNotice('El producto seleccionado ya no está disponible.', 'danger');
+          return;
+        }
+
+        productsNotice.classList.add('d-none');
+        switch (actionButton.dataset.productAction) {
+          case 'view':
+            openProductDetails(product);
+            break;
+          case 'edit':
+            openProductEditor(product);
+            break;
+          case 'register':
+            window.location.href = '../views/entrada.html#' + encodeURIComponent(product.codigo);
+            break;
+          case 'delete':
+            openDeleteConfirmation(product);
+            break;
+        }
+      });
+      editProductForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+        editProductError.classList.add('d-none');
+        if (!editProductForm.reportValidity()) return;
+
+        const codigo = editProductCode.value.trim().toUpperCase();
+        const name = editProductName.value.trim();
+        const requestedCategory = editProductCategory.value.trim();
+        if (!/^SP-\d{3,}$/.test(codigo)) {
+          editProductError.textContent = 'El código debe tener el formato SP-001.';
+          editProductError.classList.remove('d-none');
+          return;
+        }
+        if (!name || !requestedCategory) {
+          editProductError.textContent = 'Completa el nombre y la categoría del producto.';
+          editProductError.classList.remove('d-none');
+          return;
+        }
+
+        const state = StudioInventory.load();
+        const product = state.productos.find(function (item) {
+          return item.id === editingProductId;
+        });
+        if (!product) {
+          editProductError.textContent = 'El producto ya no está disponible para modificar.';
+          editProductError.classList.remove('d-none');
+          return;
+        }
+        if (state.productos.some(function (item) {
+          return item !== product && item.codigo === codigo;
+        })) {
+          editProductError.textContent = 'Ya existe otro producto con ese código.';
+          editProductError.classList.remove('d-none');
+          return;
+        }
+
+        const existingCategory = state.productos.find(function (item) {
+          return item.categoria.toLocaleLowerCase() === requestedCategory.toLocaleLowerCase();
+        });
+        const category = existingCategory ? existingCategory.categoria : requestedCategory;
+        product.codigo = codigo;
+        product.nombre = name;
+        product.corto = name.slice(0, 24);
+        product.categoria = category;
+        product.icon = StudioInventory.iconForCategory(category);
+
+        try {
+          StudioInventory.save(state);
+          editingProductId = null;
+          editProductModal.hide();
+          showProductsNotice('Se actualizaron los datos de ' + codigo + '.', 'success');
+          render();
+        } catch (error) {
+          editProductError.textContent = 'No se pudo guardar el producto: ' + error.message;
+          editProductError.classList.remove('d-none');
+        }
+      });
+      document.getElementById('confirmDeleteProduct').addEventListener('click', function () {
+        const state = StudioInventory.load();
+        const index = state.productos.findIndex(function (product) {
+          return product.id === deletingProductId;
+        });
+        if (index < 0) {
+          deleteProductModal.hide();
+          showProductsNotice('El producto ya no está disponible para eliminar.', 'danger');
+          return;
+        }
+
+        const removedProduct = state.productos[index];
+        state.productos.splice(index, 1);
+        state.deletedProductIds = Array.from(new Set((state.deletedProductIds || []).concat(removedProduct.id)));
+        try {
+          StudioInventory.save(state);
+          deletingProductId = null;
+          deleteProductModal.hide();
+          showProductsNotice('Se eliminó ' + removedProduct.codigo + ' del inventario.', 'success');
+          render();
+        } catch (error) {
+          showProductsNotice('No se pudo eliminar el producto: ' + error.message, 'danger');
+        }
+      });
+      document.getElementById('editProductModal').addEventListener('hidden.bs.modal', function () {
+        editingProductId = null;
+      });
+      document.getElementById('deleteProductModal').addEventListener('hidden.bs.modal', function () {
+        deletingProductId = null;
+      });
+      document.getElementById('btnTopNewProduct').addEventListener('click', function () {
+        newProductAccordion.classList.remove('d-none');
+        newProductCollapse.show();
+        setTimeout(function () {
+          newProductAccordion.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 200);
+      });
+      document.getElementById('btnCloseNewProduct').addEventListener('click', function () {
+        newProductCollapse.hide();
+      });
+      newProductCollapseEl.addEventListener('hidden.bs.collapse', function () {
+        newProductAccordion.classList.add('d-none');
+        newProductFrame.src = '../components/Nuevo.html';
+      });
+      window.addEventListener('storage', function (event) {
+        if (event.key === StudioInventory.KEY) render();
+      });
+      window.addEventListener('message', function (event) {
+        if (event.source === newProductFrame.contentWindow
+          && event.data
+          && event.data.type === 'studio-inventory-updated') {
+          render();
+        }
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>

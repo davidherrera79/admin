@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nuevo producto</title>
+  <script src="../assets/js/inventory-origin.js"></script>
+  <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../assets/icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../assets/css/theme.css">
+  <link rel="stylesheet" href="../assets/css/nuevo.css">
+</head>
+<body>
+  <main class="new-product-panel">
+    <div class="alert alert-danger d-none" id="newProductError" role="alert"></div>
+    <div class="alert alert-success d-none" id="newProductSuccess" role="status" aria-live="polite"></div>
+    <form id="newProductForm">
+      <div class="row g-3">
+        <div class="col-12 col-md-4">
+          <label for="productCode" class="form-label fw-semibold">Código</label>
+          <input id="productCode" class="form-control" type="text" maxlength="32" autocomplete="off" autocapitalize="characters" spellcheck="false" required>
+          <div class="form-text">Formato: SP-001. Puedes editar el código sugerido.</div>
+        </div>
+        <div class="col-12 col-md-8">
+          <label for="productName" class="form-label fw-semibold">Nombre del producto</label>
+          <input id="productName" class="form-control" type="text" maxlength="80" required>
+        </div>
+        <div class="col-12 col-md-6">
+          <label for="productCategory" class="form-label fw-semibold">Categoría</label>
+          <input id="productCategory" class="form-control" type="text" list="productCategoryOptions" maxlength="40" value="Video" required>
+          <datalist id="productCategoryOptions"></datalist>
+          <div class="form-text">Elige una categoría existente o escribe una nueva.</div>
+        </div>
+        <div class="col-12 col-md-6">
+          <label for="initialStock" class="form-label fw-semibold">Stock inicial</label>
+          <input id="initialStock" class="form-control" type="number" min="0" step="1" value="0" required>
+        </div>
+        <div class="col-12 d-flex justify-content-end">
+          <button class="btn btn-primary" type="submit"><i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Guardar producto</button>
+        </div>
+      </div>
+    </form>
+  </main>
+  <script src="../assets/js/inventory-store.js"></script>
+  <script src="../assets/js/session.js"></script>
+  <script>
+    (function () {
+      const form = document.getElementById('newProductForm');
+      const codeInput = document.getElementById('productCode');
+      const nameInput = document.getElementById('productName');
+      const categoryInput = document.getElementById('productCategory');
+      const stockInput = document.getElementById('initialStock');
+      const categoryOptions = document.getElementById('productCategoryOptions');
+      const errorBox = document.getElementById('newProductError');
+      const successBox = document.getElementById('newProductSuccess');
+      let codeManuallyEdited = false;
+
+      function refreshCode() {
+        codeInput.value = StudioInventory.nextCode(StudioInventory.load().productos);
+      }
+
+      function refreshCategories() {
+        const categories = new Set(StudioInventory.load().productos.map(function (product) {
+          return product.categoria;
+        }));
+        categoryOptions.replaceChildren();
+        categories.forEach(function (category) {
+          const option = document.createElement('option');
+          option.value = category;
+          categoryOptions.appendChild(option);
+        });
+      }
+
+      codeInput.addEventListener('input', function () {
+        codeManuallyEdited = true;
+      });
+
+      form.addEventListener('submit', function (event) {
+        event.preventDefault();
+        errorBox.classList.add('d-none');
+        successBox.classList.add('d-none');
+        if (!form.reportValidity()) return;
+
+        const codigo = codeInput.value.trim().toUpperCase();
+        const name = nameInput.value.trim();
+        const requestedCategory = categoryInput.value.trim();
+        const stock = Number(stockInput.value);
+        if (!/^SP-\d{3,}$/.test(codigo)) {
+          errorBox.textContent = 'El código debe tener el formato SP-001.';
+          errorBox.classList.remove('d-none');
+          return;
+        }
+        if (!name || !Number.isSafeInteger(stock) || stock < 0) {
+          errorBox.textContent = 'Ingresa un nombre y una cantidad inicial válida.';
+          errorBox.classList.remove('d-none');
+          return;
+        }
+        if (!requestedCategory) {
+          errorBox.textContent = 'Ingresa una categoría válida.';
+          errorBox.classList.remove('d-none');
+          return;
+        }
+
+        const state = StudioInventory.load();
+        if (state.productos.some(function (product) {
+          return product.codigo === codigo;
+        })) {
+          errorBox.textContent = 'Ya existe otro producto con ese código.';
+          errorBox.classList.remove('d-none');
+          return;
+        }
+        const existingCategory = state.productos.find(function (product) {
+          return product.categoria.toLocaleLowerCase() === requestedCategory.toLocaleLowerCase();
+        });
+        const category = existingCategory ? existingCategory.categoria : requestedCategory;
+        const session = StudioSession.get();
+        const registeredBy = StudioSession.displayName(session);
+        state.productos.push({
+          id: StudioInventory.createProductId(),
+          codigo: codigo,
+          nombre: name,
+          corto: name.slice(0, 24),
+          categoria: category,
+          icon: StudioInventory.iconForCategory(category),
+          codigoRegistro: codigo,
+          nombreRegistro: name,
+          categoriaRegistro: category,
+          registradoPor: session.loggedIn && session.email ? registeredBy + ' (' + session.email + ')' : registeredBy,
+          fechaRegistro: new Date().toISOString(),
+          unidadesRegistro: stock,
+          stock: stock,
+          entradas: stock,
+          salidas: 0
+        });
+
+        try {
+          StudioInventory.save(state);
+          form.reset();
+          codeManuallyEdited = false;
+          refreshCode();
+          refreshCategories();
+          successBox.textContent = 'Producto ' + codigo + ' agregado al inventario.';
+          successBox.classList.remove('d-none');
+          window.parent.postMessage({ type: 'studio-inventory-updated' }, '*');
+        } catch (error) {
+          errorBox.textContent = 'No se pudo guardar el producto: ' + error.message;
+          errorBox.classList.remove('d-none');
+        }
+      });
+
+      window.addEventListener('storage', function (event) {
+        if (event.key === StudioInventory.KEY) {
+          if (!codeManuallyEdited) refreshCode();
+          refreshCategories();
+        }
+      });
+
+      refreshCode();
+      refreshCategories();
+    })();
+  </script>
+</body>
+</html>

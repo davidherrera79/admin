@@ -204,6 +204,10 @@
     // Se usa window.name (atributo name del iframe) porque frameElement es null
     // cuando las páginas se abren como archivos locales (file://).
     const isEmbedded = window.parent !== window && window.name === 'frameUserList';
+    const newUserButton = document.getElementById('newUserButton');
+    if (window.location.hash === '#hideNewUserButton') {
+      newUserButton.classList.add('d-none');
+    }
 
     const state = {
       search: '',
@@ -727,7 +731,7 @@
       });
     });
 
-    document.getElementById('newUserButton').addEventListener('click', function () {
+    newUserButton.addEventListener('click', function () {
       if (isEmbedded) {
         window.parent.postMessage({ type: 'studio-user-new' }, '*');
       } else {

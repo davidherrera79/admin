@@ -1,0 +1,120 @@
+.movement-page {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.movement-heading {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.movement-icon {
+  display: grid;
+  width: 3.25rem;
+  height: 3.25rem;
+  place-items: center;
+  border-radius: 1rem;
+  font-size: 1.5rem;
+}
+
+.entry-icon {
+  color: #15803d;
+  background: #dcfce7;
+}
+
+.movement-summary,
+.movement-card {
+  background: #fff;
+  border: 1px solid var(--sp-slate-200, #e2e8f0);
+  border-radius: 1rem;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, .04);
+}
+
+.movement-summary {
+  min-height: 96px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: var(--sp-slate-600, #475569);
+  font-size: .85rem;
+}
+
+.movement-summary strong {
+  color: var(--sp-slate-900, #0f172a);
+  font-size: 1.65rem;
+}
+
+.movement-card {
+  overflow: hidden;
+}
+
+.movement-card-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--sp-slate-200, #e2e8f0);
+}
+
+.movement-tag {
+  padding: .3rem .7rem;
+  border-radius: 999px;
+  font-size: .75rem;
+  font-weight: 700;
+}
+
+.entry-tag {
+  color: #166534;
+  background: #dcfce7;
+}
+
+.recent-product-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: .15rem;
+  white-space: nowrap;
+}
+
+.recent-product-action {
+  display: inline-grid;
+  width: 1.8rem;
+  height: 1.8rem;
+  place-items: center;
+  padding: 0;
+  border: 1px solid #e2e8f0;
+  border-radius: .3rem;
+  background: #fff;
+  font-size: .8rem;
+  line-height: 1;
+}
+
+.recent-product-action:hover {
+  border-color: currentColor;
+  background: #f8fafc;
+}
+
+.recent-product-action--view {
+  color: #0891d1;
+}
+
+.recent-product-action--edit {
+  color: #7048c8;
+}
+
+.recent-product-action--register {
+  color: #e99000;
+}
+
+.recent-product-action--delete {
+  color: #e45b79;
+}
+
+@media (max-width: 575.98px) {
+  .movement-heading {
+    align-items: flex-start;
+  }
+}

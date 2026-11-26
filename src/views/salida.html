@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Studio play - Salida de stock</title>
+  <script src="../assets/js/inventory-origin.js"></script>
+  <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../assets/css/navbar.css">
+  <link rel="stylesheet" href="../assets/css/sidebar.css">
+  <link rel="stylesheet" href="../assets/css/dashboard.css">
+  <link rel="stylesheet" href="../assets/icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../assets/css/theme.css">
+  <link rel="stylesheet" href="../assets/css/salida.css">
+</head>
+<body data-movement="salida">
+  <iframe src="../components/navbar.html" id="navbarFrame" title="Navbar Studio play" class="navbar-iframe"></iframe>
+  <div class="workspace-shell">
+    <iframe src="../components/sidebar.html?section=inventario-salida" id="sidebarFrame" name="sidebarFrame" title="Sidebar Studio play" class="sidebar-iframe"></iframe>
+    <main class="dashboard-main-scroll">
+      <div class="dashboard-container container-fluid">
+        <div class="movement-page">
+          <header class="movement-heading">
+            <span class="movement-icon exit-icon"><i class="bi bi-box-arrow-up" aria-hidden="true"></i></span>
+            <div>
+              <div class="text-danger small fw-semibold text-uppercase">Inventario</div>
+              <h1 class="h3 fw-bold mb-1">Salida de stock</h1>
+              <p class="text-muted mb-0">Registra las unidades retiradas del inventario.</p>
+            </div>
+          </header>
+
+          <div class="row g-3 mb-4">
+            <div class="col-12 col-sm-4"><div class="movement-summary"><span>Unidades en stock</span><strong id="totalStock">0</strong></div></div>
+            <div class="col-12 col-sm-4"><div class="movement-summary"><span>Productos registrados</span><strong id="totalProducts">0</strong></div></div>
+            <div class="col-12 col-sm-4"><div class="movement-summary"><span>Productos con stock</span><strong id="availableProducts">0</strong></div></div>
+          </div>
+
+          <section class="movement-card mb-4" aria-labelledby="exitFormTitle">
+            <div class="movement-card-heading">
+              <h2 class="h5 fw-bold mb-0" id="exitFormTitle">Registrar salida</h2>
+              <span class="movement-tag exit-tag">Restar stock</span>
+            </div>
+            <form id="movementForm" class="p-3 p-lg-4" novalidate>
+              <div class="row g-3 align-items-end">
+                <div class="col-12 col-md-7">
+                  <label for="movementProduct" class="form-label fw-semibold">Producto</label>
+                  <select id="movementProduct" class="form-select" required></select>
+                </div>
+                <div class="col-12 col-md-3">
+                  <label for="movementQuantity" class="form-label fw-semibold">Cantidad</label>
+                  <input id="movementQuantity" class="form-control" type="number" min="1" step="1" value="1" required>
+                </div>
+                <div class="col-12 col-md-2 d-grid">
+                  <button class="btn btn-danger" type="submit"><i class="bi bi-dash-lg me-1" aria-hidden="true"></i>Registrar</button>
+                </div>
+                <div class="col-12 small text-muted" id="availableStock"></div>
+                <div class="col-12"><div class="alert d-none mb-0" id="movementNotice" role="status" aria-live="polite"></div></div>
+              </div>
+            </form>
+          </section>
+
+          <section class="movement-card" aria-labelledby="activityTitle">
+            <div class="movement-card-heading"><h2 class="h5 fw-bold mb-0" id="activityTitle">Salidas recientes</h2></div>
+            <ul class="list-group list-group-flush" id="movementActivity"></ul>
+            <p class="text-muted text-center py-4 mb-0 d-none" id="activityEmpty">Todavía no hay salidas registradas.</p>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="../assets/js/inventory-store.js"></script>
+  <script src="../assets/js/inventory-navigation.js"></script>
+  <script src="../assets/js/inventory-movement.js"></script>
+</body>
+</html>

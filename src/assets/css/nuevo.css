@@ -1,0 +1,17 @@
+body {
+  background: #fff;
+}
+
+.new-product-panel {
+  padding: 1.25rem;
+}
+
+.new-product-panel .form-label {
+  font-size: .85rem;
+}
+
+@media (max-width: 575.98px) {
+  .new-product-panel {
+    padding: .85rem;
+  }
+}
