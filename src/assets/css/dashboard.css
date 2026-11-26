@@ -114,6 +114,23 @@ body {
   max-width: 1600px;
 }
 
+.dashboard-entry-panel {
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--sp-slate-200, #e2e8f0);
+  border-radius: var(--radius-lg);
+  background: #ffffff;
+}
+
+.dashboard-entry-iframe {
+  display: block;
+  width: 100%;
+  height: calc(100vh - var(--navbar-height) - 5.5rem);
+  min-height: 640px;
+  border: 0;
+  background: #ffffff;
+}
+
 /* ---------- Barra superior ---------- */
 .dashboard-topbar {
   background: rgba(255, 255, 255, 0.85);

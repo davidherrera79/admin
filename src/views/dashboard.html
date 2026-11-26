@@ -56,6 +56,16 @@
           </div>
         </div>
 
+        <section class="dashboard-entry-panel d-none mb-3" id="dashboardEntradaPanel" aria-label="Entrada de stock">
+          <iframe
+            class="dashboard-entry-iframe"
+            id="dashboardEntradaFrame"
+            title="Vista completa de entrada de stock"
+            loading="lazy"
+            data-src="./entrada.html">
+          </iframe>
+        </section>
+
         <!-- Bienvenida -->
         <div class="hero-card mb-3 section-panel" data-group="general">
           <div class="d-flex flex-wrap justify-content-between align-items-end gap-3">
@@ -65,7 +75,7 @@
               <div class="hero-sub" id="heroSummary">Resumen del estudio en tiempo real.</div>
             </div>
             <div class="d-flex flex-wrap gap-2">
-              <button type="button" class="hero-action primary" data-goto="inventario-entrada"><i class="bi bi-box-arrow-in-down"></i>Registrar entrada</button>
+              <button type="button" class="hero-action primary" data-goto="dashboard-entrada"><i class="bi bi-box-arrow-in-down"></i>Registrar entrada</button>
               <button type="button" class="hero-action" data-goto="inventario-salida"><i class="bi bi-box-arrow-up"></i>Registrar salida</button>
               <a class="hero-action" href="./useradmin.html"><i class="bi bi-people"></i>Gestionar usuarios</a>
             </div>
@@ -1280,8 +1290,23 @@
     const panels = document.querySelectorAll('.section-panel');
     const filterPills = document.querySelectorAll('.filter-pill');
     const dashboardScroll = document.getElementById('dashboardScroll');
+    const dashboardEntryPanel = document.getElementById('dashboardEntradaPanel');
+    const dashboardEntryFrame = document.getElementById('dashboardEntradaFrame');
 
-    function mostrarSeccion(seccion) {
+    function mostrarSeccion(seccion, productCode) {
+      if (seccion === 'dashboard-entrada') {
+        filterPills.forEach(btn => btn.classList.remove('active'));
+        panels.forEach(panel => panel.classList.add('d-none'));
+        dashboardEntryPanel.classList.remove('d-none');
+        const source = dashboardEntryFrame.dataset.src + (productCode ? '#' + encodeURIComponent(productCode) : '');
+        if (dashboardEntryFrame.getAttribute('src') !== source) {
+          dashboardEntryFrame.setAttribute('src', source);
+        }
+        dashboardScroll.scrollTo({ top: 0 });
+        return;
+      }
+
+      dashboardEntryPanel.classList.add('d-none');
       if (!seccion || seccion === 'todos') {
         filtrarPorGrupo('todos');
         return;
@@ -1297,6 +1322,10 @@
     }
 
     function filtrarPorGrupo(grupo) {
+      dashboardEntryPanel.classList.add('d-none');
+      if (window.location.hash.indexOf('#dashboard-entrada') === 0) {
+        window.history.replaceState(null, '', window.location.pathname + window.location.search + '#todos');
+      }
       filterPills.forEach(btn => btn.classList.toggle('active', btn.dataset.filter === grupo));
       panels.forEach(p => {
         p.classList.toggle('d-none', grupo !== 'todos' && p.dataset.group !== grupo);
@@ -1318,6 +1347,14 @@
     // Botones del encabezado: llevan al formulario y lo enfocan
     document.querySelectorAll('[data-goto]').forEach(btn => {
       btn.addEventListener('click', function () {
+        if (btn.dataset.goto === 'dashboard-entrada') {
+          if (window.location.hash === '#dashboard-entrada') {
+            mostrarSeccion('dashboard-entrada');
+          } else {
+            window.location.hash = 'dashboard-entrada';
+          }
+          return;
+        }
         const destino = document.getElementById(btn.dataset.goto);
         if (!destino) return;
         destino.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -1399,6 +1436,10 @@
         seccion = decodeURIComponent(window.location.hash.replace('#', ''));
       } catch (e) {
         seccion = '';
+      }
+      if (seccion.indexOf('dashboard-entrada:') === 0) {
+        mostrarSeccion('dashboard-entrada', seccion.slice('dashboard-entrada:'.length));
+        return;
       }
       if (seccion) mostrarSeccion(seccion);
     }

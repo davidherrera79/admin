@@ -10,7 +10,7 @@
     'usuario-admin': './useradmin.html',
     'usuario-restar': './restar.html',
     'inventario-productos': './productos.html',
-    'inventario-entrada': './entrada.html',
+    'inventario-entrada': './dashboard.html#dashboard-entrada',
     'inventario-salida': './salida.html'
   };
 

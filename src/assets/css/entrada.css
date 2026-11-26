@@ -113,6 +113,35 @@
   color: #e45b79;
 }
 
+html.movement-embedded,
+html.movement-embedded body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+html.movement-embedded .navbar-iframe,
+html.movement-embedded .sidebar-iframe {
+  display: none;
+}
+
+html.movement-embedded .workspace-shell {
+  display: block;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+html.movement-embedded .dashboard-main-scroll {
+  height: 100%;
+  overflow-y: auto;
+}
+
+html.movement-embedded .dashboard-container,
+html.movement-embedded .movement-page {
+  max-width: none;
+}
+
 @media (max-width: 575.98px) {
   .movement-heading {
     align-items: flex-start;
